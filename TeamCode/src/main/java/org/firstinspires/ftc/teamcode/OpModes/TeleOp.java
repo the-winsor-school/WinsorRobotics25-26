@@ -34,5 +34,3 @@ public class TeleOp extends LinearOpMode
         }
     }
 }
-
-//hi guys!!
