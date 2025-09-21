@@ -44,10 +44,11 @@ public class CascadeArm extends MechAssembly
                 "cascadeMotor",
                 "topLiftLimit",
                 "bottomLiftLimit",
+                // Control strategy
                 (gamepad, dlm) ->
                 {
-                 double power = GamepadExtensions.GetLeftStickY(gamepad);
-                 dlm.setPower(power);
+                     double power = GamepadExtensions.GetLeftStickY(gamepad);
+                     dlm.setPower(power);
                 },
                 ((dlm, telemetry) ->
                 {
@@ -60,6 +61,7 @@ public class CascadeArm extends MechAssembly
                 "drawbridge",
                 "topDrawLimit",
                 "botDrawLimit",
+                // Control Strategy
                 (gamepad, dlm) -> {
                     double power = GamepadExtensions.GetRightStickY(gamepad);
                     dlm.setPower(power);
@@ -72,11 +74,12 @@ public class CascadeArm extends MechAssembly
                 hardwareMap,
                 "servo",
                 (servo, gamepad) -> {
-                    if (gamepad.a) servo.setPosition(1.0);
-                    if (gamepad.b) servo.setPosition(0.0);
+                    if (gamepad.a) servo.setPower(1.0);
+                    else if (gamepad.b) servo.setPower(-1.0);
+                    else servo.setPower(0);
                 },
                 (servo, telemetry) -> {
-                    telemetry.addData("Claw Position", servo.getPosition());
+                    telemetry.addData("Claw Position", servo.getPower());
                 }
         );
 

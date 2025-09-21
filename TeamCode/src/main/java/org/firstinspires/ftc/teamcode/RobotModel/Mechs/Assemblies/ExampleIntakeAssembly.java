@@ -43,9 +43,11 @@ public class ExampleIntakeAssembly extends MechAssembly
                 (servo, gamepad) ->
                 {
                     if(gamepad.left_bumper)
-                        servo.setPosition(1);
-                    if(gamepad.right_bumper)
-                        servo.setPosition(0);
+                        servo.setPower(1);
+                    else if(gamepad.right_bumper)
+                        servo.setPower(-1);
+                    else
+                        servo.setPower(0);
                 },
                 (servo, telemetry) -> {});
 

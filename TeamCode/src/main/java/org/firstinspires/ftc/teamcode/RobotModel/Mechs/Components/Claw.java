@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components;
 
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -13,13 +14,14 @@ public class Claw extends MechComponent
     {
         public void open()
         {
-            servo.setPosition(1);
+            servo.setPower(1);
         }
 
         public void close()
         {
-            servo.setPosition(0);
+            servo.setPower(-1);
         }
+
     }
 
     private AutonomousClawBehaviors auton = new AutonomousClawBehaviors();
@@ -33,14 +35,14 @@ public class Claw extends MechComponent
 
     public interface ClawControlStrategy extends IControlStrategy
     {
-        public void chomp(Servo servo, Gamepad gamepad);
+        public void chomp(CRServo servo, Gamepad gamepad);
     }
 
     public interface ClawTelemetryStrategy
     {
-        public void update(Servo servo, Telemetry telemetry);
+        public void update(CRServo servo, Telemetry telemetry);
     }
-    public Servo servo;
+    public CRServo servo;
 
     protected ClawControlStrategy strategy;
     protected ClawTelemetryStrategy telemetryStrategy;
@@ -51,7 +53,7 @@ public class Claw extends MechComponent
                 ClawTelemetryStrategy telemetryStrategy)
     {
         super(strategy);
-        servo = hardwareMap.get(Servo.class, servoName);
+        servo = hardwareMap.get(CRServo.class, servoName);
         this.strategy = strategy;
         this.telemetryStrategy = telemetryStrategy;
     }
