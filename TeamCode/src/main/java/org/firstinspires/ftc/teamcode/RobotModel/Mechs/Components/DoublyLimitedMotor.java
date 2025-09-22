@@ -80,7 +80,7 @@ public  class DoublyLimitedMotor extends MechComponent{
      */
     public void setPower(double power){
 
-        if ((power > 0 && !canGoForward() )|| (power > 0 && !canGoReverse())) {
+        if ((power > 0 && !canGoForward() )|| (power < 0 && !canGoReverse())) {
             power = 0;
         }
 
