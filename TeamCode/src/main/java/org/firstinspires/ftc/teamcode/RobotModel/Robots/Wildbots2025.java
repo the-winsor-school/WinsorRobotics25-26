@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.RobotModel.DriveTrain.Mecanum.MecanumDrive;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Assemblies.CascadeArm;
 
-public class MecanumRobot extends Robot
+public class Wildbots2025 extends Robot
 {
     public class AutonomousMecanumRobot extends AutonomousRobot
     {
@@ -33,7 +33,7 @@ public class MecanumRobot extends Robot
     }
 
 
-    public MecanumRobot(HardwareMap hardwareMap)
+    public Wildbots2025(HardwareMap hardwareMap)
     {
         driveTrain = new MecanumDrive(
                 hardwareMap,

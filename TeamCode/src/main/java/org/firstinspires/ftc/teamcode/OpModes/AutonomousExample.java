@@ -5,18 +5,18 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.AutonStrategies.ExampleAutonomousStrategies;
 import org.firstinspires.ftc.teamcode.AutonStrategies.IAutonStrategy;
-import org.firstinspires.ftc.teamcode.RobotModel.Robots.MecanumRobot;
+import org.firstinspires.ftc.teamcode.RobotModel.Robots.Wildbots2025;
 
 
 @Autonomous(name="Auton Example")
 public class AutonomousExample extends LinearOpMode
 {
-    private MecanumRobot robot;
+    private Wildbots2025 robot;
     private IAutonStrategy autonStrategy;
 
     public AutonomousExample()
     {
-        robot = new MecanumRobot(hardwareMap);
+        robot = new Wildbots2025(hardwareMap);
         autonStrategy = ExampleAutonomousStrategies.MecanumAutonDance(robot.getAutonomousRobot());
     }
 

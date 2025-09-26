@@ -2,22 +2,20 @@ package org.firstinspires.ftc.teamcode.OpModes;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.RobotModel.Robots.Wildbots2025;
+import org.firstinspires.ftc.teamcode.RobotModel.Robots.AppleRobot;
 import org.firstinspires.ftc.teamcode.RobotModel.Robots.Robot;
+import org.firstinspires.ftc.teamcode.RobotModel.Robots.Wildbots2025;
 
-@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TeleOp", group= "Example")
-public class TeleOp extends LinearOpMode
+@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "AppleTeleOp", group= "Example")
+public class AppleTeleOp extends LinearOpMode
 {
+
     Robot robot;
-    /**
-     * Imagine a world where this is all we need to have in this class~
-     * @throws InterruptedException
-     */
     @Override
     public void runOpMode()
             throws InterruptedException
     {
-        robot = new Wildbots2025(hardwareMap);
+        robot = new AppleRobot(hardwareMap);
         telemetry.addLine("initialized");
         telemetry.update();
         waitForStart();
