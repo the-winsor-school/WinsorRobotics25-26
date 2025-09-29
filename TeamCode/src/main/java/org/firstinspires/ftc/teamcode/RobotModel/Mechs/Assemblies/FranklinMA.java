@@ -7,7 +7,8 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.Shooter;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.SpinnyIntake;
 
-public class FranklinMA extends MechAssembly{
+public class FranklinMA extends MechAssembly
+{
     public FranklinMA(HardwareMap hardwareMap) {
         intake = new SpinnyIntake(hardwareMap, "THENOMS",
                 (motor, gamepad) -> {
