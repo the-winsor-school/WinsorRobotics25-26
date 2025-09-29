@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.Shooter;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.SpinnyIntake;
+import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.Unstuckinator;
 
 public class FranklinMA extends MechAssembly
 {
@@ -23,6 +24,8 @@ public class FranklinMA extends MechAssembly
                 (motor, gamepad) -> {
                     motor.setPower(gamepad.right_trigger);
                 });;
+        unstuckinator = new Unstuckinator(hardwareMap, "spinnyservo",
+                ((servo, gamepad) -> {servo.setPower(1);}));
     }
 
     @Override
@@ -30,11 +33,13 @@ public class FranklinMA extends MechAssembly
         return null;
     }
     private final SpinnyIntake intake;
-
+    private final Unstuckinator unstuckinator;
     private final Shooter canon;
     @Override
     public void giveInstructions(Gamepad gamepad) {
-
+        intake.move(gamepad);
+        canon.move(gamepad);
+        unstuckinator.move(gamepad);
     }
 
     @Override

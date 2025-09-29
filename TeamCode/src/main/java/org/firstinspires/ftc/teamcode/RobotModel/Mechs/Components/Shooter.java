@@ -30,12 +30,12 @@ public class Shooter extends MechComponent
 
     protected ShooterControlStrategy pewpew;
     @Override
-    void move(Gamepad gamepad) {
+    public void move(Gamepad gamepad) {
         pewpew.shoot(shooter, gamepad);
     }
 
     @Override
-    void update(Telemetry telemetry) {
+    public void update(Telemetry telemetry) {
 
     }
 }
