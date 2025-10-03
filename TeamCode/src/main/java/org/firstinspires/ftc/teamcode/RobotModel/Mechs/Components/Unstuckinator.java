@@ -19,6 +19,17 @@ public class Unstuckinator extends MechComponent{
         UnstuckCS = strategy;
     }
 
+    public class AutonomousUnstuckBehavior extends AutonomousComponentBehaviors {
+        public void StartUnstucking(){
+            spinny.setPower(1);
+        }
+
+        public void StopUnstucking(){
+            spinny.setPower(0);
+        }
+
+    }
+
     @Override
     public <T extends AutonomousComponentBehaviors> T getAutonomousBehaviors() {
         return null;

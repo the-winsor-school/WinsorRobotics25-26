@@ -27,6 +27,17 @@ public class FranklinMA extends MechAssembly
         unstuckinator = new Unstuckinator(hardwareMap, "spinnyservo",
                 ((servo, gamepad) -> {servo.setPower(1);}));
     }
+    
+    public class AutonomousFranklinMA extends AutonomousMechBehaviors {
+        private final Shooter.AutonomousShooterBehavior AutonShooter;
+        public final SpinnyIntake.AutonomousIntakeBehaviors SpinnyIntake;
+        public final Unstuckinator.AutonomousUnstuckBehavior Unstuckinator;
+        public AutonomousFranklinMA(Shooter.AutonomousShooterBehavior autonShooter, SpinnyIntake.AutonomousIntakeBehaviors spinnyIntake, Unstuckinator.AutonomousUnstuckBehavior unstuckinator) {
+            AutonShooter = autonShooter;
+            SpinnyIntake = spinnyIntake;
+            Unstuckinator = unstuckinator;
+        }
+    }
 
     @Override
     public <T extends AutonomousMechBehaviors> T getAutonomousBehaviors() {

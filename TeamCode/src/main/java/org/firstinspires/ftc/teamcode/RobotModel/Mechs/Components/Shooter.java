@@ -17,6 +17,15 @@ public class Shooter extends MechComponent
         this.pewpew = pewpew;
     }
 
+    public class AutonomousShooterBehavior extends AutonomousComponentBehaviors {
+        public void StartShoot(){
+            shooter.setPower(1);
+        }
+        public void StopShoot(){
+            shooter.setPower(0);
+        }
+    }
+
     @Override
     public <T extends AutonomousComponentBehaviors> T getAutonomousBehaviors() {
         return null;
