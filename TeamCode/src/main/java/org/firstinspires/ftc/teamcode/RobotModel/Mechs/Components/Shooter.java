@@ -19,7 +19,7 @@ public class Shooter extends MechComponent
 
     public class AutonomousShooterBehavior extends AutonomousComponentBehaviors {
         public void StartShoot(){
-            shooter.setPower(1);
+            shooter.setPower(0.67);
         }
         public void StopShoot(){
             shooter.setPower(0);
