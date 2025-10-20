@@ -22,7 +22,7 @@ public class FranklinMA extends MechAssembly
                 });
         canon = new Shooter(hardwareMap, "BANGBANGBANG",
                 (motor, gamepad) -> {
-                    motor.setPower(gamepad.right_trigger);
+                    motor.setPower(gamepad.right_trigger*-1);
                 });;
         unstuckinator = new Unstuckinator(hardwareMap, "spinnyservo",
                 ((servo, gamepad) -> {servo.setPower(1);}));
