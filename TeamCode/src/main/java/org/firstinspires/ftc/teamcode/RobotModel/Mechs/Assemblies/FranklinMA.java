@@ -14,10 +14,10 @@ public class FranklinMA extends MechAssembly
     public FranklinMA(HardwareMap hardwareMap) {
         intake = new FlappyServo(hardwareMap, "flappyservo",
                 (motor, gamepad) -> {
-                    if(gamepad.a)
-                        motor.setPosition(60);
-                    else
-                        motor.setPosition(0);
+                    while(gamepad.a)
+                        motor.setPosition(motor.getPosition()+1);
+                    while(gamepad.b)
+                        motor.setPosition(motor.getPosition()-1);
                 });
         canon = new Shooter(hardwareMap, "BANGBANGBANG",
                 (motor, gamepad) -> {
