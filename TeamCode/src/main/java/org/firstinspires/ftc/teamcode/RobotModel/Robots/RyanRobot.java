@@ -13,6 +13,7 @@ public class RyanRobot extends Robot {
         return null;
     }
     public RyanRobot(HardwareMap hardwareMap){
+        // pretty sure Ryan uses a MecanumDrive
         driveTrain = new StandardTankDrive(hardwareMap);
         mechAssembly = new RyanMA(hardwareMap);
     }

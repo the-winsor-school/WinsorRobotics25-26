@@ -7,6 +7,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 //help idk how to code this intake thingy for ryan
+// No worries ;) it's basically just a SpinnyIntake right?
+// I'm not sure we need a new Component just for Ryan.  It's fine either way tho!
+// I fixed some of the errors, you had everything right; just mixed up the variable names~
 
 public class RyanIntake extends MechComponent
 {
@@ -15,11 +18,11 @@ public class RyanIntake extends MechComponent
             String motorName,
             RIControlStrategy ryanintake) {
         super(ryanintake);
-        ryanintake = hardwareMap.get(DcMotor.class, motorName);
-        this.ryanintake = ryanintake;
+        ristrat = ryanintake;
+        this.ryanintake = hardwareMap.get(DcMotor.class, motorName);;
     }
 
-    public class AutonomousShooterBehavior extends AutonomousComponentBehaviors {
+    public class AutonomousRyanIntake extends AutonomousComponentBehaviors {
         public void rigogo(){
             ryanintake.setPower(0.67);
         }
@@ -41,7 +44,7 @@ public class RyanIntake extends MechComponent
 
     protected RIControlStrategy ristrat;
     @Override
-    public void move(Gamepad gamepad) {ryanintake.rigo(ristrat, gamepad);}
+    public void move(Gamepad gamepad) {ristrat.rigo(ryanintake, gamepad);}
 
     @Override
     public void update(Telemetry telemetry) {
