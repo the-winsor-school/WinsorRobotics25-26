@@ -15,6 +15,23 @@ import org.firstinspires.ftc.vision.opencv.ImageRegion;
 
 import java.util.List;
 
+
+/**
+ * Alright!~
+ *
+ * This is really cool!  And, IT WORKS
+ *
+ * Things we need to think about:
+ *  we might have to live wholly within some autonomous controls...
+ *  because, ultimately, we want it to be able to DRIVE the robot,
+ *  it will need to have access to the AutonomousDriveTrain....
+ *  Which means, this code needs to live somewhere farther up in the Object Model
+ *  ... OR ...
+ *  We need to think about adding another layer in the Object Model for the Camera
+ *  (which really might be the better way)
+ *
+ *  Let's talk about it!
+ */
 public class BallDetectionComponent extends MechComponent{
     public class AutonomousBallDetection extends AutonomousComponentBehaviors {
         public boolean isPurpleBallDetected() {
@@ -81,6 +98,10 @@ public class BallDetectionComponent extends MechComponent{
                 .setCameraResolution(new Size(640, 480))
                 .addProcessor(purpleBallProcessor)
                 .addProcessor(greenBallProcessor)
+                // this is supposed to make it show up on the driverstation....
+                // it works, but you can only do it at a very specific time...
+                .setStreamFormat(org.firstinspires.ftc.vision.VisionPortal.StreamFormat.YUY2)
+                .enableLiveView(true)
                 .build();
     }
 
