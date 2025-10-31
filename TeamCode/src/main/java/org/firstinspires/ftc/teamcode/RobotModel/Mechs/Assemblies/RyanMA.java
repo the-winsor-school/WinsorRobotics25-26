@@ -19,8 +19,7 @@ public class RyanMA extends MechAssembly {
                 (motor, gamepad) -> {
                     motor.setPower(gamepad.right_trigger);
                 });
-        // fix this error by passing down ryanintake.getAutonomousBehaviors() in the parenthesis
-        auton = new AutonomousRyanMA();
+        auton = new AutonomousRyanMA(ryanintake.getAutonomousBehaviors());
     }
 
     public class AutonomousRyanMA extends AutonomousMechBehaviors
@@ -54,5 +53,6 @@ public class RyanMA extends MechAssembly {
     public void updateTelemetry(Telemetry telemetry) {
         // Similarly, we need to pass along Telemetry requests to each of the components
         // so invoke ryanintake.updateTelemetry(...) here~
+        // UGH I HATE TELEMETRY
     }
 }
