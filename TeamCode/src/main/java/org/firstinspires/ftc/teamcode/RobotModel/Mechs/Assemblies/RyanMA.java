@@ -4,20 +4,22 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.BallDetectionComponent;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.RyanIntake;
 
 public class RyanMA extends MechAssembly {
 
     private final RyanIntake ryanintake;
-
+    private final BallDetectionComponent balldetector;
     public RyanMA(HardwareMap hardwareMap) {
         // gotta declare this variable~
         ryanintake = new RyanIntake(hardwareMap, "ryanmotor",
                 (motor, gamepad) -> {
                     motor.setPower(gamepad.right_trigger);
                 });
-        // fix this error by passing down ryanintake.getAutonomousBehaviors() in the parenthesis
-        auton = new AutonomousRyanMA();
+        auton = new AutonomousRyanMA(ryanintake.getAutonomousBehaviors());
+        balldetector = new BallDetectionComponent(hardwareMap, "Webcam 1",
+                (purpleProcessor, greenProcessor, gamepad) -> {});
     }
 
     public class AutonomousRyanMA extends AutonomousMechBehaviors
@@ -47,7 +49,6 @@ public class RyanMA extends MechAssembly {
 
     @Override
     public void updateTelemetry(Telemetry telemetry) {
-        // Similarly, we need to pass along Telemetry requests to each of the components
-        // so invoke ryanintake.updateTelemetry(...) here~
+        balldetector.update(telemetry);
     }
 }

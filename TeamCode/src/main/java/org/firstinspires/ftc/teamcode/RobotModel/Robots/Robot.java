@@ -38,6 +38,7 @@ public abstract class Robot
     public void updateTelemetry(Telemetry telemetry) {
         driveTrain.updateTelemetry(telemetry);
         mechAssembly.updateTelemetry(telemetry);
+        telemetry.update();
     }
 
     /**
