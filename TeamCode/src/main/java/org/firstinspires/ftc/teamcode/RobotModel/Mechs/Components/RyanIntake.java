@@ -6,11 +6,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-//help idk how to code this intake thingy for ryan
-// No worries ;) it's basically just a SpinnyIntake right?
-// I'm not sure we need a new Component just for Ryan.  It's fine either way tho!
-// I fixed some of the errors, you had everything right; just mixed up the variable names~
-
 public class RyanIntake extends MechComponent
 {
     public RyanIntake(

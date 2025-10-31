@@ -8,9 +8,6 @@ import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.RyanIntake;
 
 public class RyanMA extends MechAssembly {
 
-    // this is the line that you were missing here~
-    // It would also be completely valid to change RyanIntake (the type) to just be a SpinnyIntake
-    // no need to re-invent the wheel every time >.<
     private final RyanIntake ryanintake;
 
     public RyanMA(HardwareMap hardwareMap) {
@@ -37,7 +34,6 @@ public class RyanMA extends MechAssembly {
 
     private final AutonomousRyanMA auton;
 
-    // that crazy T asjddjkfhal stuff just gets replaced with the Autonomous object~
     @Override
     public AutonomousRyanMA getAutonomousBehaviors() {
         return auton;
@@ -45,7 +41,6 @@ public class RyanMA extends MechAssembly {
 
     @Override
     public void giveInstructions(Gamepad gamepad) {
-        //gamepad to move components/motors and stuff
         // our job here is to pass along instructions to each of the components of the Mech Assembly
         // So you should invoke ryanintake.move(...) here~
     }
