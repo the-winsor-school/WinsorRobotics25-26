@@ -52,6 +52,6 @@ public class FranklinMA extends MechAssembly
 
     @Override
     public void updateTelemetry(Telemetry telemetry) {
-
+        intake.update(telemetry);
     }
 }
