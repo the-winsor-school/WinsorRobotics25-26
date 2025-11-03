@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.RobotModel.DriveTrain.DriveTrain;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Assemblies.MechAssembly;
+import org.firstinspires.ftc.vision.VisionPortal;
 
 public abstract class Robot
 {
@@ -31,7 +32,7 @@ public abstract class Robot
      * @param <T> Any type which extends AutonomousRobot
      */
     public abstract <T extends AutonomousRobot> T getAutonomousRobot();
-
+    protected VisionPortal visionportal;
     protected DriveTrain driveTrain;
     protected MechAssembly mechAssembly;
 
