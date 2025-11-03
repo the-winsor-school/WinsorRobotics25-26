@@ -40,7 +40,7 @@ public class FranklinRobot extends Robot {
                 .setTargetColorRange(ColorRange.ARTIFACT_GREEN)
                 .setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)
                 .setRoi(ImageRegion.entireFrame())
-                .setDrawContours(true)S
+                .setDrawContours(true)
                 .build();
 
         visionPortal = new VisionPortal.Builder()
