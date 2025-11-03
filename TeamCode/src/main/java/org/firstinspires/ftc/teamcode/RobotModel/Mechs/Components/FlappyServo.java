@@ -6,6 +6,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor;
+
+import java.util.List;
 
 public class FlappyServo extends MechComponent{
 
@@ -44,8 +47,7 @@ public class FlappyServo extends MechComponent{
         FlappyCS.UCS(flappydoodle, gamepad);
     }
 
-    @Override
-    void update(Telemetry telemetry) {
-
+    public void update(Telemetry telemetry) {
+        telemetry.addData("Servo position ", flappydoodle.getPosition());
     }
 }
