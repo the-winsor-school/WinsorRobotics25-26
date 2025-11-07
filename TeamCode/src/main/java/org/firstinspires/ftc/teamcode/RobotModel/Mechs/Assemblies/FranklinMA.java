@@ -12,12 +12,14 @@ import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.Unstuckinator;
 public class FranklinMA extends MechAssembly
 {
     public FranklinMA(HardwareMap hardwareMap) {
-        intake = new FlappyServo(hardwareMap, "flappyservo",
+        intake = new FlappyServo(hardwareMap, "flappyservo", "FLU", "FLD",
                 (motor, gamepad) -> {
-                    while(gamepad.a)
-                        motor.setPosition(motor.getPosition()+1);
-                    while(gamepad.b)
-                        motor.setPosition(motor.getPosition()-1);
+                    if (gamepad.b)
+                        motor.setPower(0.25);
+                    else if (gamepad.x)
+                        motor.setPower(-0.25);
+                    else
+                        motor.setPower(0);
                 });
         canon = new Shooter(hardwareMap, "BANGBANGBANG",
                 (motor, gamepad) -> {
