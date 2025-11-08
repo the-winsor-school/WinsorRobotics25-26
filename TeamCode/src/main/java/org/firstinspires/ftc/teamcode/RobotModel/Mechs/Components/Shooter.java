@@ -15,6 +15,7 @@ public class Shooter extends MechComponent
         super(pewpew);
         shooter = hardwareMap.get(DcMotor.class, motorName);
         this.pewpew = pewpew;
+        auton = new AutonomousShooterBehavior();
     }
 
     public class AutonomousShooterBehavior extends AutonomousComponentBehaviors {
@@ -27,8 +28,8 @@ public class Shooter extends MechComponent
     }
 
     @Override
-    public <T extends AutonomousComponentBehaviors> T getAutonomousBehaviors() {
-        return null;
+    public AutonomousShooterBehavior getAutonomousBehaviors() {
+        return auton;
     }
 
     public interface ShooterControlStrategy extends IControlStrategy
@@ -36,6 +37,7 @@ public class Shooter extends MechComponent
         void shoot(DcMotor motor, Gamepad gamepad);
     }
     private final DcMotor shooter;
+    private final AutonomousShooterBehavior auton;
 
     protected ShooterControlStrategy pewpew;
     @Override

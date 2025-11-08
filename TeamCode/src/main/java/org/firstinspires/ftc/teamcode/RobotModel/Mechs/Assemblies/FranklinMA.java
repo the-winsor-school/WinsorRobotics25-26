@@ -14,9 +14,9 @@ public class FranklinMA extends MechAssembly
     public FranklinMA(HardwareMap hardwareMap) {
         intake = new FlappyServo(hardwareMap, "flappyservo",
                 (motor, gamepad) -> {
-                    while(gamepad.a)
+                    if(gamepad.a)
                         motor.setPosition(motor.getPosition()+1);
-                    while(gamepad.b)
+                    if(gamepad.b)
                         motor.setPosition(motor.getPosition()-1);
                 });
         canon = new Shooter(hardwareMap, "BANGBANGBANG",
@@ -29,7 +29,7 @@ public class FranklinMA extends MechAssembly
     //5 sec spinny spinny
 
     public class AutonomousFranklinMA extends AutonomousMechBehaviors {
-        private final Shooter.AutonomousShooterBehavior AutonShooter;
+        public final Shooter.AutonomousShooterBehavior AutonShooter;
         public final FlappyServo.AutonomousFlappyBehavior FlappyServo;
         public AutonomousFranklinMA(Shooter.AutonomousShooterBehavior autonShooter, FlappyServo.AutonomousFlappyBehavior flappyServo) {
             AutonShooter = autonShooter;
@@ -39,8 +39,8 @@ public class FranklinMA extends MechAssembly
 
     private final AutonomousFranklinMA auton;
     @Override
-    public <T extends AutonomousMechBehaviors> T getAutonomousBehaviors() {
-        return null;
+    public AutonomousFranklinMA getAutonomousBehaviors() {
+        return auton;
     }
     private final FlappyServo intake;
     private final Shooter canon;

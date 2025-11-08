@@ -15,7 +15,7 @@ public class FranklinAuton extends LinearOpMode {
     private IAutonStrategy autonStrategy;
     public FranklinAuton(){
         robot = new FranklinRobot(hardwareMap);
-        autonStrategy = FranklinAutonStrategy.BasicAutonomous(robot.getAutonomousRobot());
+        autonStrategy = FranklinAutonStrategy.RedGoalAutonomous(robot.getAutonomousRobot());
     }
 
     @Override
