@@ -14,13 +14,14 @@ public class FranklinAuton extends LinearOpMode {
     private FranklinRobot robot;
     private IAutonStrategy autonStrategy;
     public FranklinAuton(){
-        robot = new FranklinRobot(hardwareMap);
+
         autonStrategy = FranklinAutonStrategy.RedGoalAutonomous(robot.getAutonomousRobot());
     }
 
     @Override
     public void runOpMode() throws InterruptedException {
         waitForStart();
+        robot = new FranklinRobot(hardwareMap);
         autonStrategy.execute();
     }
 }
