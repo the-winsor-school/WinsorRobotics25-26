@@ -32,7 +32,8 @@ public abstract class Robot
      * @param <T> Any type which extends AutonomousRobot
      */
     public abstract <T extends AutonomousRobot> T getAutonomousRobot();
-    protected VisionPortal visionportal;
+
+    protected VisionPortal visionPortal;
     protected DriveTrain driveTrain;
     protected MechAssembly mechAssembly;
 
