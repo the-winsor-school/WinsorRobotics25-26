@@ -4,10 +4,9 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Extensions.ThreadExtensions;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.FlappyServo;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.Shooter;
-import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.SpinnyIntake;
-import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.Unstuckinator;
 
 public class FranklinMA extends MechAssembly
 {
@@ -16,8 +15,13 @@ public class FranklinMA extends MechAssembly
                 (motor, gamepad) -> {
                     if (gamepad.b)
                         motor.setPower(0.25);
-                    else if (gamepad.x)
-                        motor.setPower(-0.25);
+                    else if (gamepad.x) {
+                        while (motor.canGoDown())
+                            motor.setPower(-0.25);
+                        ThreadExtensions.TrySleep(1000);
+                        while (motor.canGoUp())
+                            motor.setPower(0.25);
+                    }
                     else
                         motor.setPower(0);
                 });

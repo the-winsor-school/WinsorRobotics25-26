@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -38,7 +37,7 @@ public class FlappyServo extends MechComponent{
 
     public void setPower(double power){
 
-        if ((power > 0 && !canGoForward() )|| (power < 0 && !canGoReverse())) {
+        if ((power > 0 && !canGoUp() )|| (power < 0 && !canGoDown())) {
             power = 0;
         }
 
@@ -61,7 +60,9 @@ public class FlappyServo extends MechComponent{
     }
 
     public void update(Telemetry telemetry) {
-        // telemetry.addData("Servo position ", flappydoodle.getPosition());
+        telemetry.addData("Flappy Upper", upperSensor.isPressed());
+        telemetry.addData("Flappy Lower", lowerSensor.isPressed());
+        telemetry.addData("Flappy Power", flappydoodle.getPower());
     }
 
 
@@ -69,7 +70,7 @@ public class FlappyServo extends MechComponent{
      *
      * @return true if the forward sensor is not pressed
      */
-    public boolean canGoForward()
+    public boolean canGoUp()
     {
         return ! upperSensor.isPressed();
     }
@@ -78,7 +79,7 @@ public class FlappyServo extends MechComponent{
      *
      * @return true if the reverse sensor is not pressed
      */
-    public boolean canGoReverse()
+    public boolean canGoDown()
     {
         return ! lowerSensor.isPressed();
     }
