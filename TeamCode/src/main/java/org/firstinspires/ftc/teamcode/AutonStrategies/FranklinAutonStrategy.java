@@ -6,78 +6,117 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 public class FranklinAutonStrategy {
 
-    public static IAutonStrategy AprilTagNavigationStrategy(FranklinRobot.AutonomousFranklinRobot robot, FranklinRobot franklinRobot) {
+    // Strategy that targets a specific AprilTag ID
+    public static IAutonStrategy TargetSpecificAprilTag(FranklinRobot.AutonomousFranklinRobot robot, FranklinRobot franklinRobot, int targetTagId) {
         return () -> {
-            // Phase 1: Look for AprilTag
-            searchForAprilTag(robot, franklinRobot);
+            // Phase 1: Search for the specific AprilTag
+            if (searchForSpecificAprilTag(robot, franklinRobot, targetTagId)) {
+                // Phase 2: Navigate to the found AprilTag
+                navigateToSpecificAprilTag(robot, franklinRobot, targetTagId);
 
-            // Phase 2: Navigate to AprilTag
-            navigateToAprilTag(robot, franklinRobot);
-
-            // Phase 3: Position and shoot
-            positionAndShoot(robot);
+                // Phase 3: Position and shoot
+                positionAndShoot(robot);
+            } else {
+                // Fallback behavior if tag not found
+                performFallbackBehavior(robot);
+            }
         };
     }
 
-    private static void searchForAprilTag(FranklinRobot.AutonomousFranklinRobot robot, FranklinRobot franklinRobot) {
-        // Rotate slowly to find AprilTag
-        int searchTime = 0;
-        boolean tagFound = false;
-
-        while (searchTime < 3000 && !tagFound) { // Search for 3 seconds max
-            // Get AprilTag detections from the vision portal
-            if (franklinRobot.aprilTagProcessor.getDetections().size() > 0) {
-                tagFound = true;
-                robot.driveTrain.stop(); // Stop searching
-            } else {
-                // Rotate to search for tag
-                robot.driveTrain.turnRight();
-                ThreadExtensions.TrySleep(100);
-                searchTime += 100;
+    // Helper method to find a specific AprilTag by ID
+    private static AprilTagDetection findTagById(FranklinRobot franklinRobot, int targetTagId) {
+        for (AprilTagDetection detection : franklinRobot.aprilTagProcessor.getDetections()) {
+            if (detection.id == targetTagId) {
+                return detection;
             }
+        }
+        return null; // Target tag not found
+    }
+
+    private static boolean searchForSpecificAprilTag(FranklinRobot.AutonomousFranklinRobot robot, FranklinRobot franklinRobot, int targetTagId) {
+        int searchTime = 0;
+        final int MAX_SEARCH_TIME = 4000; // 4 seconds max search
+
+        while (searchTime < MAX_SEARCH_TIME) {
+            AprilTagDetection targetTag = findTagById(franklinRobot, targetTagId);
+
+            if (targetTag != null) {
+                robot.driveTrain.stop();
+                return true; // Found the target tag!
+            }
+
+            // Continue searching - rotate slowly
+            robot.driveTrain.turnRight();
+            ThreadExtensions.TrySleep(150);
+            searchTime += 150;
         }
 
         robot.driveTrain.stop();
+        return false; // Target tag not found
     }
 
-    private static void navigateToAprilTag(FranklinRobot.AutonomousFranklinRobot robot, FranklinRobot franklinRobot) {
+    private static void navigateToSpecificAprilTag(FranklinRobot.AutonomousFranklinRobot robot, FranklinRobot franklinRobot, int targetTagId) {
         boolean targetReached = false;
         int navigationTime = 0;
+        final int MAX_NAVIGATION_TIME = 6000; // 6 seconds max navigation
 
-        while (!targetReached && navigationTime < 5000) { // Navigate for max 5 seconds
-            if (franklinRobot.aprilTagProcessor.getDetections().size() > 0) {
-                AprilTagDetection detection = franklinRobot.aprilTagProcessor.getDetections().get(0);
+        while (!targetReached && navigationTime < MAX_NAVIGATION_TIME) {
+            AprilTagDetection targetTag = findTagById(franklinRobot, targetTagId);
 
-                // Check if we have pose data (tag must be in library)
-                if (detection.ftcPose != null) {
-                    double range = detection.ftcPose.range; // Distance to tag
-                    double bearing = detection.ftcPose.bearing; // Angle to tag
-                    double yaw = detection.ftcPose.yaw; // Tag rotation
+            if (targetTag != null) {
+                // Check if we have pose data (tag must be in library with known size)
+                if (targetTag.ftcPose != null) {
+                    double range = targetTag.ftcPose.range; // Distance to tag (inches)
+                    double bearing = targetTag.ftcPose.bearing; // Angle to tag (degrees)
 
-                    // Navigate based on AprilTag pose
-                    if (range > 24.0) { // If more than 24 inches away
-                        if (Math.abs(bearing) > 10) { // Need to turn toward tag
+                    // Define target distance (e.g., 18 inches from tag)
+                    final double TARGET_DISTANCE = 18.0;
+                    final double BEARING_TOLERANCE = 8.0; // degrees
+                    final double DISTANCE_TOLERANCE = 2.0; // inches
+
+                    if (Math.abs(range - TARGET_DISTANCE) > DISTANCE_TOLERANCE) {
+                        // Need to adjust distance
+                        if (Math.abs(bearing) > BEARING_TOLERANCE) {
+                            // Turn toward the tag first
                             if (bearing > 0) {
                                 robot.driveTrain.turnLeft();
                             } else {
                                 robot.driveTrain.turnRight();
                             }
-                        } else { // Drive forward toward tag
-                            robot.driveTrain.driveForward();
+                        } else {
+                            // Move forward or backward to reach target distance
+                            if (range > TARGET_DISTANCE) {
+                                robot.driveTrain.driveForward();
+                            } else {
+                                robot.driveTrain.driveBackward();
+                            }
                         }
                     } else {
-                        // We're close enough - stop
-                        robot.driveTrain.stop();
-                        targetReached = true;
+                        // We're at the right distance - final alignment
+                        if (Math.abs(bearing) > 3.0) { // Fine-tune alignment
+                            if (bearing > 0) {
+                                robot.driveTrain.turnLeft();
+                            } else {
+                                robot.driveTrain.turnRight();
+                            }
+                        } else {
+                            // Perfect position reached!
+                            robot.driveTrain.stop();
+                            targetReached = true;
+                        }
                     }
                 } else {
-                    // No pose data - just center the tag in view
-                    centerTagInView(robot, detection);
+                    // No pose data - use basic centering
+                    centerTagInView(robot, targetTag);
                 }
             } else {
-                // Lost the tag - stop and search again
+                // Lost the target tag - stop and search briefly
                 robot.driveTrain.stop();
-                ThreadExtensions.TrySleep(500);
+                ThreadExtensions.TrySleep(300);
+
+                // Quick search
+                robot.driveTrain.turnLeft();
+                ThreadExtensions.TrySleep(200);
             }
 
             ThreadExtensions.TrySleep(100);
@@ -88,29 +127,38 @@ public class FranklinAutonStrategy {
     }
 
     private static void centerTagInView(FranklinRobot.AutonomousFranklinRobot robot, AprilTagDetection detection) {
-        // Use the tag's center position to align robot
         double tagCenterX = detection.center.x;
         double imageCenterX = 320; // Assuming 640x480 resolution
-
         double offset = tagCenterX - imageCenterX;
 
-        if (Math.abs(offset) > 50) { // If tag is significantly off-center
+        if (Math.abs(offset) > 40) {
             if (offset > 0) { // Tag is to the right
                 robot.driveTrain.turnRight();
             } else { // Tag is to the left
                 robot.driveTrain.turnLeft();
             }
-            ThreadExtensions.TrySleep(200);
+            ThreadExtensions.TrySleep(150);
         } else {
-            // Tag is centered, drive forward
+            // Tag is centered, move closer
             robot.driveTrain.driveForward();
-            ThreadExtensions.TrySleep(300);
+            ThreadExtensions.TrySleep(200);
         }
+    }
+
+    private static void performFallbackBehavior(FranklinRobot.AutonomousFranklinRobot robot) {
+        // What to do if the target tag isn't found
+        // Example: drive forward for a set time and shoot anyway
+        robot.driveTrain.driveForward();
+        ThreadExtensions.TrySleep(2000);
+        robot.driveTrain.stop();
+
+        // Still attempt to shoot
+        positionAndShoot(robot);
     }
 
     private static void positionAndShoot(FranklinRobot.AutonomousFranklinRobot robot) {
         // Position the shooter mechanism
-        robot.mechAssembly.FlappyServo.FlappyUp(); // Prepare to drop balls
+        robot.mechAssembly.FlappyServo.FlappyUp();
         ThreadExtensions.TrySleep(500);
 
         // Start shooter
