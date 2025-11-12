@@ -35,7 +35,7 @@ public class FranklinAutonStrategy {
 
     private static boolean searchForSpecificAprilTag(FranklinRobot.AutonomousFranklinRobot robot, FranklinRobot franklinRobot, int targetTagId) {
         int searchTime = 0;
-        final int MAX_SEARCH_TIME = 4000; // 4 seconds max search
+        final int MAX_SEARCH_TIME = 40000; // 4 seconds max search
 
         while (searchTime < MAX_SEARCH_TIME) {
             AprilTagDetection targetTag = findTagById(franklinRobot, targetTagId);
@@ -47,8 +47,11 @@ public class FranklinAutonStrategy {
 
             // Continue searching - rotate slowly
             robot.driveTrain.turnRight();
-            ThreadExtensions.TrySleep(150);
-            searchTime += 150;
+            ThreadExtensions.TrySleep(50); // Turn for only 100ms (was 150ms)
+            robot.driveTrain.stop();
+            ThreadExtensions.TrySleep(100); // Pause for 200ms between turns
+
+            searchTime += 300;
         }
 
         robot.driveTrain.stop();
@@ -87,8 +90,14 @@ public class FranklinAutonStrategy {
                             // Move forward or backward to reach target distance
                             if (range > TARGET_DISTANCE) {
                                 robot.driveTrain.driveForward();
+                                ThreadExtensions.TrySleep(50);
+                                robot.driveTrain.stop();
+                                ThreadExtensions.TrySleep(100);
                             } else {
                                 robot.driveTrain.driveBackward();
+                                ThreadExtensions.TrySleep(50);
+                                robot.driveTrain.stop();
+                                ThreadExtensions.TrySleep(100);
                             }
                         }
                     } else {
