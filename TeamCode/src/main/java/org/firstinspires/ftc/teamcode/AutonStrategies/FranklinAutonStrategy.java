@@ -18,7 +18,7 @@ public class FranklinAutonStrategy {
                 positionAndShoot(robot);
             } else {
                 // Fallback behavior if tag not found
-                performFallbackBehavior(robot);
+                //performFallbackBehavior(robot);
             }
         };
     }
@@ -35,7 +35,7 @@ public class FranklinAutonStrategy {
 
     private static boolean searchForSpecificAprilTag(FranklinRobot.AutonomousFranklinRobot robot, FranklinRobot franklinRobot, int targetTagId) {
         int searchTime = 0;
-        final int MAX_SEARCH_TIME = 40000; // 4 seconds max search
+        final int MAX_SEARCH_TIME = 4000000; // 4 seconds max search
 
         while (searchTime < MAX_SEARCH_TIME) {
             AprilTagDetection targetTag = findTagById(franklinRobot, targetTagId);
@@ -49,7 +49,7 @@ public class FranklinAutonStrategy {
             robot.driveTrain.turnRight();
             ThreadExtensions.TrySleep(50); // Turn for only 100ms (was 150ms)
             robot.driveTrain.stop();
-            ThreadExtensions.TrySleep(100); // Pause for 200ms between turns
+            ThreadExtensions.TrySleep(25); // Pause for 200ms between turns
 
             searchTime += 300;
         }
@@ -61,7 +61,7 @@ public class FranklinAutonStrategy {
     private static void navigateToSpecificAprilTag(FranklinRobot.AutonomousFranklinRobot robot, FranklinRobot franklinRobot, int targetTagId) {
         boolean targetReached = false;
         int navigationTime = 0;
-        final int MAX_NAVIGATION_TIME = 6000; // 6 seconds max navigation
+        final int MAX_NAVIGATION_TIME = 6000000; // 6 seconds max navigation
 
         while (!targetReached && navigationTime < MAX_NAVIGATION_TIME) {
             AprilTagDetection targetTag = findTagById(franklinRobot, targetTagId);
@@ -73,8 +73,8 @@ public class FranklinAutonStrategy {
                     double bearing = targetTag.ftcPose.bearing; // Angle to tag (degrees)
 
                     // Define target distance (e.g., 18 inches from tag)
-                    final double TARGET_DISTANCE = 18.0;
-                    final double BEARING_TOLERANCE = 8.0; // degrees
+                    final double TARGET_DISTANCE = 24.0;
+                    final double BEARING_TOLERANCE = 60.0; // degrees
                     final double DISTANCE_TOLERANCE = 2.0; // inches
 
                     if (Math.abs(range - TARGET_DISTANCE) > DISTANCE_TOLERANCE) {
