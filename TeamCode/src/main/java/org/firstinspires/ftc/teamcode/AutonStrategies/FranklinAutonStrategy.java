@@ -43,6 +43,7 @@ public class FranklinAutonStrategy {
             if (targetTag != null) {
                 robot.driveTrain.stop();
                 return true; // Found the target tag!
+
             }
 
             // Continue searching - rotate slowly
@@ -74,7 +75,7 @@ public class FranklinAutonStrategy {
 
                     // Define target distance (e.g., 18 inches from tag)
                     final double TARGET_DISTANCE = 24.0;
-                    final double BEARING_TOLERANCE = 60.0; // degrees
+                    final double BEARING_TOLERANCE = 360.0; // degrees
                     final double DISTANCE_TOLERANCE = 2.0; // inches
 
                     if (Math.abs(range - TARGET_DISTANCE) > DISTANCE_TOLERANCE) {
@@ -104,9 +105,9 @@ public class FranklinAutonStrategy {
                         // We're at the right distance - final alignment
                         if (Math.abs(bearing) > 3.0) { // Fine-tune alignment
                             if (bearing > 0) {
-                                robot.driveTrain.turnLeft();
+                                //robot.driveTrain.turnLeft();
                             } else {
-                                robot.driveTrain.turnRight();
+                                //robot.driveTrain.turnRight();
                             }
                         } else {
                             // Perfect position reached!

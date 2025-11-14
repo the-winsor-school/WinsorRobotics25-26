@@ -27,6 +27,7 @@ public class FranklinAuton extends LinearOpMode {
 
         telemetry.addLine("Franklin Autonomous Ready");
         telemetry.addData("Target AprilTag ID", TARGET_TAG_ID);
+        telemetry.addData("Range", range);
         telemetry.update();
 
         waitForStart();
