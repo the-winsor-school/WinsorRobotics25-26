@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.AutonStrategies;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Extensions.ThreadExtensions;
 import org.firstinspires.ftc.teamcode.RobotModel.Robots.FranklinRobot;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
@@ -7,15 +8,17 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 public class FranklinAutonStrategy {
 
     // Strategy that targets a specific AprilTag ID
-    public static IAutonStrategy TargetSpecificAprilTag(FranklinRobot.AutonomousFranklinRobot robot, FranklinRobot franklinRobot, int targetTagId) {
+    public static IAutonStrategy TargetSpecificAprilTag(FranklinRobot.AutonomousFranklinRobot robot,
+                                                        FranklinRobot franklinRobot, int targetTagId,
+                                                        Telemetry telemetry) {
         return () -> {
             // Phase 1: Search for the specific AprilTag
-            if (searchForSpecificAprilTag(robot, franklinRobot, targetTagId)) {
+            if (searchForSpecificAprilTag(robot, franklinRobot, targetTagId, telemetry)) {
                 // Phase 2: Navigate to the found AprilTag
-                navigateToSpecificAprilTag(robot, franklinRobot, targetTagId);
+                navigateToSpecificAprilTag(robot, franklinRobot, targetTagId, telemetry);
 
                 // Phase 3: Position and shoot
-                positionAndShoot(robot);
+                positionAndShoot(robot, telemetry);
             } else {
                 // Fallback behavior if tag not found
                 //performFallbackBehavior(robot);
@@ -24,7 +27,7 @@ public class FranklinAutonStrategy {
     }
 
     // Helper method to find a specific AprilTag by ID
-    private static AprilTagDetection findTagById(FranklinRobot franklinRobot, int targetTagId) {
+    private static AprilTagDetection findTagById(FranklinRobot franklinRobot, int targetTagId, Telemetry telemetry) {
         for (AprilTagDetection detection : franklinRobot.aprilTagProcessor.getDetections()) {
             if (detection.id == targetTagId) {
                 return detection;
@@ -33,12 +36,12 @@ public class FranklinAutonStrategy {
         return null; // Target tag not found
     }
 
-    private static boolean searchForSpecificAprilTag(FranklinRobot.AutonomousFranklinRobot robot, FranklinRobot franklinRobot, int targetTagId) {
+    private static boolean searchForSpecificAprilTag(FranklinRobot.AutonomousFranklinRobot robot, FranklinRobot franklinRobot, int targetTagId, Telemetry telemetry) {
         int searchTime = 0;
         final int MAX_SEARCH_TIME = 4000000; // 4 seconds max search
 
         while (searchTime < MAX_SEARCH_TIME) {
-            AprilTagDetection targetTag = findTagById(franklinRobot, targetTagId);
+            AprilTagDetection targetTag = findTagById(franklinRobot, targetTagId, telemetry);
 
             if (targetTag != null) {
                 robot.driveTrain.stop();
@@ -59,20 +62,22 @@ public class FranklinAutonStrategy {
         return false; // Target tag not found
     }
 
-    private static void navigateToSpecificAprilTag(FranklinRobot.AutonomousFranklinRobot robot, FranklinRobot franklinRobot, int targetTagId) {
+    private static void navigateToSpecificAprilTag(FranklinRobot.AutonomousFranklinRobot robot, FranklinRobot franklinRobot, int targetTagId, Telemetry telemetry) {
         boolean targetReached = false;
         int navigationTime = 0;
         final int MAX_NAVIGATION_TIME = 6000000; // 6 seconds max navigation
 
         while (!targetReached && navigationTime < MAX_NAVIGATION_TIME) {
-            AprilTagDetection targetTag = findTagById(franklinRobot, targetTagId);
+            AprilTagDetection targetTag = findTagById(franklinRobot, targetTagId, telemetry);
 
             if (targetTag != null) {
                 // Check if we have pose data (tag must be in library with known size)
                 if (targetTag.ftcPose != null) {
                     double range = targetTag.ftcPose.range; // Distance to tag (inches)
                     double bearing = targetTag.ftcPose.bearing; // Angle to tag (degrees)
-
+                    telemetry.addData("range",range);
+                    telemetry.addData("bearing",bearing);
+                    telemetry.update();
                     // Define target distance (e.g., 18 inches from tag)
                     final double TARGET_DISTANCE = 24.0;
                     final double BEARING_TOLERANCE = 360.0; // degrees
@@ -117,7 +122,7 @@ public class FranklinAutonStrategy {
                     }
                 } else {
                     // No pose data - use basic centering
-                    centerTagInView(robot, targetTag);
+                    centerTagInView(robot, targetTag, telemetry);
                 }
             } else {
                 // Lost the target tag - stop and search briefly
@@ -136,7 +141,7 @@ public class FranklinAutonStrategy {
         robot.driveTrain.stop();
     }
 
-    private static void centerTagInView(FranklinRobot.AutonomousFranklinRobot robot, AprilTagDetection detection) {
+    private static void centerTagInView(FranklinRobot.AutonomousFranklinRobot robot, AprilTagDetection detection, Telemetry telemetry) {
         double tagCenterX = detection.center.x;
         double imageCenterX = 320; // Assuming 640x480 resolution
         double offset = tagCenterX - imageCenterX;
@@ -155,7 +160,7 @@ public class FranklinAutonStrategy {
         }
     }
 
-    private static void performFallbackBehavior(FranklinRobot.AutonomousFranklinRobot robot) {
+    private static void performFallbackBehavior(FranklinRobot.AutonomousFranklinRobot robot, Telemetry telemetry) {
         // What to do if the target tag isn't found
         // Example: drive forward for a set time and shoot anyway
         robot.driveTrain.driveForward();
@@ -163,10 +168,10 @@ public class FranklinAutonStrategy {
         robot.driveTrain.stop();
 
         // Still attempt to shoot
-        positionAndShoot(robot);
+        positionAndShoot(robot,telemetry);
     }
 
-    private static void positionAndShoot(FranklinRobot.AutonomousFranklinRobot robot) {
+    private static void positionAndShoot(FranklinRobot.AutonomousFranklinRobot robot, Telemetry telemetry) {
         // Position the shooter mechanism
         robot.mechAssembly.FlappyServo.FlappyUp();
         ThreadExtensions.TrySleep(500);

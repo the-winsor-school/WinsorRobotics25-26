@@ -22,12 +22,12 @@ public class FranklinAuton extends LinearOpMode {
         autonStrategy = FranklinAutonStrategy.TargetSpecificAprilTag(
                 robot.getAutonomousRobot(),
                 robot,
-                TARGET_TAG_ID
+                TARGET_TAG_ID,
+                telemetry
         );
 
         telemetry.addLine("Franklin Autonomous Ready");
         telemetry.addData("Target AprilTag ID", TARGET_TAG_ID);
-        telemetry.addData("Range", range);
         telemetry.update();
 
         waitForStart();
