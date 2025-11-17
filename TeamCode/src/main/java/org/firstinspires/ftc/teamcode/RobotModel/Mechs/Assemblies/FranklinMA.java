@@ -4,20 +4,26 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Extensions.ThreadExtensions;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.FlappyServo;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.Shooter;
-import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.SpinnyIntake;
-import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.Unstuckinator;
 
 public class FranklinMA extends MechAssembly
 {
     public FranklinMA(HardwareMap hardwareMap) {
-        intake = new FlappyServo(hardwareMap, "flappyservo",
+        intake = new FlappyServo(hardwareMap, "flappyservo", "FLU", "FLD",
                 (motor, gamepad) -> {
-                    if(gamepad.a)
-                        motor.setPosition(motor.getPosition()+1);
-                    if(gamepad.b)
-                        motor.setPosition(motor.getPosition()-1);
+                    if (gamepad.b)
+                        motor.setPower(0.25);
+                    else if (gamepad.x) {
+                        while (motor.canGoDown())
+                            motor.setPower(-0.25);
+                        ThreadExtensions.TrySleep(1000);
+                        while (motor.canGoUp())
+                            motor.setPower(0.25);
+                    }
+                    else
+                        motor.setPower(0);
                 });
         canon = new Shooter(hardwareMap, "BANGBANGBANG",
                 (motor, gamepad) -> {
@@ -29,7 +35,7 @@ public class FranklinMA extends MechAssembly
     //5 sec spinny spinny
 
     public class AutonomousFranklinMA extends AutonomousMechBehaviors {
-        public final Shooter.AutonomousShooterBehavior AutonShooter;
+        private final Shooter.AutonomousShooterBehavior AutonShooter;
         public final FlappyServo.AutonomousFlappyBehavior FlappyServo;
         public AutonomousFranklinMA(Shooter.AutonomousShooterBehavior autonShooter, FlappyServo.AutonomousFlappyBehavior flappyServo) {
             AutonShooter = autonShooter;
@@ -39,8 +45,8 @@ public class FranklinMA extends MechAssembly
 
     private final AutonomousFranklinMA auton;
     @Override
-    public AutonomousFranklinMA getAutonomousBehaviors() {
-        return auton;
+    public <T extends AutonomousMechBehaviors> T getAutonomousBehaviors() {
+        return null;
     }
     private final FlappyServo intake;
     private final Shooter canon;
