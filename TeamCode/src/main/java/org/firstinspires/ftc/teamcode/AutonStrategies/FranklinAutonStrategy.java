@@ -6,7 +6,6 @@ import org.firstinspires.ftc.teamcode.RobotModel.Robots.FranklinRobot;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 public class FranklinAutonStrategy {
-
     // Strategy that targets a specific AprilTag ID
     public static IAutonStrategy TargetSpecificAprilTag(FranklinRobot.AutonomousFranklinRobot robot,
                                                         FranklinRobot franklinRobot, int targetTagId,
@@ -80,32 +79,30 @@ public class FranklinAutonStrategy {
                     telemetry.update();
                     // Define target distance (e.g., 18 inches from tag)
                     final double TARGET_DISTANCE = 24.0;
-                    final double BEARING_TOLERANCE = 360.0; // degrees
+                    final double BEARING_TOLERANCE = 60.0; // degrees
                     final double DISTANCE_TOLERANCE = 2.0; // inches
 
                     if (Math.abs(range - TARGET_DISTANCE) > DISTANCE_TOLERANCE) {
                         // Need to adjust distance
-                        if (Math.abs(bearing) > BEARING_TOLERANCE) {
-                            // Turn toward the tag first
-                            if (bearing > 0) {
-                                robot.driveTrain.turnLeft();
-                            } else {
-                                robot.driveTrain.turnRight();
-                            }
-                        } else {
+//                        if (Math.abs(bearing) > BEARING_TOLERANCE) {
+//                            // Turn toward the tag first
+//                            TurnTowardsBearing(robot, bearing);
+//                            bearing = targetTag.ftcPose.bearing;
+//                        }
+//                        else {
                             // Move forward or backward to reach target distance
                             if (range > TARGET_DISTANCE) {
                                 robot.driveTrain.driveForward();
-                                ThreadExtensions.TrySleep(50);
+                                ThreadExtensions.TrySleep(5000);
                                 robot.driveTrain.stop();
-                                ThreadExtensions.TrySleep(100);
+                                ThreadExtensions.TrySleep(10000);
                             } else {
                                 robot.driveTrain.driveBackward();
-                                ThreadExtensions.TrySleep(50);
+                                ThreadExtensions.TrySleep(5000);
                                 robot.driveTrain.stop();
-                                ThreadExtensions.TrySleep(100);
+                                ThreadExtensions.TrySleep(10000);
                             }
-                        }
+//                        }
                     } else {
                         // We're at the right distance - final alignment
                         if (Math.abs(bearing) > 3.0) { // Fine-tune alignment
@@ -139,6 +136,17 @@ public class FranklinAutonStrategy {
         }
 
         robot.driveTrain.stop();
+    }
+
+    private static void TurnTowardsBearing(FranklinRobot.AutonomousFranklinRobot robot, double bearing) {
+        if (bearing > 0) {
+            robot.driveTrain.turnLeft();
+            ThreadExtensions.TrySleep(1);
+        } else {
+            robot.driveTrain.turnRight();
+            ThreadExtensions.TrySleep(1);
+
+        }
     }
 
     private static void centerTagInView(FranklinRobot.AutonomousFranklinRobot robot, AprilTagDetection detection, Telemetry telemetry) {
