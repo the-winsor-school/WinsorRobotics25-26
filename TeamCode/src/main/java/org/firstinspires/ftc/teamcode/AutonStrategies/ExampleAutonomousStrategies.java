@@ -1,14 +1,12 @@
 package org.firstinspires.ftc.teamcode.AutonStrategies;
 
 import org.firstinspires.ftc.teamcode.Extensions.ThreadExtensions;
-import org.firstinspires.ftc.teamcode.RobotModel.DriveTrain.DriveTrain;
-import org.firstinspires.ftc.teamcode.RobotModel.DriveTrain.Mecanum.MecanumDrive;
-import org.firstinspires.ftc.teamcode.RobotModel.Robots.MecanumRobot;
+import org.firstinspires.ftc.teamcode.RobotModel.Robots.Wildbots2025;
 
 public class ExampleAutonomousStrategies
 {
     /** make it dance! */
-    public static IAutonStrategy MecanumAutonDance(MecanumRobot.AutonomousMecanumRobot robot)
+    public static IAutonStrategy MecanumAutonDance(Wildbots2025.AutonomousMecanumRobot robot)
     {
         return () ->
         {
