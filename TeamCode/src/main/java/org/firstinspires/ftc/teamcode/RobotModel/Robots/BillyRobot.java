@@ -1,56 +1,36 @@
 package org.firstinspires.ftc.teamcode.RobotModel.Robots;
 
-import com.qualcomm.robotcore.hardware.Gamepad;
+import android.util.Size;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.RobotModel.DriveTrain.DriveTrain;
-import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Assemblies.MechAssembly;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.RobotModel.DriveTrain.Mecanum.MecanumDrive;
+import org.firstinspires.ftc.teamcode.RobotModel.DriveTrain.Tank.StandardTankDrive;
+import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Assemblies.FranklinMA;
 import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor;
+import org.firstinspires.ftc.vision.opencv.ColorRange;
+import org.firstinspires.ftc.vision.opencv.ImageRegion;
 
-public abstract class BillyRobot
-{
-    public abstract class AutonomousRobot
-    {
-        /**
-         * This doesn't actually do anything with these parameters. It DOES require that any
-         * extension of this class MUST include matching parameters in its constructor
-         * @param driveTrain Any AutonomousDriving implementation
-         * @param mechAssembly Any Aut
-         */
-        public AutonomousRobot(
-                DriveTrain.AutonomousDriving driveTrain,
-                MechAssembly.AutonomousMechBehaviors mechAssembly)
-        {
-            // this requires that any inheriting classes must provide these types of parameters.
-        }
+public class BillyRobot extends Robot {
+    @Override
+    public <T extends AutonomousRobot> T getAutonomousRobot() {
+
+        return null;
     }
 
-    /**
-     * This abstract method definition tells inheriting classes that they MUST define a
-     * way to run Autonomously.
-     * @return a CONCRETE implementation of the ABSTRACT AutonomousRobot type.
-     * @param <T> Any type which extends AutonomousRobot
-     */
-    public abstract <T extends AutonomousRobot> T getAutonomousRobot();
 
-    protected VisionPortal visionPortal;
-    protected DriveTrain driveTrain;
-    protected MechAssembly mechAssembly;
+    public BillyRobot(HardwareMap hardwareMap) {
+        driveTrain = new MecanumDrive(hardwareMap, new MecanumDrive.OrientationConfiguration(
+                DcMotorSimple.Direction.REVERSE,
+                DcMotorSimple.Direction.FORWARD,
+                DcMotorSimple.Direction.FORWARD,
+                DcMotorSimple.Direction.REVERSE
+        ));
 
-    public void updateTelemetry(Telemetry telemetry) {
-        driveTrain.updateTelemetry(telemetry);
-        mechAssembly.updateTelemetry(telemetry);
-        telemetry.update();
-    }
-
-    /**
-     * update the robot state!  Pass along the gamepads to the different modules.
-     * @param gamepad1 driver gamepad
-     * @param gamepad2 mech gamepad
-     */
-    public void update(Gamepad gamepad1, Gamepad gamepad2)
-    {
-        driveTrain.drive(gamepad1);
-        mechAssembly.giveInstructions(gamepad2);
+        mechAssembly = new BillyMA(hardwareMap);
     }
 }
