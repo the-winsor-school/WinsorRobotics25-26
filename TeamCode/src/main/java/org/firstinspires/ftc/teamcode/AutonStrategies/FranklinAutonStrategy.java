@@ -11,11 +11,13 @@ public class FranklinAutonStrategy {
                                                         FranklinRobot franklinRobot, int targetTagId,
                                                         Telemetry telemetry) {
         return () -> {
+            //Get Franklin's front wheels to line up with colorful double marker
             // Phase 1: Search for the specific AprilTag
             if (searchForSpecificAprilTag(robot, franklinRobot, targetTagId, telemetry)) {
                 // Phase 2: Navigate to the found AprilTag
                 navigateToSpecificAprilTag(robot, franklinRobot, targetTagId, telemetry);
-
+                robot.driveTrain.turnRight();
+                ThreadExtensions.TrySleep(100);
                 // Phase 3: Position and shoot
                 positionAndShoot(robot, telemetry);
             } else {
@@ -38,21 +40,21 @@ public class FranklinAutonStrategy {
     private static boolean searchForSpecificAprilTag(FranklinRobot.AutonomousFranklinRobot robot, FranklinRobot franklinRobot, int targetTagId, Telemetry telemetry) {
         int searchTime = 0;
         final int MAX_SEARCH_TIME = 4000000; // 4 seconds max search
-
+        robot.driveTrain.driveForward();
+        ThreadExtensions.TrySleep(6000); //Adjust to get wheels to hash
         while (searchTime < MAX_SEARCH_TIME) {
             AprilTagDetection targetTag = findTagById(franklinRobot, targetTagId, telemetry);
 
             if (targetTag != null) {
                 robot.driveTrain.stop();
                 return true; // Found the target tag!
-
             }
 
             // Continue searching - rotate slowly
             robot.driveTrain.turnRight();
-            ThreadExtensions.TrySleep(50); // Turn for only 100ms (was 150ms)
+            ThreadExtensions.TrySleep(100); // Turn for only 100ms (was 150ms)
             robot.driveTrain.stop();
-            ThreadExtensions.TrySleep(25); // Pause for 200ms between turns
+            ThreadExtensions.TrySleep(200); // Pause for 200ms between turns
 
             searchTime += 300;
         }
@@ -78,9 +80,9 @@ public class FranklinAutonStrategy {
                     telemetry.addData("bearing",bearing);
                     telemetry.update();
                     // Define target distance (e.g., 18 inches from tag)
-                    final double TARGET_DISTANCE = 24.0;
+                    final double TARGET_DISTANCE = 36.0;
                     final double BEARING_TOLERANCE = 60.0; // degrees
-                    final double DISTANCE_TOLERANCE = 2.0; // inches
+                    final double DISTANCE_TOLERANCE = 10.0; // inches
 
                     if (Math.abs(range - TARGET_DISTANCE) > DISTANCE_TOLERANCE) {
                         // Need to adjust distance
@@ -106,33 +108,37 @@ public class FranklinAutonStrategy {
                     } else {
                         // We're at the right distance - final alignment
                         if (Math.abs(bearing) > 3.0) { // Fine-tune alignment
-                            if (bearing > 0) {
-                                //robot.driveTrain.turnLeft();
+                            if (bearing > 3.0) {
+                                robot.driveTrain.turnLeft();
+                                ThreadExtensions.TrySleep(50);
                             } else {
-                                //robot.driveTrain.turnRight();
+                                robot.driveTrain.turnRight();
+                                ThreadExtensions.TrySleep(50);
                             }
-                        } else {
-                            // Perfect position reached!
-                            robot.driveTrain.stop();
-                            targetReached = true;
                         }
+                            //else {
+//                            // Perfect position reached!
+//                            robot.driveTrain.stop();
+//                            targetReached = true;
+//                        }
                     }
                 } else {
                     // No pose data - use basic centering
                     centerTagInView(robot, targetTag, telemetry);
                 }
-            } else {
-                // Lost the target tag - stop and search briefly
-                robot.driveTrain.stop();
-                ThreadExtensions.TrySleep(300);
-
-                // Quick search
-                robot.driveTrain.turnLeft();
-                ThreadExtensions.TrySleep(200);
             }
-
+            else {
+                // Lost the target tag - stop and search briefly
+//                robot.driveTrain.stop();
+//                ThreadExtensions.TrySleep(30);
+//
+//                // Quick search
+//                robot.driveTrain.turnLeft();
+//                ThreadExtensions.TrySleep(20);
+            }
+//
             ThreadExtensions.TrySleep(100);
-            navigationTime += 100;
+//            navigationTime += 100;
         }
 
         robot.driveTrain.stop();
@@ -141,10 +147,10 @@ public class FranklinAutonStrategy {
     private static void TurnTowardsBearing(FranklinRobot.AutonomousFranklinRobot robot, double bearing) {
         if (bearing > 0) {
             robot.driveTrain.turnLeft();
-            ThreadExtensions.TrySleep(1);
+            ThreadExtensions.TrySleep(10);
         } else {
             robot.driveTrain.turnRight();
-            ThreadExtensions.TrySleep(1);
+            ThreadExtensions.TrySleep(10);
 
         }
     }
@@ -161,11 +167,12 @@ public class FranklinAutonStrategy {
                 robot.driveTrain.turnLeft();
             }
             ThreadExtensions.TrySleep(150);
-        } else {
-            // Tag is centered, move closer
-            robot.driveTrain.driveForward();
-            ThreadExtensions.TrySleep(200);
         }
+//        } else {
+//            // Tag is centered, move closer
+            //robot.driveTrain.driveForward();
+            ThreadExtensions.TrySleep(200);
+//        }
     }
 
     private static void performFallbackBehavior(FranklinRobot.AutonomousFranklinRobot robot, Telemetry telemetry) {
