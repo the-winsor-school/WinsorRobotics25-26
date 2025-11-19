@@ -29,7 +29,7 @@ public class BillyRobot extends Robot {
                 DcMotorSimple.Direction.REVERSE,
                 DcMotorSimple.Direction.FORWARD,
                 DcMotorSimple.Direction.FORWARD,
-                DcMotorSimple.Direction.REVERSE
+                DcMotorSimple.Direction.FORWARD
         ));
 
         mechAssembly = new BillyMA(hardwareMap);
