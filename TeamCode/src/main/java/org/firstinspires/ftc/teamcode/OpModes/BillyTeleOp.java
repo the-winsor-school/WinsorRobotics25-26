@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.RobotModel.Robots.FranklinRobot;
 import org.firstinspires.ftc.teamcode.RobotModel.Robots.Robot;
 import org.firstinspires.ftc.teamcode.RobotModel.Robots.RyanRobot;
 
-@TeleOp(name="Ryan")
+@TeleOp(name="Billy")
 public class BillyTeleOp extends LinearOpMode {
 
     Robot robot;
