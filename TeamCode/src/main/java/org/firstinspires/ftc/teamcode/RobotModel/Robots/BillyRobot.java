@@ -26,9 +26,9 @@ public class BillyRobot extends Robot {
 
     public BillyRobot(HardwareMap hardwareMap) {
         driveTrain = new MecanumDrive(hardwareMap, new MecanumDrive.OrientationConfiguration(
+                DcMotorSimple.Direction.FORWARD,
+                DcMotorSimple.Direction.FORWARD,
                 DcMotorSimple.Direction.REVERSE,
-                DcMotorSimple.Direction.FORWARD,
-                DcMotorSimple.Direction.FORWARD,
                 DcMotorSimple.Direction.FORWARD
         ));
 
