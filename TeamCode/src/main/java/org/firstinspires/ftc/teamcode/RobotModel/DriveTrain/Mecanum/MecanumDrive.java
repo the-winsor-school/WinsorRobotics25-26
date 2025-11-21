@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.Extensions.ThreadExtensions;
 import org.firstinspires.ftc.teamcode.Extensions.TurnDirection;
 import org.firstinspires.ftc.teamcode.RobotModel.DriveTrain.DriveTrain;
 import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor;
+import java.util.List;
 
 public class MecanumDrive extends DriveTrain
 {
@@ -83,14 +84,117 @@ public class MecanumDrive extends DriveTrain
             RF.setPower(-dir);
         }
 
-        public void LocateAndDriveToColor(ColorBlobLocatorProcessor color)
-        {
-            color.getBlobs();
-            
+        public void LocateAndDriveToColor(ColorBlobLocatorProcessor greenProcessor,
+                                          ColorBlobLocatorProcessor purpleProcessor,
+                                          String targetColor) {
+            // Constants for navigation control
+            final double TARGET_AREA_THRESHOLD = 5000.0;
+            final double CENTER_TOLERANCE = 50.0;
+            final double APPROACH_SPEED = 0.3;
+            final double TURN_SPEED = 0.2;
+            final int MAX_SEARCH_TIME = 5000;
+            final int CAMERA_CENTER_X = 320;
+
+            ColorBlobLocatorProcessor activeProcessor;
+            if (targetColor.equalsIgnoreCase("green")) {
+                activeProcessor = greenProcessor;
+            } else if (targetColor.equalsIgnoreCase("purple")) {
+                activeProcessor = purpleProcessor;
+            } else {
+                stop();
+                return;
+            }
+
+            int searchTime = 0;
+            boolean targetFound = false;
+
+            //search for the specified color blob
+            while (!targetFound && searchTime < MAX_SEARCH_TIME) {
+                List<ColorBlobLocatorProcessor.Blob> blobs = activeProcessor.getBlobs();
+
+                if (!blobs.isEmpty()) {
+                    targetFound = true;
+                    break;
+                }
+
+                spin(TurnDirection.LEFT);
+                ThreadExtensions.TrySleep(100);
+                stop();
+                ThreadExtensions.TrySleep(50);
+
+                searchTime += 150;
+            }
+
+            if (!targetFound) {
+                stop();
+                return;
+            }
+
+            //navigate to the largest color blob of specified color
+            boolean targetReached = false;
+            int navigationTime = 0;
+            final int MAX_NAVIGATION_TIME = 10000;
+
+            while (!targetReached && navigationTime < MAX_NAVIGATION_TIME) {
+                List<ColorBlobLocatorProcessor.Blob> blobs = activeProcessor.getBlobs();
+
+                if (blobs.isEmpty()) {
+                    stop();
+                    ThreadExtensions.TrySleep(200);
+
+                    spin(TurnDirection.LEFT);
+                    ThreadExtensions.TrySleep(300);
+                    stop();
+
+                    navigationTime += 500;
+                    continue;
+                }
+
+                ColorBlobLocatorProcessor.Blob targetBlob = blobs.get(0);
+                double blobCenterX = targetBlob.getBoxFit().center.x;
+                double blobArea = targetBlob.getContourArea();
+
+                if (blobArea > TARGET_AREA_THRESHOLD) {
+                    stop();
+                    targetReached = true;
+                    break;
+                }
+
+                double horizontalOffset = blobCenterX - CAMERA_CENTER_X;
+
+                if (Math.abs(horizontalOffset) > CENTER_TOLERANCE) {
+                    if (horizontalOffset > 0) {
+                        drive(0, 0, TURN_SPEED);
+                    } else {
+                        drive(0, 0, -TURN_SPEED);
+                    }
+                } else {
+                    drive(0, APPROACH_SPEED, 0);
+                }
+
+                ThreadExtensions.TrySleep(50);
+                navigationTime += 50;
+            }
+            stop();
+        }
+        public void LocateAndDriveToGreen(ColorBlobLocatorProcessor greenProcessor,
+                                          ColorBlobLocatorProcessor purpleProcessor) {
+            LocateAndDriveToColor(greenProcessor, purpleProcessor, "green");
+        }
+
+        public void LocateAndDriveToPurple(ColorBlobLocatorProcessor greenProcessor,
+                                           ColorBlobLocatorProcessor purpleProcessor) {
+            LocateAndDriveToColor(greenProcessor, purpleProcessor, "purple");
+        }
+
+        public void stop() {
+            RF.setPower(0);
+            RB.setPower(0);
+            LF.setPower(0);
+            LB.setPower(0);
         }
 
     }
-
 
 
     // these can be declared Final because once they are initialized they should not be changed.
