@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.Extensions.GamepadExtensions;
 import org.firstinspires.ftc.teamcode.Extensions.ThreadExtensions;
 import org.firstinspires.ftc.teamcode.Extensions.TurnDirection;
 import org.firstinspires.ftc.teamcode.RobotModel.DriveTrain.DriveTrain;
+import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor;
 
 public class MecanumDrive extends DriveTrain
 {
@@ -80,6 +81,12 @@ public class MecanumDrive extends DriveTrain
             LF.setPower(dir);
             RB.setPower(-dir);
             RF.setPower(-dir);
+        }
+
+        public void LocateAndDriveToColor(ColorBlobLocatorProcessor color)
+        {
+            color.getBlobs();
+            
         }
 
     }

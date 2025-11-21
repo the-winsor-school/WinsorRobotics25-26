@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.AutonStrategies;
 import org.firstinspires.ftc.teamcode.RobotModel.Robots.FranklinRobot;
 import org.firstinspires.ftc.teamcode.RobotModel.Robots.Robot;
 import org.firstinspires.ftc.teamcode.RobotModel.Robots.Wildbots2025;
+import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor;
 
 public class RyanAutonStrategy {
     /*
@@ -12,7 +13,11 @@ public class RyanAutonStrategy {
      */
     public static IAutonStrategy BasicAutonomous(Wildbots2025.AutonomousMecanumRobot robot) {
         return () -> {
-            //insert code
+
         };
+    }
+
+    private static GreenBallDetection() {
+
     }
 }
