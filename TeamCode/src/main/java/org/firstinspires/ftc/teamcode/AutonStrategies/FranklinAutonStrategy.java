@@ -16,8 +16,6 @@ public class FranklinAutonStrategy {
             if (searchForSpecificAprilTag(robot, franklinRobot, targetTagId, telemetry)) {
                 // Phase 2: Navigate to the found AprilTag
                 navigateToSpecificAprilTag(robot, franklinRobot, targetTagId, telemetry);
-                robot.driveTrain.turnRight();
-                ThreadExtensions.TrySleep(100);
                 // Phase 3: Position and shoot
                 positionAndShoot(robot, telemetry);
             } else {
@@ -41,11 +39,13 @@ public class FranklinAutonStrategy {
         int searchTime = 0;
         final int MAX_SEARCH_TIME = 4000000; // 4 seconds max search
         robot.driveTrain.driveForward();
-        ThreadExtensions.TrySleep(6000); //Adjust to get wheels to hash
+        ThreadExtensions.TrySleep(2500); //Adjust to get wheels to hash
         while (searchTime < MAX_SEARCH_TIME) {
             AprilTagDetection targetTag = findTagById(franklinRobot, targetTagId, telemetry);
 
             if (targetTag != null) {
+                robot.driveTrain.turnRight();
+                ThreadExtensions.TrySleep(175);
                 robot.driveTrain.stop();
                 return true; // Found the target tag!
             }
@@ -58,7 +58,8 @@ public class FranklinAutonStrategy {
 
             searchTime += 300;
         }
-
+        robot.driveTrain.turnRight();
+        ThreadExtensions.TrySleep(1000); // Turn for only 100ms (was 150ms)
         robot.driveTrain.stop();
         return false; // Target tag not found
     }
@@ -67,7 +68,6 @@ public class FranklinAutonStrategy {
         boolean targetReached = false;
         int navigationTime = 0;
         final int MAX_NAVIGATION_TIME = 6000000; // 6 seconds max navigation
-
         while (!targetReached && navigationTime < MAX_NAVIGATION_TIME) {
             AprilTagDetection targetTag = findTagById(franklinRobot, targetTagId, telemetry);
 
@@ -95,14 +95,14 @@ public class FranklinAutonStrategy {
                             // Move forward or backward to reach target distance
                             if (range > TARGET_DISTANCE) {
                                 robot.driveTrain.driveForward();
-                                ThreadExtensions.TrySleep(5000);
+                                ThreadExtensions.TrySleep(100);
                                 robot.driveTrain.stop();
-                                ThreadExtensions.TrySleep(10000);
+                                ThreadExtensions.TrySleep(50);
                             } else {
                                 robot.driveTrain.driveBackward();
-                                ThreadExtensions.TrySleep(5000);
+                                ThreadExtensions.TrySleep(100);
                                 robot.driveTrain.stop();
-                                ThreadExtensions.TrySleep(10000);
+                                ThreadExtensions.TrySleep(50);
                             }
 //                        }
                     } else {
@@ -124,7 +124,7 @@ public class FranklinAutonStrategy {
                     }
                 } else {
                     // No pose data - use basic centering
-                    centerTagInView(robot, targetTag, telemetry);
+                    //centerTagInView(robot, targetTag, telemetry);
                 }
             }
             else {
@@ -142,6 +142,8 @@ public class FranklinAutonStrategy {
         }
 
         robot.driveTrain.stop();
+        ThreadExtensions.TrySleep(100);
+        telemetry.addData("ready to shoot",navigationTime);
     }
 
     private static void TurnTowardsBearing(FranklinRobot.AutonomousFranklinRobot robot, double bearing) {

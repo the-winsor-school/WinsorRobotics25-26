@@ -17,12 +17,12 @@ public class StandardTankDrive extends DriveTrain
         //make it turn for a set amount of degrees using millis
 
         public void driveForward() {
-            left.setPower(0.2);
-            right.setPower(0.2);
+            left.setPower(0.4);
+            right.setPower(0.4);
         }
         public void driveBackward() {
-            left.setPower(-0.2);
-            right.setPower(-0.2);
+            left.setPower(-0.4);
+            right.setPower(-0.4);
         }
         public void stop() {
             left.setPower(0);
