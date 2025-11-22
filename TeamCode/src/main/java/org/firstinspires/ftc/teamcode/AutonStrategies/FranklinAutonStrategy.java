@@ -252,7 +252,7 @@ public class FranklinAutonStrategy {
      */
     private static void positionAndShoot(FranklinRobot.AutonomousFranklinRobot robot, Telemetry telemetry) {
         // Position the shooter mechanism
-        robot.mechAssembly.FlappyServo.FlappyUp();
+        robot.mechAssembly.FlappyServo.FlappyPos();
         ThreadExtensions.TrySleep(500);
 
         // Start shooter
@@ -260,13 +260,13 @@ public class FranklinAutonStrategy {
         ThreadExtensions.TrySleep(1000);
 
         // Drop balls into shooter
-        robot.mechAssembly.FlappyServo.FlappyDown();
+        robot.mechAssembly.FlappyServo.FlappyNeg();
         ThreadExtensions.TrySleep(2000);
 
         // Stop shooter
         robot.mechAssembly.AutonShooter.StopShoot();
 
         // Reset flappy servo
-        robot.mechAssembly.FlappyServo.FlappyUp();
+        robot.mechAssembly.FlappyServo.FlappyPos();
     }
 }
