@@ -5,6 +5,14 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+
+/**
+ * TODO:  This is a good example of a thing that we need in this project
+ *        An "EmptyMechAssembly" which just ensures that nothing throws
+ *        a NullReferenceException when being accessed.  (currently this
+ *        still does have a null in it....)  But, otherwise, this is the
+ *        EmptyMechAssembly
+ */
 public class BillyMA extends MechAssembly
 {
     public BillyMA(HardwareMap hardwareMap) {
