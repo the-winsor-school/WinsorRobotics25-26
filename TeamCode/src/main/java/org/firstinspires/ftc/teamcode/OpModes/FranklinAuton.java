@@ -9,19 +9,28 @@ import org.firstinspires.ftc.teamcode.AutonStrategies.IAutonStrategy;
 import org.firstinspires.ftc.teamcode.RobotModel.Robots.FranklinRobot;
 import org.firstinspires.ftc.teamcode.RobotModel.Robots.Wildbots2025;
 
-@Autonomous(name = "Franklin Auton")
+
+@Autonomous(name = "Franklin Target Tag 24")
 public class FranklinAuton extends LinearOpMode {
     private FranklinRobot robot;
     private IAutonStrategy autonStrategy;
-    public FranklinAuton(){
-
-        autonStrategy = FranklinAutonStrategy.RedGoalAutonomous(robot.getAutonomousRobot());
-    }
+    private final int TARGET_TAG_ID = 24; // Red
 
     @Override
     public void runOpMode() throws InterruptedException {
-        waitForStart();
         robot = new FranklinRobot(hardwareMap);
+        autonStrategy = FranklinAutonStrategy.TargetSpecificAprilTag(
+                robot.getAutonomousRobot(),
+                robot,
+                TARGET_TAG_ID,
+                telemetry
+        );
+
+        telemetry.addLine("Franklin Autonomous Ready");
+        telemetry.addData("Target AprilTag ID", TARGET_TAG_ID);
+        telemetry.update();
+
+        waitForStart();
         autonStrategy.execute();
     }
 }

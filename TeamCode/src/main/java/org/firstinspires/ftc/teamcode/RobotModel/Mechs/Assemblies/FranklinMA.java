@@ -35,7 +35,7 @@ public class FranklinMA extends MechAssembly
     //5 sec spinny spinny
 
     public class AutonomousFranklinMA extends AutonomousMechBehaviors {
-        private final Shooter.AutonomousShooterBehavior AutonShooter;
+        public final Shooter.AutonomousShooterBehavior AutonShooter;
         public final FlappyServo.AutonomousFlappyBehavior FlappyServo;
         public AutonomousFranklinMA(Shooter.AutonomousShooterBehavior autonShooter, FlappyServo.AutonomousFlappyBehavior flappyServo) {
             AutonShooter = autonShooter;
