@@ -7,10 +7,20 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 public class FranklinAutonStrategy {
     // Strategy that targets a specific AprilTag ID
+
+    /**
+     * TODO: Comment the methods so we know what they do!
+     * @param robot
+     * @param franklinRobot
+     * @param targetTagId
+     * @param telemetry
+     * @return
+     */
     public static IAutonStrategy TargetSpecificAprilTag(FranklinRobot.AutonomousFranklinRobot robot,
                                                         FranklinRobot franklinRobot, int targetTagId,
                                                         Telemetry telemetry) {
         return () -> {
+            // TODO:  This is where the "State Machine" would be /implemented/
             //Get Franklin's front wheels to line up with colorful double marker
             // Phase 1: Search for the specific AprilTag
             if (searchForSpecificAprilTag(robot, franklinRobot, targetTagId, telemetry)) {
@@ -25,7 +35,11 @@ public class FranklinAutonStrategy {
         };
     }
 
-    // Helper method to find a specific AprilTag by ID
+
+    /**
+     * TODO: Comment the methods so we know what they do!
+     Helper method to find a specific AprilTag by ID
+      */
     private static AprilTagDetection findTagById(FranklinRobot franklinRobot, int targetTagId, Telemetry telemetry) {
         for (AprilTagDetection detection : franklinRobot.aprilTagProcessor.getDetections()) {
             if (detection.id == targetTagId) {
@@ -35,6 +49,14 @@ public class FranklinAutonStrategy {
         return null; // Target tag not found
     }
 
+    /**
+     * TODO: Comment the methods so we know what they do!
+     * @param robot
+     * @param franklinRobot
+     * @param targetTagId
+     * @param telemetry
+     * @return
+     */
     private static boolean searchForSpecificAprilTag(FranklinRobot.AutonomousFranklinRobot robot, FranklinRobot franklinRobot, int targetTagId, Telemetry telemetry) {
         int searchTime = 0;
         final int MAX_SEARCH_TIME = 4000000; // 4 seconds max search
@@ -64,15 +86,30 @@ public class FranklinAutonStrategy {
         return false; // Target tag not found
     }
 
+    /**
+     * TODO: Comment the methods so we know what they do!
+     * @param robot
+     * @param franklinRobot
+     * @param targetTagId
+     * @param telemetry
+     */
     private static void navigateToSpecificAprilTag(FranklinRobot.AutonomousFranklinRobot robot, FranklinRobot franklinRobot, int targetTagId, Telemetry telemetry) {
         boolean targetReached = false;
         int navigationTime = 0;
         final int MAX_NAVIGATION_TIME = 6000000; // 6 seconds max navigation
+        // TODO:  This While Loop needs some love
+        //        First off, the MAX_NAVIGATION_TIME is never used, so it's just an infinite loop.
         while (!targetReached && navigationTime < MAX_NAVIGATION_TIME) {
             AprilTagDetection targetTag = findTagById(franklinRobot, targetTagId, telemetry);
 
+            // TODO:  Look at the "State Machine" lesson.  This crazy
+            //        bunch of if statements can be cleaned up a lot~
+            //        "State Machine" will also mean you don't need the While Loop~
             if (targetTag != null) {
                 // Check if we have pose data (tag must be in library with known size)
+                // TODO:  "Invert" this If Statement to reduce a layer of code nesting >_<
+                //        this means: If `targetTag.ftcPose` IS null,
+                //        then you need to go do a different thing.
                 if (targetTag.ftcPose != null) {
                     double range = targetTag.ftcPose.range; // Distance to tag (inches)
                     double bearing = targetTag.ftcPose.bearing; // Angle to tag (degrees)
@@ -80,6 +117,8 @@ public class FranklinAutonStrategy {
                     telemetry.addData("bearing",bearing);
                     telemetry.update();
                     // Define target distance (e.g., 18 inches from tag)
+                    // TODO:  Make these variables static at the class level
+                    //        We don't need to re-declare them every time we are using them ;)
                     final double TARGET_DISTANCE = 36.0;
                     final double BEARING_TOLERANCE = 60.0; // degrees
                     final double DISTANCE_TOLERANCE = 10.0; // inches
@@ -122,6 +161,8 @@ public class FranklinAutonStrategy {
 //                            targetReached = true;
 //                        }
                     }
+                    // TODO:  Get rid of the empty Else clauses~  unless they shouldn't be empty?
+                    //        P.S. "State Machine" will make these go away ;)
                 } else {
                     // No pose data - use basic centering
                     //centerTagInView(robot, targetTag, telemetry);
@@ -146,6 +187,11 @@ public class FranklinAutonStrategy {
         telemetry.addData("ready to shoot",navigationTime);
     }
 
+    /**
+     * TODO: Comment the methods so we know what they do!
+     * @param robot
+     * @param bearing
+     */
     private static void TurnTowardsBearing(FranklinRobot.AutonomousFranklinRobot robot, double bearing) {
         if (bearing > 0) {
             robot.driveTrain.turnLeft();
@@ -157,6 +203,12 @@ public class FranklinAutonStrategy {
         }
     }
 
+    /** TODO: Comment the methods so we know what they do!
+     *
+     * @param robot
+     * @param detection
+     * @param telemetry
+     */
     private static void centerTagInView(FranklinRobot.AutonomousFranklinRobot robot, AprilTagDetection detection, Telemetry telemetry) {
         double tagCenterX = detection.center.x;
         double imageCenterX = 320; // Assuming 640x480 resolution
@@ -177,6 +229,11 @@ public class FranklinAutonStrategy {
 //        }
     }
 
+    /**
+     * TODO: Comment the methods so we know what they do!
+     * @param robot
+     * @param telemetry
+     */
     private static void performFallbackBehavior(FranklinRobot.AutonomousFranklinRobot robot, Telemetry telemetry) {
         // What to do if the target tag isn't found
         // Example: drive forward for a set time and shoot anyway
@@ -188,6 +245,11 @@ public class FranklinAutonStrategy {
         positionAndShoot(robot,telemetry);
     }
 
+    /**
+     * TODO: Comment the methods so we know what they do!
+     * @param robot
+     * @param telemetry
+     */
     private static void positionAndShoot(FranklinRobot.AutonomousFranklinRobot robot, Telemetry telemetry) {
         // Position the shooter mechanism
         robot.mechAssembly.FlappyServo.FlappyUp();
