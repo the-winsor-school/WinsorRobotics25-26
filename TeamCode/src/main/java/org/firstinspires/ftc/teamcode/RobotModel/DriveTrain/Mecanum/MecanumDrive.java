@@ -84,10 +84,23 @@ public class MecanumDrive extends DriveTrain
             RF.setPower(-dir);
         }
 
+        /**
+         * TODO:  Comment your methods!
+         * TODO:  Why do we pass two color processors and then only use one?
+         *        Only pass one color processor
+         *        (and pass in the one that is for the color you want to search for)
+         *        This will make your code much more robust and will work for future seasons
+         * @param greenProcessor
+         * @param purpleProcessor
+         * @param targetColor
+         */
         public void LocateAndDriveToColor(ColorBlobLocatorProcessor greenProcessor,
                                           ColorBlobLocatorProcessor purpleProcessor,
                                           String targetColor) {
             // Constants for navigation control
+            // TODO:  Another way to make this method more robust would be to pass all of these
+            //        variables as parameters.  Bonus points if you make this into an OBJECT as well
+            //        Something like a "ColorSearchConfiguration" perhaps?  (similar to OrientationConfiguration)
             final double TARGET_AREA_THRESHOLD = 5000.0;
             final double CENTER_TOLERANCE = 50.0;
             final double APPROACH_SPEED = 0.3;
@@ -109,6 +122,8 @@ public class MecanumDrive extends DriveTrain
             boolean targetFound = false;
 
             //search for the specified color blob
+            // TODO:  searchTime isn't really measuring time!~
+            //        also, targetFound is not actually used here.
             while (!targetFound && searchTime < MAX_SEARCH_TIME) {
                 List<ColorBlobLocatorProcessor.Blob> blobs = activeProcessor.getBlobs();
 
@@ -125,6 +140,8 @@ public class MecanumDrive extends DriveTrain
                 searchTime += 150;
             }
 
+            // TODO:  Implementing a "State Machine" would negate the need for a lot of loops
+            //        and If Statements here~
             if (!targetFound) {
                 stop();
                 return;
@@ -134,7 +151,8 @@ public class MecanumDrive extends DriveTrain
             boolean targetReached = false;
             int navigationTime = 0;
             final int MAX_NAVIGATION_TIME = 10000;
-
+            // TODO: break this down into helper methods~  Those helper methods are the seeds for
+            //       different "States" for the State Machine
             while (!targetReached && navigationTime < MAX_NAVIGATION_TIME) {
                 List<ColorBlobLocatorProcessor.Blob> blobs = activeProcessor.getBlobs();
 
@@ -177,11 +195,22 @@ public class MecanumDrive extends DriveTrain
             }
             stop();
         }
+
+        /**
+         * TODO:  Comment your Methods!
+         * @param greenProcessor
+         * @param purpleProcessor
+         */
         public void LocateAndDriveToGreen(ColorBlobLocatorProcessor greenProcessor,
                                           ColorBlobLocatorProcessor purpleProcessor) {
             LocateAndDriveToColor(greenProcessor, purpleProcessor, "green");
         }
 
+        /**
+         * TODO:  Comment your Methods!
+         * @param greenProcessor
+         * @param purpleProcessor
+         */
         public void LocateAndDriveToPurple(ColorBlobLocatorProcessor greenProcessor,
                                            ColorBlobLocatorProcessor purpleProcessor) {
             LocateAndDriveToColor(greenProcessor, purpleProcessor, "purple");
