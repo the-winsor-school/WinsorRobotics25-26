@@ -27,10 +27,27 @@ public class FlappyServo extends MechComponent{
     }
 
     public class AutonomousFlappyBehavior extends AutonomousComponentBehaviors {
-        public void FlappyPos(){flappydoodle.setPower(0.25); }
+        /**
+         * Go up until it hits the upper limit
+         * Takes time
+         * TODO: make this not use a while loop (not suck)
+         */
+        public void FlappyPos()
+        {
+            while (canGoUp())
+                flappydoodle.setPower(0.25);
+        }
         public void FlappyStop(){flappydoodle.setPower(0);
         }
-        public void FlappyNeg(){flappydoodle.setPower(-0.25);
+
+        /**
+         * Go down until it hits the lower limit
+         * Takes time
+         * TODO: make this not use a while loop (not suck)
+         */
+        public void FlappyNeg(){
+            while (canGoDown())
+                flappydoodle.setPower(-0.25);
         }
 
     }
