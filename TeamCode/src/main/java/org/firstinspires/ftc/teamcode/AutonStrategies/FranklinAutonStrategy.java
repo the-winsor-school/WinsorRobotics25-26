@@ -251,6 +251,9 @@ public class FranklinAutonStrategy {
      * @param telemetry
      */
     private static void positionAndShoot(FranklinRobot.AutonomousFranklinRobot robot, Telemetry telemetry) {
+        telemetry.addLine("starting shooting (pAS)");
+        telemetry.update();
+
         // Position the shooter mechanism
         robot.mechAssembly.FlappyServo.FlappyPos(); 
 
