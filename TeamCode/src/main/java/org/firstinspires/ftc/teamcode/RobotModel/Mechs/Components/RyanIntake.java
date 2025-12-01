@@ -18,9 +18,7 @@ public class RyanIntake extends MechComponent
     }
 
     public class AutonomousRyanIntake extends AutonomousComponentBehaviors {
-        public void rigogo(){
-            ryanintake.setPower(0.67);
-        }
+        public void rigogo(){ryanintake.setPower(0.67);}
         public void rigostop(){
             ryanintake.setPower(0);
         }
