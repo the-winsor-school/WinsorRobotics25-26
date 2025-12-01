@@ -252,7 +252,7 @@ public class FranklinAutonStrategy {
      */
     private static void positionAndShoot(FranklinRobot.AutonomousFranklinRobot robot, Telemetry telemetry) {
         // Position the shooter mechanism
-        robot.mechAssembly.FlappyServo.FlappyPos(); 
+        robot.mechAssembly.FlappyServo.FlappyPos();
 
         // Start shooter
         robot.mechAssembly.AutonShooter.StartShoot();
