@@ -42,6 +42,22 @@ public class ExampleAutonomousStrategies
      * use in this AutonStrategy.  You'll pass them along to each of the States as well so
      * that each state can pass those along to the next states.
      *
+     * This is a Declaratively Expressed, Iteratively Executed approach to a State Machine.
+     * Each "State" (which are all the methods here that return an IState lambda)
+     * is a self-contained program which executes just once, and determines what the next step
+     * for the State Machine should be.
+     *
+     * this IAutonStrategy is the StateMachine itself.  It keeps track of what the current
+     * State is, and is responsible for executing each step.  whatever the "currentState" is
+     * determines what action is taken at each Iteration of the State Machine.  the execution of
+     * a particular State, then returns back to the State Machine what the next state should be
+     * (potentially, the same state).
+     *
+     * This is different from the implementation that we did together during Robotics in one
+     * very important way.  The way we did it would almost certainly cause a StackOverflowException
+     * because each iteration of the state immediately started the next itteration within its own
+     * Stack frame.  (That's some high level jargon, but it means that it would have crashed constantly!)
+     *
      * @param robot Franklin!
      * @param telemetry Yes, we should use telemetry~
      * @param opMode we need to pass in the opMode here so we aren't doing anything evil~
