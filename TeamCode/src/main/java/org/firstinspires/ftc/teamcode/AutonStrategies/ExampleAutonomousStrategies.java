@@ -65,9 +65,15 @@ public class ExampleAutonomousStrategies
 
     /**
      * starting state:
+     * Turn right in a circle until Franklin sees a Purple Blob
+     *
+     * Keep repeating this until purple is found.
+     *
+     * once purple if found, move to "driveToPurple" state.
+     *
      * @param robot
      * @param telemetry
-     * @return
+     * @return either lookForPurple or driveToPurple
      */
     public static IState lookForPurple(FranklinRobot robot, Telemetry telemetry) {
         return () ->
@@ -97,6 +103,19 @@ public class ExampleAutonomousStrategies
         };
     }
 
+    /**
+     * Assumes we have FOUND purple
+     *
+     * if no purple is seen, we lost it -- return to lookForPurple
+     *
+     * if purple is covering enough area of the camera.. we found it!  return drive in a circle cw
+     *
+     * otherwise, keep driving forward
+     *
+     * @param robot
+     * @param telemetry
+     * @return
+     */
     public static IState driveTowardPurple(FranklinRobot robot, Telemetry telemetry) {
         return () ->
         {
@@ -135,13 +154,25 @@ public class ExampleAutonomousStrategies
         };
     }
 
+
+    /**
+     * Turn left in a circle until Franklin sees a Green Blob
+     *
+     * Keep repeating this until green is found.
+     *
+     * once green is found, move to "driveToGreen" state.
+     *
+     * @param robot
+     * @param telemetry
+     * @return either lookForGreen or driveToGreen
+     */
     public static IState lookForGreen(FranklinRobot robot, Telemetry telemetry) {
         return () ->
         {
             telemetry.clear();
             telemetry.addLine("Current State: looking for GREEN");
 
-            // Get some purple blobs~
+            // Get some green blobs~
             List<ColorBlobLocatorProcessor.Blob> blobs = robot.greenBallProcessor.getBlobs();
 
             // if there aren't any, or if they're not centered in the frame...
@@ -151,7 +182,7 @@ public class ExampleAutonomousStrategies
                 telemetry.addLine("I don't see GREEN yet...");
                 telemetry.update();
                 // turn right a bit..
-                robot.getAutonomousRobot().driveTrain.turnRight();
+                robot.getAutonomousRobot().driveTrain.turnLeft();
                 ThreadExtensions.TrySleep(50);
                 return lookForGreen(robot, telemetry);
             }
@@ -162,16 +193,30 @@ public class ExampleAutonomousStrategies
             return driveTowardGreen(robot, telemetry);
         };
     }
+
+    /**
+     * Assumes we have FOUND green
+     *
+     * if no green is seen, we lost it -- return to lookForGreen
+     *
+     * if green is covering enough area of the camera.. we found it!  return drive in a circle ccw
+     *
+     * otherwise, keep driving forward
+     *
+     * @param robot
+     * @param telemetry
+     * @return
+     */
     public static IState driveTowardGreen(FranklinRobot robot, Telemetry telemetry) {
         return () ->
         {
             telemetry.clear();
             telemetry.addLine("Current State: GETTIN THAT GREEN THING");
 
-            // Get some purple blobs~
+            // Get some green blobs~
             List<ColorBlobLocatorProcessor.Blob> blobs = robot.greenBallProcessor.getBlobs();
 
-            // first way out--Lost the PURPLE thing
+            // first way out--Lost the GREEN thing
             if(blobs.isEmpty())
             {
                 telemetry.addLine("I lost it....");
@@ -181,7 +226,7 @@ public class ExampleAutonomousStrategies
             }
 
 
-            // Second path out--The purple thing is big enough to count as I got it~
+            // Second path out--The green thing is big enough to count as I got it~
             if(blobs.stream().anyMatch(b -> b.getContourArea() > 100))
             {
                 telemetry.addLine("I GOT IT!");
