@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.AutonStrategies;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Extensions.IState;
 import org.firstinspires.ftc.teamcode.Extensions.ThreadExtensions;
@@ -42,73 +44,184 @@ public class ExampleAutonomousStrategies
      *
      * @param robot Franklin!
      * @param telemetry Yes, we should use telemetry~
+     * @param opMode we need to pass in the opMode here so we aren't doing anything evil~
+     *               We should probably do this in all AutonStrategies
      * @return The Auton Strategy!
      */
-    public static IAutonStrategy FranklinDanceStateMachineEdition(FranklinRobot robot, Telemetry telemetry) {
+    public static IAutonStrategy FranklinDanceStateMachineEdition(FranklinRobot robot, Telemetry telemetry, LinearOpMode opMode) {
         return () ->
         {
             IState currentState = lookForPurple(robot, telemetry);
 
-            while(currentState != null)
+            // We really need the opMode here so we don't break any rules~
+            while(opMode.opModeIsActive() && currentState != null)
             {
                 currentState = currentState.execute();
+                opMode.idle();  // it is also important to release some
+                                // resources back to the robot controller.
             }
         };
     }
 
+    /**
+     * starting state:
+     * @param robot
+     * @param telemetry
+     * @return
+     */
     public static IState lookForPurple(FranklinRobot robot, Telemetry telemetry) {
         return () ->
         {
             telemetry.clear();
             telemetry.addLine("Current State: looking for purple");
+
+            // Get some purple blobs~
             List<ColorBlobLocatorProcessor.Blob> blobs = robot.purpleBallProcessor.getBlobs();
-            if(blobs.isEmpty() || !blobs.stream().anyMatch(b -> b.getBoxFit().center.x > 300 &&))
+
+            // if there aren't any, or if they're not centered in the frame...
+            if(blobs.isEmpty() || blobs.stream().noneMatch(b -> b.getBoxFit().center.x > 300 && b.getBoxFit().center.x < 380))
             {
                 // Print the current state message on the DriverStation.
                 telemetry.addLine("I don't see Purple yet...");
                 telemetry.update();
+                // turn right a bit..
                 robot.getAutonomousRobot().driveTrain.turnRight();
                 ThreadExtensions.TrySleep(50);
                 return lookForPurple(robot, telemetry);
             }
 
-            
-
-            telemetry.addLine("I don't see Purple yet...");
+            telemetry.addLine("THATS PURPLE!!");
             telemetry.update();
+            ThreadExtensions.TrySleep(500);
+            return driveTowardPurple(robot, telemetry);
         };
     }
 
     public static IState driveTowardPurple(FranklinRobot robot, Telemetry telemetry) {
         return () ->
         {
+            telemetry.clear();
+            telemetry.addLine("Current State: GETTIN THAT PURPLE THING");
 
+            // Get some purple blobs~
+            List<ColorBlobLocatorProcessor.Blob> blobs = robot.purpleBallProcessor.getBlobs();
+            
+            // first way out--Lost the PURPLE thing
+            if(blobs.isEmpty())
+            {
+                telemetry.addLine("I lost it....");
+                telemetry.update();
+                ThreadExtensions.TrySleep(500);
+                return lookForPurple(robot, telemetry);
+            }
+
+
+            // Second path out--The purple thing is big enough to count as I got it~
+            if(blobs.stream().anyMatch(b -> b.getContourArea() > 100))
+            {
+                telemetry.addLine("I GOT IT!");
+                telemetry.update();
+                ThreadExtensions.TrySleep(500);
+                return driveInACircleCW(robot, telemetry);
+            }
+
+            // otherwise, keep driving forward.
+            telemetry.addLine("OHH LAWD HE COMMIN'");
+            telemetry.update();
+            robot.getAutonomousRobot().driveTrain.driveForward();
+            ThreadExtensions.TrySleep(50);
+
+            return driveTowardPurple(robot, telemetry);
         };
     }
 
     public static IState lookForGreen(FranklinRobot robot, Telemetry telemetry) {
         return () ->
         {
+            telemetry.clear();
+            telemetry.addLine("Current State: looking for GREEN");
 
+            // Get some purple blobs~
+            List<ColorBlobLocatorProcessor.Blob> blobs = robot.greenBallProcessor.getBlobs();
+
+            // if there aren't any, or if they're not centered in the frame...
+            if(blobs.isEmpty() || blobs.stream().noneMatch(b -> b.getBoxFit().center.x > 300 && b.getBoxFit().center.x < 380))
+            {
+                // Print the current state message on the DriverStation.
+                telemetry.addLine("I don't see GREEN yet...");
+                telemetry.update();
+                // turn right a bit..
+                robot.getAutonomousRobot().driveTrain.turnRight();
+                ThreadExtensions.TrySleep(50);
+                return lookForGreen(robot, telemetry);
+            }
+
+            telemetry.addLine("THATS GREEN!!");
+            telemetry.update();
+            ThreadExtensions.TrySleep(500);
+            return driveTowardGreen(robot, telemetry);
         };
     }
     public static IState driveTowardGreen(FranklinRobot robot, Telemetry telemetry) {
         return () ->
         {
+            telemetry.clear();
+            telemetry.addLine("Current State: GETTIN THAT GREEN THING");
 
+            // Get some purple blobs~
+            List<ColorBlobLocatorProcessor.Blob> blobs = robot.greenBallProcessor.getBlobs();
+
+            // first way out--Lost the PURPLE thing
+            if(blobs.isEmpty())
+            {
+                telemetry.addLine("I lost it....");
+                telemetry.update();
+                ThreadExtensions.TrySleep(500);
+                return lookForGreen(robot, telemetry);
+            }
+
+
+            // Second path out--The purple thing is big enough to count as I got it~
+            if(blobs.stream().anyMatch(b -> b.getContourArea() > 100))
+            {
+                telemetry.addLine("I GOT IT!");
+                telemetry.update();
+                ThreadExtensions.TrySleep(500);
+                return driveInACircleCCW(robot, telemetry);
+            }
+
+            // otherwise, keep driving forward.
+            telemetry.addLine("OHH LAWD HE COMMIN'");
+            telemetry.update();
+            robot.getAutonomousRobot().driveTrain.driveForward();
+            ThreadExtensions.TrySleep(50);
+
+            return driveTowardGreen(robot, telemetry);
         };
     }
 
     public static IState driveInACircleCW(FranklinRobot robot, Telemetry telemetry) {
         return () ->
         {
+            telemetry.clear();
+            telemetry.addLine("Current State: WOOOOO");
+            telemetry.update();
 
+            robot.getAutonomousRobot().driveTrain.turnRight();
+            ThreadExtensions.TrySleep(5000);
+            return lookForGreen(robot, telemetry);
         };
     }
     public static IState driveInACircleCCW(FranklinRobot robot, Telemetry telemetry) {
         return () ->
         {
+            telemetry.clear();
+            telemetry.addLine("Current State: WOOOOO");
+            telemetry.update();
 
+            robot.getAutonomousRobot().driveTrain.turnLeft();
+            ThreadExtensions.TrySleep(5000);
+            return null;
         };
     }
 }
