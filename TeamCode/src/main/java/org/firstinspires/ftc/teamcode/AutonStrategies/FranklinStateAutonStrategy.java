@@ -7,12 +7,26 @@ import org.firstinspires.ftc.teamcode.RobotModel.Robots.Robot;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 public class FranklinStateAutonStrategy {
+
+    /**
+     * Ok, so like... one problem here is that we need a way to know if a State is "Completed"
+     * meaning it's the END of the process.
+     * It is ... inelegant... but allowing the "execute" method to return `null` will
+     * solve that problem
+     */
     public interface IState {
-        IState execute(Robot robot);
+
+        /**
+         * we don't actually need the parameter here.
+         * @return
+         */
+        IState execute(/*Robot robot*/);
     }
 
     public static IAutonStrategy ShootAtRed(FranklinRobot robot, Telemetry telemetry) {
-        return()-> {
+        return ()-> {
+            // The problem here is currently we aren't using the "Lambda Expression" form.
+            // Therefore, we need ot modify the way we defined all of these things.
             IState currentState = goFowardFor(1500,robot);
         };
 

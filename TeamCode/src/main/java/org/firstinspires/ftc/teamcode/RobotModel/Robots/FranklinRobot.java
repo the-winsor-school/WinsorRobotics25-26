@@ -35,8 +35,8 @@ public class FranklinRobot extends Robot {
     }
 
     public final AprilTagProcessor aprilTagProcessor;
-    private final ColorBlobLocatorProcessor purpleBallProcessor;
-    private final ColorBlobLocatorProcessor greenBallProcessor;
+    public final ColorBlobLocatorProcessor purpleBallProcessor;
+    public final ColorBlobLocatorProcessor greenBallProcessor;
 
     public FranklinRobot(HardwareMap hardwareMap) {
         driveTrain = new StandardTankDrive(hardwareMap);
