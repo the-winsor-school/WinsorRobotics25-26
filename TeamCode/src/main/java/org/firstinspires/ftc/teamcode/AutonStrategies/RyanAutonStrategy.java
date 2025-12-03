@@ -17,7 +17,5 @@ public class RyanAutonStrategy {
         };
     }
 
-    private static GreenBallDetection() {
-
-    }
+        
 }
