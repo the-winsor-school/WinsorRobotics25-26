@@ -34,14 +34,14 @@ public class FranklinStateAutonStrategy {
 
     }
 
-    public IState goForwardFor(long duration, FranklinRobot robot) {
+    public static IState goForwardFor(long duration, FranklinRobot robot) {
         return() -> {
             robot.getAutonomousRobot().driveTrain.driveForward();
             ThreadExtensions.TrySleep(duration);
             return searchForTag(robot, 24);
         };
     }
-    public IState searchForTag(FranklinRobot robot, int targetTagId) {
+    public static IState searchForTag(FranklinRobot robot, int targetTagId) {
         return() -> {
         AprilTagDetection targetTag = findTagById(robot, targetTagId);
 
@@ -56,7 +56,7 @@ public class FranklinStateAutonStrategy {
         return searchForTag(robot, 24);
         };
     }
-    public IState driveToTag(FranklinRobot robot, int tagId) {
+    public static IState driveToTag(FranklinRobot robot, int tagId) {
         AprilTagDetection targetTag = findTagById(robot, tagId);
 
         if (targetTag.ftcPose != null) {
@@ -90,11 +90,11 @@ public class FranklinStateAutonStrategy {
         ThreadExtensions.TrySleep(100);
         return driveToTag(robot,tagId);
     }
-    public IState shoot(FranklinRobot robot) {
+    public static IState shoot(FranklinRobot robot) {
 
         return done(robot);
     }
-    public IState done(FranklinRobot robot) {
+    public static IState done(FranklinRobot robot) {
 
         return done(robot);
     }
