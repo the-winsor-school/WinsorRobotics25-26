@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode.AutonStrategies;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Extensions.IState;
 import org.firstinspires.ftc.teamcode.Extensions.ThreadExtensions;
 import org.firstinspires.ftc.teamcode.RobotModel.Robots.FranklinRobot;
 import org.firstinspires.ftc.teamcode.RobotModel.Robots.Robot;
@@ -14,41 +17,44 @@ public class FranklinStateAutonStrategy {
      * It is ... inelegant... but allowing the "execute" method to return `null` will
      * solve that problem
      */
-    public interface IState {
 
-        /**
-         * we don't actually need the parameter here.
-         * @return
-         */
-        IState execute(/*Robot robot*/);
-    }
+    public static IAutonStrategy ShootAtRed(FranklinRobot robot, Telemetry telemetry, LinearOpMode opMode) {
+        return () ->
+        {
+            IState currentState = goForwardFor(1500,robot);
 
-    public static IAutonStrategy ShootAtRed(FranklinRobot robot, Telemetry telemetry) {
-        return ()-> {
-            // The problem here is currently we aren't using the "Lambda Expression" form.
-            // Therefore, we need ot modify the way we defined all of these things.
-            IState currentState = goFowardFor(1500,robot);
+            // We really need the opMode here so we don't break any rules~
+            while(opMode.opModeIsActive() && currentState != null)
+            {
+                currentState = currentState.execute();
+                opMode.idle();  // it is also important to release some
+                // resources back to the robot controller.
+            }
         };
 
     }
 
     public IState goForwardFor(long duration, FranklinRobot robot) {
-        robot.getAutonomousRobot().driveTrain.driveForward();
-        ThreadExtensions.TrySleep(duration);
-        return searchForTag(robot, 24);
+        return() -> {
+            robot.getAutonomousRobot().driveTrain.driveForward();
+            ThreadExtensions.TrySleep(duration);
+            return searchForTag(robot, 24);
+        };
     }
     public IState searchForTag(FranklinRobot robot, int targetTagId) {
+        return() -> {
         AprilTagDetection targetTag = findTagById(robot, targetTagId);
 
         if (targetTag != null) {
             robot.getAutonomousRobot().driveTrain.turnRight();
             ThreadExtensions.TrySleep(175);
             robot.getAutonomousRobot().driveTrain.stop();
-            return driveToTag(robot,targetTagId); // Found the target tag!
+            return driveToTag(robot, targetTagId); // Found the target tag!
         }
         robot.getAutonomousRobot().driveTrain.turnRight();
         ThreadExtensions.TrySleep(100);
         return searchForTag(robot, 24);
+        };
     }
     public IState driveToTag(FranklinRobot robot, int tagId) {
         AprilTagDetection targetTag = findTagById(robot, tagId);
