@@ -2,13 +2,13 @@ package org.firstinspires.ftc.teamcode.RobotModel.Robots;
 
 import android.util.Size;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.RobotModel.DriveTrain.Mecanum.MecanumDrive;
-import org.firstinspires.ftc.teamcode.RobotModel.DriveTrain.Tank.StandardTankDrive;
-import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Assemblies.FranklinMA;
+import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Assemblies.MechAssembly;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Assemblies.RyanMA;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
@@ -17,15 +17,32 @@ import org.firstinspires.ftc.vision.opencv.ColorRange;
 import org.firstinspires.ftc.vision.opencv.ImageRegion;
 
 public class RyanRobot extends Robot {
-    @Override
-    public <T extends AutonomousRobot> T getAutonomousRobot() {
+    public class AutonomousRyanRobot extends AutonomousRobot {
+        public final MecanumDrive.AutonomousMecanumDrive driveTrain;
 
-        return null;
+        public final RyanMA.AutonomousRyanMA mechAssembly;
+
+        public AutonomousRyanRobot(
+                MecanumDrive.AutonomousMecanumDrive driveTrain,
+                RyanMA.AutonomousRyanMA mechAssembly) {
+            super(driveTrain, mechAssembly);
+            this.driveTrain = driveTrain;
+            this.mechAssembly = mechAssembly;
+        }
     }
+
 
     private final AprilTagProcessor aprilTagProcessor;
     private final ColorBlobLocatorProcessor purpleBallProcessor;
     private final ColorBlobLocatorProcessor greenBallProcessor;
+
+    private final AutonomousRyanRobot auton;
+
+    @Override
+    public AutonomousRyanRobot getAutonomousRobot(){
+        return auton;
+    }
+
     public RyanRobot(HardwareMap hardwareMap){
         driveTrain = new MecanumDrive(hardwareMap,
                 new MecanumDrive.OrientationConfiguration(
@@ -63,5 +80,10 @@ public class RyanRobot extends Robot {
                 .setStreamFormat(org.firstinspires.ftc.vision.VisionPortal.StreamFormat.YUY2)
                 .enableLiveView(true)
                 .build();
+
+        auton = new AutonomousRyanRobot(
+                driveTrain.getAutonomousDriving(),
+                mechAssembly.getAutonomousBehaviors()
+        );
     }
 }
