@@ -84,18 +84,7 @@ public class MecanumDrive extends DriveTrain
             RF.setPower(-dir);
         }
 
-        /**
-         * TODO:  Comment your methods!
-         * TODO:  Why do we pass two color processors and then only use one?
-         *        Only pass one color processor
-         *        (and pass in the one that is for the color you want to search for)
-         *        This will make your code much more robust and will work for future seasons
-         * @param greenProcessor
-         * @param purpleProcessor
-         * @param targetColor
-         */
-        public void LocateAndDriveToColor(ColorBlobLocatorProcessor greenProcessor,
-                                          ColorBlobLocatorProcessor purpleProcessor,
+        public void LocateAndDriveToColor(ColorBlobLocatorProcessor activeProcessor,
                                           String targetColor) {
             // Constants for navigation control
             // TODO:  Another way to make this method more robust would be to pass all of these
@@ -108,15 +97,6 @@ public class MecanumDrive extends DriveTrain
             final int MAX_SEARCH_TIME = 5000;
             final int CAMERA_CENTER_X = 320;
 
-            ColorBlobLocatorProcessor activeProcessor;
-            if (targetColor.equalsIgnoreCase("green")) {
-                activeProcessor = greenProcessor;
-            } else if (targetColor.equalsIgnoreCase("purple")) {
-                activeProcessor = purpleProcessor;
-            } else {
-                stop();
-                return;
-            }
 
             int searchTime = 0;
             boolean targetFound = false;
@@ -196,24 +176,12 @@ public class MecanumDrive extends DriveTrain
             stop();
         }
 
-        /**
-         * TODO:  Comment your Methods!
-         * @param greenProcessor
-         * @param purpleProcessor
-         */
-        public void LocateAndDriveToGreen(ColorBlobLocatorProcessor greenProcessor,
-                                          ColorBlobLocatorProcessor purpleProcessor) {
-            LocateAndDriveToColor(greenProcessor, purpleProcessor, "green");
+        public void LocateAndDriveToGreen(ColorBlobLocatorProcessor greenProcessor) {
+            LocateAndDriveToColor(greenProcessor, "green");
         }
 
-        /**
-         * TODO:  Comment your Methods!
-         * @param greenProcessor
-         * @param purpleProcessor
-         */
-        public void LocateAndDriveToPurple(ColorBlobLocatorProcessor greenProcessor,
-                                           ColorBlobLocatorProcessor purpleProcessor) {
-            LocateAndDriveToColor(greenProcessor, purpleProcessor, "purple");
+        public void LocateAndDriveToPurple(ColorBlobLocatorProcessor purpleProcessor) {
+            LocateAndDriveToColor(purpleProcessor, "purple");
         }
 
         public void stop() {
