@@ -20,7 +20,7 @@ import java.util.List;
 public class MecanumDrive extends DriveTrain
 {
     public class AutonomousMecanumDrive extends AutonomousDriving
-    {
+    {   
         // TODO: Write the Autonomous Methods!
 
         public void turnToAngle(double degrees) {
@@ -85,7 +85,7 @@ public class MecanumDrive extends DriveTrain
         }
 
         public void LocateAndDriveToColor(ColorBlobLocatorProcessor activeProcessor,
-                                          String targetColor, ColorSearchConfiguration colorSearchConfiguration) {
+                                          String targetColor, ColorSearchConfiguration csc) {
             // Constants for navigation control
             // TODO:  Another way to make this method more robust would be to pass all of these
             //        variables as parameters.  Bonus points if you make this into an OBJECT as well
@@ -163,11 +163,15 @@ public class MecanumDrive extends DriveTrain
             stop();
         }
 
-        public void LocateAndDriveToGreen(ColorBlobLocatorProcessor greenProcessor) {
+
+        public static IState driveToGreen(ColorBlobLocatorProcessor greenProcessor)
+        {
             LocateAndDriveToColor(greenProcessor, "green");
         }
 
-        public void LocateAndDriveToPurple(ColorBlobLocatorProcessor purpleProcessor) {
+
+        public static IState driveToPurple(ColorBlobLocatorProcessor purpleProcessor)
+        {
             LocateAndDriveToColor(purpleProcessor, "purple");
         }
 
@@ -187,25 +191,20 @@ public class MecanumDrive extends DriveTrain
     private final DcMotor RB;
     private final DcMotor RF;
 
-    private final double TARGET_AREA_THRESHOLD = 5000.0;
-    private final double CENTER_TOLERANCE = 50.0;
-    private final double APPROACH_SPEED = 0.3;
-    private final double TURN_SPEED = 0.2;
-    private final int MAX_SEARCH_TIME = 5000;
-    private final int CAMERA_CENTER_X = 320;
+    private final ColorSearchConfiguration csc = new ColorSearchConfiguration(
+        5000, 50, 0.3, 0.2, 320);
 
     private final IMU imu;
 
     public static class ColorSearchConfiguration
     {
         double TARGET_AREA_THRESHOLD, CENTER_TOLERANCE, APPROACH_SPEED, TURN_SPEED;
-        int MAX_SEARCH_TIME, CAMERA_CENTER_X;
+        int CAMERA_CENTER_X;
         public ColorSearchConfiguration(
                 double TARGET_AREA_THRESHOLD,
                 double CENTER_TOLERANCE,
                 double APPROACH_SPEED,
                 double TURN_SPEED,
-                int MAX_SEARCH_TIME,
                 int CAMERA_CENTER_X
         )
         {
