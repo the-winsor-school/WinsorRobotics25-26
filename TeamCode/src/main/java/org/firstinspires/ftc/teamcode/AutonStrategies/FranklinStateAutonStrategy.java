@@ -21,7 +21,7 @@ public class FranklinStateAutonStrategy {
     public static IAutonStrategy ShootAtRed(FranklinRobot robot, Telemetry telemetry, LinearOpMode opMode) {
         return () ->
         {
-            IState currentState = goForwardFor(1500,robot);
+            IState currentState = goForwardFor(2500,robot);
 
             // We really need the opMode here so we don't break any rules~
             while(opMode.opModeIsActive() && currentState != null)
