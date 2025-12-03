@@ -85,18 +85,11 @@ public class MecanumDrive extends DriveTrain
         }
 
         public void LocateAndDriveToColor(ColorBlobLocatorProcessor activeProcessor,
-                                          String targetColor) {
+                                          String targetColor, ColorSearchConfiguration colorSearchConfiguration) {
             // Constants for navigation control
             // TODO:  Another way to make this method more robust would be to pass all of these
             //        variables as parameters.  Bonus points if you make this into an OBJECT as well
             //        Something like a "ColorSearchConfiguration" perhaps?  (similar to OrientationConfiguration)
-            final double TARGET_AREA_THRESHOLD = 5000.0;
-            final double CENTER_TOLERANCE = 50.0;
-            final double APPROACH_SPEED = 0.3;
-            final double TURN_SPEED = 0.2;
-            final int MAX_SEARCH_TIME = 5000;
-            final int CAMERA_CENTER_X = 320;
-
 
             int searchTime = 0;
             boolean targetFound = false;
@@ -104,7 +97,7 @@ public class MecanumDrive extends DriveTrain
             //search for the specified color blob
             // TODO:  searchTime isn't really measuring time!~
             //        also, targetFound is not actually used here.
-            while (!targetFound && searchTime < MAX_SEARCH_TIME) {
+            while (!targetFound) {
                 List<ColorBlobLocatorProcessor.Blob> blobs = activeProcessor.getBlobs();
 
                 if (!blobs.isEmpty()) {
@@ -116,8 +109,6 @@ public class MecanumDrive extends DriveTrain
                 ThreadExtensions.TrySleep(100);
                 stop();
                 ThreadExtensions.TrySleep(50);
-
-                searchTime += 150;
             }
 
             // TODO:  Implementing a "State Machine" would negate the need for a lot of loops
@@ -129,11 +120,9 @@ public class MecanumDrive extends DriveTrain
 
             //navigate to the largest color blob of specified color
             boolean targetReached = false;
-            int navigationTime = 0;
-            final int MAX_NAVIGATION_TIME = 10000;
             // TODO: break this down into helper methods~  Those helper methods are the seeds for
             //       different "States" for the State Machine
-            while (!targetReached && navigationTime < MAX_NAVIGATION_TIME) {
+            while (!targetReached) {
                 List<ColorBlobLocatorProcessor.Blob> blobs = activeProcessor.getBlobs();
 
                 if (blobs.isEmpty()) {
@@ -144,7 +133,6 @@ public class MecanumDrive extends DriveTrain
                     ThreadExtensions.TrySleep(300);
                     stop();
 
-                    navigationTime += 500;
                     continue;
                 }
 
@@ -171,7 +159,6 @@ public class MecanumDrive extends DriveTrain
                 }
 
                 ThreadExtensions.TrySleep(50);
-                navigationTime += 50;
             }
             stop();
         }
@@ -199,7 +186,36 @@ public class MecanumDrive extends DriveTrain
     private final DcMotor LF;
     private final DcMotor RB;
     private final DcMotor RF;
+
+    private final double TARGET_AREA_THRESHOLD = 5000.0;
+    private final double CENTER_TOLERANCE = 50.0;
+    private final double APPROACH_SPEED = 0.3;
+    private final double TURN_SPEED = 0.2;
+    private final int MAX_SEARCH_TIME = 5000;
+    private final int CAMERA_CENTER_X = 320;
+
     private final IMU imu;
+
+    public static class ColorSearchConfiguration
+    {
+        double TARGET_AREA_THRESHOLD, CENTER_TOLERANCE, APPROACH_SPEED, TURN_SPEED;
+        int MAX_SEARCH_TIME, CAMERA_CENTER_X;
+        public ColorSearchConfiguration(
+                double TARGET_AREA_THRESHOLD,
+                double CENTER_TOLERANCE,
+                double APPROACH_SPEED,
+                double TURN_SPEED,
+                int MAX_SEARCH_TIME,
+                int CAMERA_CENTER_X
+        )
+        {
+            this.TARGET_AREA_THRESHOLD = TARGET_AREA_THRESHOLD;
+            this.CENTER_TOLERANCE = CENTER_TOLERANCE;
+            this.APPROACH_SPEED = APPROACH_SPEED;
+            this.TURN_SPEED = TURN_SPEED;
+            this.CAMERA_CENTER_X = CAMERA_CENTER_X;
+        }
+    }
 
     public static class OrientationConfiguration{
         DcMotorSimple.Direction lb, lf, rb, rf;
