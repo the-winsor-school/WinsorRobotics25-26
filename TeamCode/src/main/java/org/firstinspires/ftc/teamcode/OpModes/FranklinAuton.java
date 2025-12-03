@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.AutonStrategies.FranklinAutonStrategy;
+import org.firstinspires.ftc.teamcode.AutonStrategies.FranklinStateAutonStrategy;
 import org.firstinspires.ftc.teamcode.AutonStrategies.IAutonStrategy;
 import org.firstinspires.ftc.teamcode.RobotModel.Robots.FranklinRobot;
 import org.firstinspires.ftc.teamcode.RobotModel.Robots.Wildbots2025;
@@ -19,12 +20,17 @@ public class FranklinAuton extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new FranklinRobot(hardwareMap);
-        autonStrategy = FranklinAutonStrategy.TargetSpecificAprilTag(
+        autonStrategy = 
+            /*FranklinAutonStrategy.TargetSpecificAprilTag(
                 robot.getAutonomousRobot(),
                 robot,
                 TARGET_TAG_ID,
                 telemetry
-        );
+        );*/
+            FranklinStateAutonStrategy.ShootAtRed(
+                robot,
+                telemetry,
+                this);
 
         telemetry.addLine("Franklin Autonomous Ready");
         telemetry.addData("Target AprilTag ID", TARGET_TAG_ID);
