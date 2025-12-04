@@ -18,10 +18,15 @@ public class RyanAutonStrategy {
     the line below i'm not sure about... help
     (the public static one, shouldn't use wildbots2025 but...
     idk what the autonomousmecanumrobot is)
+    
+    Cox - This looks like a good starter for the Ryan auton.  You have to Robot, Telemetry and the opMode~
+    Basically the important thing here is that you need to have access to everything you're possibly going to 
+    want to use in the Autonomous action.
      */
     public static IAutonStrategy BasicAutonomous(RyanRobot robot, Telemetry telemetry, LinearOpMode opMode) {
         return () -> {
-
+            // TODO: set up the State Machine iteration here~  
+            // Keep track of the `current` IState, and update it in the while loop.
         };
     }
 
@@ -41,8 +46,10 @@ public class RyanAutonStrategy {
                 telemetry.addLine("I don't see Purple yet...");
                 telemetry.update();
                 // turn right a bit..
+                // TODO: I did give the silliest way possible to do this as an example ;) lol
                 robot.getAutonomousRobot().driveTrain.turnRight();
                 ThreadExtensions.TrySleep(50);
+                // TODO:  you might also need to tell the drivetrain to STOP before it tries to do more vision processing.
                 return lookForPurple(robot, telemetry);
             }
 
