@@ -51,8 +51,10 @@ public class FranklinStateAutonStrategy {
             robot.getAutonomousRobot().driveTrain.stop();
             return driveToTag(robot, targetTagId); // Found the target tag!
         }
+
         robot.getAutonomousRobot().driveTrain.turnRight();
         ThreadExtensions.TrySleep(100);
+        // We need to stop the robot here~  That's why its spinning constantly
         return searchForTag(robot, 24);
         };
     }
