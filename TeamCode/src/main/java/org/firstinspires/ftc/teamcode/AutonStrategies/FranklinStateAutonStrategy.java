@@ -94,6 +94,7 @@ public class FranklinStateAutonStrategy {
     }
     public static IState shoot(FranklinRobot robot) {
 
+        // Instead of a Done thing, the way to tell that we are finished is to return `null`
         return done(robot);
     }
     public static IState done(FranklinRobot robot) {
