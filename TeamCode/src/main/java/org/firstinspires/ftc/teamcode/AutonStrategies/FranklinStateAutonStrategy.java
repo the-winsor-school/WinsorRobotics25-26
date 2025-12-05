@@ -34,54 +34,79 @@ public class FranklinStateAutonStrategy {
 
     }
 
+    /**
+     * TODO:  Add telemetry to /all/ of these states ;-;  Telemetry is SUPER important for debugging~
+     */
     public static IState goForwardFor(long duration, FranklinRobot robot) {
-        return() -> {
+        return() -> 
+        {
+            // TODO:  The `driveForward()` method here should probably get a "speed" parameter~
             robot.getAutonomousRobot().driveTrain.driveForward();
             ThreadExtensions.TrySleep(duration);
             return searchForTag(robot, 24);
         };
     }
+
+
     public static IState searchForTag(FranklinRobot robot, int targetTagId) {
         return() -> {
         AprilTagDetection targetTag = findTagById(robot, targetTagId);
 
-        if (targetTag != null) {
+        if (targetTag != null) 
+        {
+            // TODO:  Question:  Why are we continuing to turn right after finding the tag?
             robot.getAutonomousRobot().driveTrain.turnRight();
             ThreadExtensions.TrySleep(175);
             robot.getAutonomousRobot().driveTrain.stop();
             return driveToTag(robot, targetTagId); // Found the target tag!
         }
 
+
+        // TODO:  Another thing that might be helpful is to modify the "turnRight()" method on the driveTrain
+        //        It would be helpful to be able to give it a desired "speed" so you can slow this turning down~
         robot.getAutonomousRobot().driveTrain.turnRight();
         ThreadExtensions.TrySleep(100);
         // We need to stop the robot here~  That's why its spinning constantly
         return searchForTag(robot, 24);
         };
     }
+
+    /**
+     * Don't forget to JavaDoc comment your methods~ >_<
+     */
     public static IState driveToTag(FranklinRobot robot, int tagId) {
         AprilTagDetection targetTag = findTagById(robot, tagId);
 
-        if (targetTag.ftcPose != null) {
+        if (targetTag.ftcPose != null) 
+        {
+            // TODO:  talk with Susan and Eleanor about updating this part~
             double range = targetTag.ftcPose.range; // Distance to tag (inches)
             double bearing = targetTag.ftcPose.bearing; // Angle to tag (degrees)
             final double TARGET_DISTANCE = 36.0;
             final double BEARING_TOLERANCE = 60.0; // degrees
             final double DISTANCE_TOLERANCE = 10.0; // inches
 
-            if (Math.abs(range - TARGET_DISTANCE) > DISTANCE_TOLERANCE) {
-                if (range > TARGET_DISTANCE) {
+            // TODO:  We've done a lot of untangling code, but these tripply-nested If Statements are still painful ;)
+            //        We can talk about how to dis-entangle this by "Inverting the IF statements"
+            if (Math.abs(range - TARGET_DISTANCE) > DISTANCE_TOLERANCE) 
+            {
+                if (range > TARGET_DISTANCE) 
+                {
                     robot.getAutonomousRobot().driveTrain.driveForward();
                     ThreadExtensions.TrySleep(100);
                     robot.getAutonomousRobot().driveTrain.stop();
                     ThreadExtensions.TrySleep(50);
-                } else {
+                } 
+                else 
+                {
                     robot.getAutonomousRobot().driveTrain.driveBackward();
                     ThreadExtensions.TrySleep(100);
                     robot.getAutonomousRobot().driveTrain.stop();
                     ThreadExtensions.TrySleep(50);
                 }
             }
-            else {
+            else 
+            {
                 // We're at the right distance - final alignment
                 return shoot(robot);
             }
@@ -92,15 +117,27 @@ public class FranklinStateAutonStrategy {
         ThreadExtensions.TrySleep(100);
         return driveToTag(robot,tagId);
     }
-    public static IState shoot(FranklinRobot robot) {
+
+
+    public static IState shoot(FranklinRobot robot) 
+    {
+        // TODO:  shoot things?
 
         // Instead of a Done thing, the way to tell that we are finished is to return `null`
         return done(robot);
     }
+
+    /**
+     * this method does not need to exist~
+     */
     public static IState done(FranklinRobot robot) {
 
         return done(robot);
     }
+
+    /**
+     * TODO: This is a great helper method ;) fix this comment to explain what it does~
+     */
     private static AprilTagDetection findTagById(FranklinRobot robot, int targetTagId) {
         for (AprilTagDetection detection : robot.aprilTagProcessor.getDetections()) {
             if (detection.id == targetTagId) {

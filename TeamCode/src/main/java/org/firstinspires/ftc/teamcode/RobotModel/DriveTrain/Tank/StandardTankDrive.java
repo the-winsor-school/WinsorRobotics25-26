@@ -11,6 +11,10 @@ import org.firstinspires.ftc.teamcode.RobotModel.DriveTrain.DriveTrain;
 
 public class StandardTankDrive extends DriveTrain
 {
+    /**
+     * TODO:  Make Parameterized overloads for the moving methods that have a "speed" parameter.
+     * i.e. driveForward(double speed), driveBackward(double speed)
+     */
     public class AutonomousTankDrive extends AutonomousDriving
     {
         //make it move for a set amount of time/distance using millis and trysleep.
