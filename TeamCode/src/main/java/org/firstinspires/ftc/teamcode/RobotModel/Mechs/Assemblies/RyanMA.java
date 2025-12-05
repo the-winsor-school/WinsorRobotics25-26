@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Extensions.GamepadExtensions;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.BallDetectionComponent;
+import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.RyanDoubleShooter;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.RyanIntake;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.SpinnyIntake;
 
@@ -24,6 +25,17 @@ public class RyanMA extends MechAssembly {
         stopper = new SpinnyIntake(hardwareMap, "stopper",
                 (motor, gamepad) ->{
                    motor.setPower(GamepadExtensions.GetLeftStickY(gamepad));
+                });
+        RyanDoubleShooter ryandoubleshooter = new RyanDoubleShooter(hardwareMap, "doubleshooterleft", "doubleshooterright",
+                (left,right,gamepad)->{
+                    if (gamepad.b) {
+                        left.setPower(1);
+                        right.setPower(1);
+                    }
+                    else{
+                        left.setPower(0);
+                        right.setPower(0);
+                    }
                 });
         auton = new AutonomousRyanMA(ryanintake.getAutonomousBehaviors());
         balldetector = new BallDetectionComponent(hardwareMap, "Webcam 1",
