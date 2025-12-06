@@ -36,7 +36,7 @@ public class RyanDoubleShooter extends MechComponent{
     }
     private final AutonomousDoubleShooterBehavior auton = new AutonomousDoubleShooterBehavior();
     @Override
-    void move(Gamepad gamepad) {
+    public void move(Gamepad gamepad) {
         kapow.doubleshoot(doubleshooterleft, doubleshooterright, gamepad);
     }
 
@@ -52,7 +52,7 @@ public class RyanDoubleShooter extends MechComponent{
     private final DcMotor doubleshooterleft;
     private final DcMotor doubleshooterright;
 
-    protected DoubleShooterControlStrategy kapow;
+    private DoubleShooterControlStrategy kapow;
 
 
 
