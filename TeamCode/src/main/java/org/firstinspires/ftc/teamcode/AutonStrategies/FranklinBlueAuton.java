@@ -6,19 +6,10 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Extensions.IState;
 import org.firstinspires.ftc.teamcode.Extensions.ThreadExtensions;
 import org.firstinspires.ftc.teamcode.RobotModel.Robots.FranklinRobot;
-import org.firstinspires.ftc.teamcode.RobotModel.Robots.Robot;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
-public class FranklinStateAutonStrategy {
-
-    /**
-     * Ok, so like... one problem here is that we need a way to know if a State is "Completed"
-     * meaning it's the END of the process.
-     * It is ... inelegant... but allowing the "execute" method to return `null` will
-     * solve that problem
-     */
-
-    public static IAutonStrategy ShootAtRed(FranklinRobot robot, Telemetry telemetry, LinearOpMode opMode) {
+public class FranklinBlueAuton {
+    public static IAutonStrategy ShootAtBlue(FranklinRobot robot, Telemetry telemetry, LinearOpMode opMode) {
         return () ->
         {
             IState currentState = goForwardFor(2500,robot, telemetry);
@@ -38,38 +29,38 @@ public class FranklinStateAutonStrategy {
      * TODO:  Add telemetry to /all/ of these states ;-;  Telemetry is SUPER important for debugging~
      */
     public static IState goForwardFor(long duration, FranklinRobot robot, Telemetry telemetry) {
-        return() -> 
+        return() ->
         {
             // TODO:  The `driveForward()` method here should probably get a "speed" parameter~
             robot.getAutonomousRobot().driveTrain.driveForward();
             ThreadExtensions.TrySleep(duration);
-            return searchForTag(robot, 24, telemetry);
+            return searchForTag(robot, 23, telemetry);
         };
     }
 
 
     public static IState searchForTag(FranklinRobot robot, int targetTagId, Telemetry telemetry) {
         return() -> {
-        AprilTagDetection targetTag = findTagById(robot, targetTagId);
+            AprilTagDetection targetTag = findTagById(robot, targetTagId);
 
-        if (targetTag != null) 
-        {
-            // TODO:  Question:  Why are we continuing to turn right after finding the tag? Franlin likes it better that way
-            robot.getAutonomousRobot().driveTrain.turnRight();
-            ThreadExtensions.TrySleep(175);
+            if (targetTag != null)
+            {
+                // TODO:  Question:  Why are we continuing to turn right after finding the tag?
+                robot.getAutonomousRobot().driveTrain.turnLeft();
+                ThreadExtensions.TrySleep(175);
+                robot.getAutonomousRobot().driveTrain.stop();
+                return driveToTag(robot, targetTagId, telemetry); // Found the target tag!
+            }
+
+
+            // TODO:  Another thing that might be helpful is to modify the "turnRight()" method on the driveTrain
+            //        It would be helpful to be able to give it a desired "speed" so you can slow this turning down~
+            robot.getAutonomousRobot().driveTrain.turnLefter(0.3F);
+            ThreadExtensions.TrySleep(100);
             robot.getAutonomousRobot().driveTrain.stop();
-            return driveToTag(robot, targetTagId, telemetry); // Found the target tag!
-        }
-
-
-        // TODO:  Another thing that might be helpful is to modify the "turnRight()" method on the driveTrain
-        //        It would be helpful to be able to give it a desired "speed" so you can slow this turning down~
-        robot.getAutonomousRobot().driveTrain.turnRighter(0.3F);
-        ThreadExtensions.TrySleep(100);
-        robot.getAutonomousRobot().driveTrain.stop();
-        ThreadExtensions.TrySleep(50);
-        // We need to stop the robot here~  That's why its spinning constantly
-        return searchForTag(robot, 24, telemetry);
+            ThreadExtensions.TrySleep(50);
+            // We need to stop the robot here~  That's why its spinning constantly
+            return searchForTag(robot, 23, telemetry);
         };
     }
 
@@ -79,7 +70,7 @@ public class FranklinStateAutonStrategy {
     public static IState driveToTag(FranklinRobot robot, int tagId, Telemetry telemetry) {
         AprilTagDetection targetTag = findTagById(robot, tagId);
 
-        if (targetTag.ftcPose != null) 
+        if (targetTag.ftcPose != null)
         {
             // TODO:  talk with Susan and Eleanor about updating this part~
             double range = targetTag.ftcPose.range; // Distance to tag (inches)
@@ -90,16 +81,16 @@ public class FranklinStateAutonStrategy {
 
             // TODO:  We've done a lot of untangling code, but these tripply-nested If Statements are still painful ;)
             //        We can talk about how to dis-entangle this by "Inverting the IF statements"
-            if (Math.abs(range - TARGET_DISTANCE) > DISTANCE_TOLERANCE) 
+            if (Math.abs(range - TARGET_DISTANCE) > DISTANCE_TOLERANCE)
             {
-                if (range > TARGET_DISTANCE) 
+                if (range > TARGET_DISTANCE)
                 {
                     robot.getAutonomousRobot().driveTrain.driveForward();
                     ThreadExtensions.TrySleep(100);
                     robot.getAutonomousRobot().driveTrain.stop();
                     ThreadExtensions.TrySleep(50);
-                } 
-                else 
+                }
+                else
                 {
                     robot.getAutonomousRobot().driveTrain.driveBackward();
                     ThreadExtensions.TrySleep(100);
@@ -107,13 +98,13 @@ public class FranklinStateAutonStrategy {
                     ThreadExtensions.TrySleep(50);
                 }
             }
-            else 
+            else
             {
                 // We're at the right distance - final alignment
                 return shoot(robot, telemetry);
             }
         }
-            ThreadExtensions.TrySleep(100);
+        ThreadExtensions.TrySleep(100);
 
         robot.getAutonomousRobot().driveTrain.stop();
         ThreadExtensions.TrySleep(100);
@@ -169,4 +160,3 @@ public class FranklinStateAutonStrategy {
         return null; // Target tag not found
     }
 }
-
