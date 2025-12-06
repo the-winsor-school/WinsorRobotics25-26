@@ -47,7 +47,7 @@ public class FranklinBlueAuton {
             {
                 // TODO:  Question:  Why are we continuing to turn right after finding the tag?
                 robot.getAutonomousRobot().driveTrain.turnLeft();
-                ThreadExtensions.TrySleep(175);
+                ThreadExtensions.TrySleep(375);
                 robot.getAutonomousRobot().driveTrain.stop();
                 return driveToTag(robot, targetTagId, telemetry); // Found the target tag!
             }
@@ -58,7 +58,7 @@ public class FranklinBlueAuton {
             robot.getAutonomousRobot().driveTrain.turnLefter(0.3F);
             ThreadExtensions.TrySleep(100);
             robot.getAutonomousRobot().driveTrain.stop();
-            ThreadExtensions.TrySleep(50);
+            ThreadExtensions.TrySleep(10);
             // We need to stop the robot here~  That's why its spinning constantly
             return searchForTag(robot, 23, telemetry);
         };
@@ -70,7 +70,7 @@ public class FranklinBlueAuton {
     public static IState driveToTag(FranklinRobot robot, int tagId, Telemetry telemetry) {
         AprilTagDetection targetTag = findTagById(robot, tagId);
 
-        if (targetTag.ftcPose != null)
+        if (targetTag != null && targetTag.ftcPose != null)
         {
             // TODO:  talk with Susan and Eleanor about updating this part~
             double range = targetTag.ftcPose.range; // Distance to tag (inches)

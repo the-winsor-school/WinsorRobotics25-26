@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.AutonStrategies.IAutonStrategy;
 import org.firstinspires.ftc.teamcode.RobotModel.Robots.FranklinRobot;
 
 
-@Autonomous(name = "Franklin Target Tag 24")
+@Autonomous(name = "Franklin Target Tag 23")
 public class FranklinAuton2 extends LinearOpMode {
     private FranklinRobot robot;
     private IAutonStrategy autonStrategy;
