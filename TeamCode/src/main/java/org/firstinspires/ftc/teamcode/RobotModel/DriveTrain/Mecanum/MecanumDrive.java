@@ -75,6 +75,7 @@ public class MecanumDrive extends DriveTrain
             LF.setPower(lf);
             LB.setPower(lb);
         }
+
         public void spin(TurnDirection direction)
         {
             double dir = direction==TurnDirection.RIGHT? 1:-1;

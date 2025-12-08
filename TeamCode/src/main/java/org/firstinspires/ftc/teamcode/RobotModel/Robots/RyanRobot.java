@@ -33,8 +33,8 @@ public class RyanRobot extends Robot {
 
 
     private final AprilTagProcessor aprilTagProcessor;
-    private final ColorBlobLocatorProcessor purpleBallProcessor;
-    private final ColorBlobLocatorProcessor greenBallProcessor;
+    public final ColorBlobLocatorProcessor purpleBallProcessor;
+    public final ColorBlobLocatorProcessor greenBallProcessor;
 
     private final AutonomousRyanRobot auton;
 

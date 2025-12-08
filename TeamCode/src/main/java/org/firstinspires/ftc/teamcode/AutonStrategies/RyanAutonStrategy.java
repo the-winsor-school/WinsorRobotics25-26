@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Extensions.ThreadExtensions;
 import org.firstinspires.ftc.teamcode.Extensions.IState;
+import org.firstinspires.ftc.teamcode.Extensions.TurnDirection;
 import org.firstinspires.ftc.teamcode.R;
 import org.firstinspires.ftc.teamcode.RobotModel.Robots.Robot;
 import org.firstinspires.ftc.teamcode.RobotModel.Robots.RyanRobot;
@@ -47,7 +48,7 @@ public class RyanAutonStrategy {
                 telemetry.update();
                 // turn right a bit..
                 // TODO: I did give the silliest way possible to do this as an example ;) lol
-                robot.getAutonomousRobot().driveTrain.turnRight();
+                robot.getAutonomousRobot().driveTrain.spin(TurnDirection.RIGHT);
                 ThreadExtensions.TrySleep(50);
                 // TODO:  you might also need to tell the drivetrain to STOP before it tries to do more vision processing.
                 return lookForPurple(robot, telemetry);
@@ -104,7 +105,7 @@ public class RyanAutonStrategy {
             // otherwise, keep driving forward.
             telemetry.addLine("OHH LAWD HE COMMIN'");
             telemetry.update();
-            robot.getAutonomousRobot().driveTrain.driveForward();
+            robot.getAutonomousRobot().driveTrain.drive(1,1 ,0);
             ThreadExtensions.TrySleep(50);
 
             return driveTowardPurple(robot, telemetry);
@@ -139,7 +140,7 @@ public class RyanAutonStrategy {
                 telemetry.addLine("I don't see GREEN yet...");
                 telemetry.update();
                 // turn right a bit..
-                robot.getAutonomousRobot().driveTrain.turnLeft();
+                robot.getAutonomousRobot().driveTrain.spin(TurnDirection.LEFT);
                 ThreadExtensions.TrySleep(50);
                 return lookForGreen(robot, telemetry);
             }
@@ -195,7 +196,7 @@ public class RyanAutonStrategy {
             // otherwise, keep driving forward.
             telemetry.addLine("OHH LAWD HE COMMIN'");
             telemetry.update();
-            robot.getAutonomousRobot().driveTrain.driveForward();
+            robot.getAutonomousRobot().driveTrain.drive(1,1, 0);
             ThreadExtensions.TrySleep(50);
 
             return driveTowardGreen(robot, telemetry);
@@ -209,7 +210,7 @@ public class RyanAutonStrategy {
             telemetry.addLine("Current State: WOOOOO");
             telemetry.update();
 
-            robot.getAutonomousRobot().driveTrain.turnRight();
+            robot.getAutonomousRobot().driveTrain.spin(TurnDirection.RIGHT);
             ThreadExtensions.TrySleep(5000);
             return lookForGreen(robot, telemetry);
         };
@@ -221,7 +222,7 @@ public class RyanAutonStrategy {
             telemetry.addLine("Current State: WOOOOO");
             telemetry.update();
 
-            robot.getAutonomousRobot().driveTrain.turnLeft();
+            robot.getAutonomousRobot().driveTrain.spin(TurnDirection.LEFT);
             ThreadExtensions.TrySleep(5000);
             return null;
         };
