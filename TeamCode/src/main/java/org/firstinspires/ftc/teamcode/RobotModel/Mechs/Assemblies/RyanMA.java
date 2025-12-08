@@ -7,14 +7,15 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Extensions.GamepadExtensions;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.BallDetectionComponent;
+import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.RyanDoubleShooter;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.RyanIntake;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.SpinnyIntake;
 
 public class RyanMA extends MechAssembly {
-
     private final RyanIntake ryanintake;
     private final SpinnyIntake stopper;
-    private final BallDetectionComponent balldetector;
+    //private final BallDetectionComponent balldetector;
+    private final RyanDoubleShooter ryandoubleshooter;
     public RyanMA(HardwareMap hardwareMap) {
         // gotta declare this variable~
         ryanintake = new RyanIntake(hardwareMap, "ryanmotor",
@@ -25,9 +26,21 @@ public class RyanMA extends MechAssembly {
                 (motor, gamepad) ->{
                    motor.setPower(GamepadExtensions.GetLeftStickY(gamepad));
                 });
+        ryandoubleshooter = new RyanDoubleShooter(hardwareMap,
+                "doubleshooterleft", "doubleshooterright",
+                (left,right,gamepad)->{
+                    if (gamepad.b) {
+                        left.setPower(-1);
+                        right.setPower(-1);
+                    }
+                    else{
+                        left.setPower(0);
+                        right.setPower(0);
+                    }
+                });
         auton = new AutonomousRyanMA(ryanintake.getAutonomousBehaviors());
-        balldetector = new BallDetectionComponent(hardwareMap, "Webcam 1",
-                (purpleProcessor, greenProcessor, gamepad) -> {});
+        //balldetector = new BallDetectionComponent(hardwareMap, "Webcam 1",
+        //        (purpleProcessor, greenProcessor, gamepad) -> {});
     }
 
     public class AutonomousRyanMA extends AutonomousMechBehaviors
@@ -55,10 +68,11 @@ public class RyanMA extends MechAssembly {
         // So you should invoke ryanintake.move(...) here~
         ryanintake.move(gamepad);
         stopper.move(gamepad);
+        ryandoubleshooter.move(gamepad);
     }
 
     @Override
     public void updateTelemetry(Telemetry telemetry) {
-        balldetector.update(telemetry);
+        //balldetector.update(telemetry);
     }
 }

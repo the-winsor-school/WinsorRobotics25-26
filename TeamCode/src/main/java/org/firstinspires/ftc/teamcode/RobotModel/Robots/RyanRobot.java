@@ -46,9 +46,9 @@ public class RyanRobot extends Robot {
     public RyanRobot(HardwareMap hardwareMap){
         driveTrain = new MecanumDrive(hardwareMap,
                 new MecanumDrive.OrientationConfiguration(
+                        DcMotorSimple.Direction.FORWARD,
                         DcMotorSimple.Direction.REVERSE,
-                        DcMotorSimple.Direction.FORWARD,
-                        DcMotorSimple.Direction.FORWARD,
+                        DcMotorSimple.Direction.REVERSE,
                         DcMotorSimple.Direction.REVERSE
                 ));
         mechAssembly = new RyanMA(hardwareMap);
