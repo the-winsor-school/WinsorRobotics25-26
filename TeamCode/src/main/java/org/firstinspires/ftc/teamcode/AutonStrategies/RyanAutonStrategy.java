@@ -14,6 +14,8 @@ import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor;
 
 import java.util.List;
 
+//TODO: SOMEONE PLEASE MAKE A SHOOTER METHOD IDK HOW THE SHOOTER WORKS FOR RYAN ROBOT PLEASE
+
 public class RyanAutonStrategy {
     /*
     the line below i'm not sure about... help
@@ -24,10 +26,27 @@ public class RyanAutonStrategy {
     Basically the important thing here is that you need to have access to everything you're possibly going to 
     want to use in the Autonomous action.
      */
-    public static IAutonStrategy BasicAutonomous(RyanRobot robot, Telemetry telemetry, LinearOpMode opMode) {
+    public static IAutonStrategy Green(RyanRobot robot, Telemetry telemetry, LinearOpMode opMode) {
         return () -> {
-            // TODO: set up the State Machine iteration here~  
-            // Keep track of the `current` IState, and update it in the while loop.
+            IState currentState = lookForGreen(robot, telemetry);
+
+            while (opMode.opModeIsActive() && currentState != null )
+            {
+                currentState = currentState.execute();
+                opMode.idle();
+            }
+        };
+    }
+
+    public static IAutonStrategy Purple(RyanRobot robot, Telemetry telemetry, LinearOpMode opMode) {
+        return () -> {
+            IState currentState = lookForPurple(robot, telemetry);
+
+            while (opMode.opModeIsActive() && currentState != null )
+            {
+                currentState = currentState.execute();
+                opMode.idle();;
+            }
         };
     }
 
