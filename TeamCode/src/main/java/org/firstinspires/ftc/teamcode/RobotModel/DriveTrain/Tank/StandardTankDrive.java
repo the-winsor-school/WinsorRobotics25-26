@@ -24,10 +24,19 @@ public class StandardTankDrive extends DriveTrain
             left.setPower(0.4);
             right.setPower(0.4);
         }
+        public void driveForward(float power) {
+            left.setPower(power);
+            right.setPower(power);
+        }
         public void driveBackward() {
             left.setPower(-0.4);
             right.setPower(-0.4);
         }
+        public void driveBackward(float power) {
+            left.setPower(-power);
+            right.setPower(-power);
+        }
+
         public void stop() {
             left.setPower(0);
             right.setPower(0);
@@ -36,11 +45,11 @@ public class StandardTankDrive extends DriveTrain
             left.setPower(-0.5);
             right.setPower(0.5);
         }
-        public void turnLefter(float x) {
+        public void turnLeft(float x) {
             left.setPower(-x);
             right.setPower(x);
         }
-        public void turnRighter(float x) {
+        public void turnRight(float x) {
             left.setPower(x);
             right.setPower(-x);
         }

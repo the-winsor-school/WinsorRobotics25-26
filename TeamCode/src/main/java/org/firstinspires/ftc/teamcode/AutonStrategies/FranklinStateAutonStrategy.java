@@ -6,7 +6,6 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Extensions.IState;
 import org.firstinspires.ftc.teamcode.Extensions.ThreadExtensions;
 import org.firstinspires.ftc.teamcode.RobotModel.Robots.FranklinRobot;
-import org.firstinspires.ftc.teamcode.RobotModel.Robots.Robot;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 public class FranklinStateAutonStrategy {
@@ -64,7 +63,7 @@ public class FranklinStateAutonStrategy {
 
         // TODO:  Another thing that might be helpful is to modify the "turnRight()" method on the driveTrain
         //        It would be helpful to be able to give it a desired "speed" so you can slow this turning down~
-        robot.getAutonomousRobot().driveTrain.turnRighter(0.3F);
+        robot.getAutonomousRobot().driveTrain.turnRight(0.3F);
         ThreadExtensions.TrySleep(100);
         robot.getAutonomousRobot().driveTrain.stop();
         ThreadExtensions.TrySleep(50);
