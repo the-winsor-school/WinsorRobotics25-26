@@ -48,7 +48,8 @@ public class FranklinStateAutonStrategy {
 
             telemetry.addLine("Forward drive complete - starting tag search");
             telemetry.update();
-
+            robot.getAutonomousRobot().driveTrain.stop();
+            ThreadExtensions.TrySleep(200);
             return searchForTag(robot, 24, telemetry);
         };
     }
