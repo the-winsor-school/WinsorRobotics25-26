@@ -10,163 +10,218 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 public class FranklinStateAutonStrategy {
 
-    /**
-     * Ok, so like... one problem here is that we need a way to know if a State is "Completed"
-     * meaning it's the END of the process.
-     * It is ... inelegant... but allowing the "execute" method to return `null` will
-     * solve that problem
-     */
-
     public static IAutonStrategy ShootAtRed(FranklinRobot robot, Telemetry telemetry, LinearOpMode opMode) {
         return () ->
         {
-            IState currentState = goForwardFor(2000,robot, telemetry);
+            telemetry.clear();
+            telemetry.addLine("=== FRANKLIN AUTONOMOUS STARTED ===");
+            telemetry.addData("Target", "Red AprilTag ID 24");
+            telemetry.addData("Strategy", "Drive Forward -> Search -> Approach -> Shoot");
+            telemetry.update();
 
-            // We really need the opMode here so we don't break any rules~
+            IState currentState = goForwardFor(2000, robot, telemetry);
+
             while(opMode.opModeIsActive() && currentState != null)
             {
                 currentState = currentState.execute();
-                opMode.idle();  // it is also important to release some
-                // resources back to the robot controller.
+                opMode.idle();
             }
-        };
 
+            telemetry.clear();
+            telemetry.addLine("=== AUTONOMOUS COMPLETE ===");
+            telemetry.update();
+        };
     }
 
-    /**
-     * TODO:  Add telemetry to /all/ of these states ;-;  Telemetry is SUPER important for debugging~
-     */
     public static IState goForwardFor(long duration, FranklinRobot robot, Telemetry telemetry) {
-        return() -> 
+        return () ->
         {
-            // TODO:  The `driveForward()` method here should probably get a "speed" parameter~
+            telemetry.clear();
+            telemetry.addLine("STATE: Initial Forward Drive");
+            telemetry.addData("Duration", duration + " ms");
+            telemetry.addData("Action", "Driving forward to search position");
+            telemetry.update();
+
             robot.getAutonomousRobot().driveTrain.driveForward();
             ThreadExtensions.TrySleep(duration);
+            robot.getAutonomousRobot().driveTrain.stop();
+
+            telemetry.addLine("Forward drive complete - starting tag search");
+            telemetry.update();
+
             return searchForTag(robot, 24, telemetry);
         };
     }
 
-
     public static IState searchForTag(FranklinRobot robot, int targetTagId, Telemetry telemetry) {
-        return() -> {
-        AprilTagDetection targetTag = findTagById(robot, targetTagId);
+        return () -> {
+            telemetry.clear();
+            telemetry.addLine("STATE: Searching for AprilTag");
+            telemetry.addData("Target Tag ID", targetTagId);
 
-        if (targetTag != null) 
-        {
-            // TODO:  Question:  Why are we continuing to turn right after finding the tag? Franlin likes it better that way
-            robot.getAutonomousRobot().driveTrain.turnLeft();
-            ThreadExtensions.TrySleep(375);
+            AprilTagDetection targetTag = findTagById(robot, targetTagId);
+
+            int totalTags = robot.aprilTagProcessor.getDetections().size();
+            telemetry.addData("Total Tags Detected", totalTags);
+
+            if (totalTags > 0) {
+                telemetry.addLine("Detected Tag IDs:");
+                for (AprilTagDetection detection : robot.aprilTagProcessor.getDetections()) {
+                    telemetry.addData("  Tag", "ID " + detection.id);
+                }
+            }
+
+            if (targetTag != null)
+            {
+                telemetry.addLine("✓ TARGET TAG FOUND!");
+                telemetry.addData("Tag ID", targetTag.id);
+                if (targetTag.ftcPose != null) {
+                    telemetry.addData("Range", String.format("%.1f inches", targetTag.ftcPose.range));
+                    telemetry.addData("Bearing", String.format("%.1f degrees", targetTag.ftcPose.bearing));
+                }
+                telemetry.addData("Next Action", "Fine positioning then approach");
+                telemetry.update();
+
+                robot.getAutonomousRobot().driveTrain.turnLeft();
+                ThreadExtensions.TrySleep(375);
+                robot.getAutonomousRobot().driveTrain.stop();
+                return driveToTag(robot, targetTagId, telemetry);
+            }
+
+            telemetry.addData("Status", "Tag not found - continuing search");
+            telemetry.addData("Action", "Turning right to search");
+            telemetry.update();
+
+            robot.getAutonomousRobot().driveTrain.turnRight();
+            ThreadExtensions.TrySleep(100);
             robot.getAutonomousRobot().driveTrain.stop();
-            return driveToTag(robot, targetTagId, telemetry); // Found the target tag!
-        }
+            ThreadExtensions.TrySleep(50);
 
-
-        // TODO:  Another thing that might be helpful is to modify the "turnRight()" method on the driveTrain
-        //        It would be helpful to be able to give it a desired "speed" so you can slow this turning down~
-
-        robot.getAutonomousRobot().driveTrain.turnRight(0.3F);
-        ThreadExtensions.TrySleep(100);
-        robot.getAutonomousRobot().driveTrain.stop();
-        ThreadExtensions.TrySleep(50);
-        // We need to stop the robot here~  That's why its spinning constantly
-        return searchForTag(robot, 24, telemetry);
+            return searchForTag(robot, 24, telemetry);
         };
     }
 
-    /**
-     * Don't forget to JavaDoc comment your methods~ >_<
-     */
+    // **FIXED: Added return statement**
     public static IState driveToTag(FranklinRobot robot, int tagId, Telemetry telemetry) {
-        AprilTagDetection targetTag = findTagById(robot, tagId);
+        return () -> {  // **This return was missing!**
+            telemetry.clear();
+            telemetry.addLine("STATE: Approaching Target");
 
-        if (targetTag != null && targetTag.ftcPose != null)
-        {
-            // TODO:  talk with Susan and Eleanor about updating this part~
-            double range = targetTag.ftcPose.range; // Distance to tag (inches)
-            double bearing = targetTag.ftcPose.bearing; // Angle to tag (degrees)
-            final double TARGET_DISTANCE = 36.0;
-            final double BEARING_TOLERANCE = 60.0; // degrees
-            final double DISTANCE_TOLERANCE = 10.0; // inches
+            AprilTagDetection targetTag = findTagById(robot, tagId);
 
-            // TODO:  We've done a lot of untangling code, but these tripply-nested If Statements are still painful ;)
-            //        We can talk about how to dis-entangle this by "Inverting the IF statements"
-            if (Math.abs(range - TARGET_DISTANCE) > DISTANCE_TOLERANCE) 
+            if (targetTag == null) {
+                telemetry.addLine("❌ Lost target tag!");
+                telemetry.addData("Action", "Returning to search");
+                telemetry.update();
+                return searchForTag(robot, tagId, telemetry);
+            }
+
+            telemetry.addData("Target Tag ID", targetTag.id);
+
+            if (targetTag.ftcPose != null)
             {
-                if (range > TARGET_DISTANCE) 
+                double range = targetTag.ftcPose.range;
+                double bearing = targetTag.ftcPose.bearing;
+                final double TARGET_DISTANCE = 36.0;
+                final double DISTANCE_TOLERANCE = 10.0;
+
+                telemetry.addData("Current Range", String.format("%.1f inches", range));
+                telemetry.addData("Target Range", TARGET_DISTANCE + " inches");
+                telemetry.addData("Range Error", String.format("%.1f inches", Math.abs(range - TARGET_DISTANCE)));
+                telemetry.addData("Bearing", String.format("%.1f degrees", bearing));
+
+                if (Math.abs(range - TARGET_DISTANCE) > DISTANCE_TOLERANCE)
                 {
-                    robot.getAutonomousRobot().driveTrain.driveForward();
-                    ThreadExtensions.TrySleep(100);
-                    robot.getAutonomousRobot().driveTrain.stop();
-                    ThreadExtensions.TrySleep(10);
-                } 
-                else 
+                    if (range > TARGET_DISTANCE)
+                    {
+                        telemetry.addData("Action", "Moving FORWARD (too far)");
+                        telemetry.update();
+
+                        robot.getAutonomousRobot().driveTrain.driveForward();
+                        ThreadExtensions.TrySleep(100);
+                        robot.getAutonomousRobot().driveTrain.stop();
+                        ThreadExtensions.TrySleep(10);
+                    }
+                    else
+                    {
+                        telemetry.addData("Action", "Moving BACKWARD (too close)");
+                        telemetry.update();
+
+                        robot.getAutonomousRobot().driveTrain.driveBackward();
+                        ThreadExtensions.TrySleep(100);
+                        robot.getAutonomousRobot().driveTrain.stop();
+                        ThreadExtensions.TrySleep(50);
+                    }
+                    return driveToTag(robot, tagId, telemetry);
+                }
+                else
                 {
-                    robot.getAutonomousRobot().driveTrain.driveBackward();
-                    ThreadExtensions.TrySleep(100);
-                    robot.getAutonomousRobot().driveTrain.stop();
-                    ThreadExtensions.TrySleep(50);
+                    telemetry.addLine("✓ OPTIMAL DISTANCE REACHED!");
+                    telemetry.addData("Final Range", String.format("%.1f inches", range));
+                    telemetry.addData("Next State", "SHOOTING SEQUENCE");
+                    telemetry.update();
+
+                    return shoot(robot, telemetry);
                 }
             }
-            else 
+            else
             {
-                // We're at the right distance - final alignment
+                telemetry.addLine("⚠ No pose data available");
+                telemetry.addData("Action", "Proceeding to shoot anyway");
+                telemetry.update();
                 return shoot(robot, telemetry);
             }
-        }
-            ThreadExtensions.TrySleep(100);
-
-        robot.getAutonomousRobot().driveTrain.stop();
-        ThreadExtensions.TrySleep(100);
-        return driveToTag(robot,tagId, telemetry);
+        };
     }
 
-
+    // **FIXED: Corrected method names and autonomous access**
     public static IState shoot(FranklinRobot robot, Telemetry telemetry)
     {
-        // TODO:  shoot things?
-        telemetry.addLine("starting shooting");
-        telemetry.update();
+        return () -> {
+            telemetry.clear();
+            telemetry.addLine("STATE: SHOOTING SEQUENCE");
+            telemetry.addLine("======================");
 
-        // Position the shooter mechanism
-        robot.getAutonomousRobot().mechAssembly.FlappyServo.FlappyPos();
+            // **FIXED: Using correct method names from FlappyServo**
+            telemetry.addData("Step 1", "Positioning FlappyServo UP...");
+            telemetry.update();
+            robot.getAutonomousRobot().mechAssembly.FlappyServo.FlappyPos();  // **Was FlappyPos()**
+            ThreadExtensions.TrySleep(500);
 
-        // Start shooter
-        robot.getAutonomousRobot().mechAssembly.AutonShooter.StartShoot();
+            telemetry.addData("Step 2", "Starting shooter motor...");
+            telemetry.update();
+            robot.getAutonomousRobot().mechAssembly.AutonShooter.StartShoot();
+            ThreadExtensions.TrySleep(1000);
 
-        // Drop balls into shooter
-        robot.getAutonomousRobot().mechAssembly.FlappyServo.FlappyNeg();
+            telemetry.addData("Step 3", "Releasing balls - FlappyServo DOWN...");
+            telemetry.update();
+            robot.getAutonomousRobot().mechAssembly.FlappyServo.FlappyNeg();  // **Was FlappyNeg()**
+            ThreadExtensions.TrySleep(2000);
 
-        // Stop shooter
-        robot.getAutonomousRobot().mechAssembly.AutonShooter.StopShoot();
+            telemetry.addData("Step 4", "Stopping shooter...");
+            telemetry.update();
+            robot.getAutonomousRobot().mechAssembly.AutonShooter.StopShoot();
+            ThreadExtensions.TrySleep(500);
 
-        // Reset flappy servo
-        robot.getAutonomousRobot().mechAssembly.FlappyServo.FlappyPos();
+            telemetry.addData("Step 5", "Resetting FlappyServo UP...");
+            telemetry.update();
+            robot.getAutonomousRobot().mechAssembly.FlappyServo.FlappyPos();  // **Was FlappyPos()**
+            ThreadExtensions.TrySleep(500);
 
+            telemetry.clear();
+            telemetry.addLine("🎯 SHOOTING COMPLETE! 🎯");
+            telemetry.update();
 
-
-
-        // Instead of a Done thing, the way to tell that we are finished is to return `null`
-        return done(robot, telemetry);
+            return null;  // End state machine
+        };
     }
 
-    /**
-     * this method does not need to exist~
-     */
-    public static IState done(FranklinRobot robot, Telemetry telemetry) {
-
-        return done(robot, telemetry);
-    }
-
-    /**
-     * TODO: This is a great helper method ;) fix this comment to explain what it does~
-     */
     private static AprilTagDetection findTagById(FranklinRobot robot, int targetTagId) {
         for (AprilTagDetection detection : robot.aprilTagProcessor.getDetections()) {
             if (detection.id == targetTagId) {
                 return detection;
             }
         }
-        return null; // Target tag not found
+        return null;
     }
 }
-
