@@ -17,7 +17,7 @@ public class RyanAuton22 extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         robot = new RyanRobot(hardwareMap);
-        autonStrategy = RyanAutonStrategy.Green(
+        autonStrategy = RyanAutonStrategy.Purple(
                 robot,
                 telemetry,
                 this

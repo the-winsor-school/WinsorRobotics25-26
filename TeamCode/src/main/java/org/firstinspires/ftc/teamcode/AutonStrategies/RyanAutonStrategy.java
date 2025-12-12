@@ -26,7 +26,7 @@ public class RyanAutonStrategy {
     Basically the important thing here is that you need to have access to everything you're possibly going to 
     want to use in the Autonomous action.
      */
-    public static IAutonStrategy Green(RyanRobot robot, Telemetry telemetry, LinearOpMode opMode) {
+    public static IAutonStrategy GPP(RyanRobot robot, Telemetry telemetry, LinearOpMode opMode) {
         return () -> {
             IState currentState = lookForGreen(robot, telemetry);
 
@@ -246,4 +246,16 @@ public class RyanAutonStrategy {
             return null;
         };
     }
+
+    public static IState shoot(RyanRobot robot, Telemetry telemetry) {
+        return () ->
+        {
+            telemetry.clear();
+            telemetry.addLine("shooting ball");
+            telemetry.update();
+
+            robot.getAutonomousRobot().mechAssembly.autonomousDoubleShooter
+        }
+    }
+
 }

@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Extensions.GamepadExtensions;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.BallDetectionComponent;
+import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.MechComponent;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.RyanDoubleShooter;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.RyanIntake;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.SpinnyIntake;
@@ -38,9 +39,9 @@ public class RyanMA extends MechAssembly {
                         right.setPower(0);
                     }
                 });
-        auton = new AutonomousRyanMA(ryanintake.getAutonomousBehaviors());
-        //balldetector = new BallDetectionComponent(hardwareMap, "Webcam 1",
-        //        (purpleProcessor, greenProcessor, gamepad) -> {});
+        auton = new AutonomousRyanMA(ryanintake.getAutonomousBehaviors(),
+                ryandoubleshooter.getAutonomousBehaviors(),
+                stopper.getAutonomousBehaviors());
     }
 
     public class AutonomousRyanMA extends AutonomousMechBehaviors
@@ -48,10 +49,16 @@ public class RyanMA extends MechAssembly {
         // Here we need to have the Autonomous parts of each of the components,
         // so this is the place to have an AutonomousRyanIntake property
         public final RyanIntake.AutonomousRyanIntake autonomousRyanIntake;
+        public final SpinnyIntake.AutonomousIntakeBehaviors autonomousStopper;
+        public final RyanDoubleShooter.AutonomousDoubleShooterBehavior autonomousDoubleShooter;
 
         // we also have to have it initialized in the Constructor method~
-        public AutonomousRyanMA(RyanIntake.AutonomousRyanIntake autonomousRyanIntake) {
+        public AutonomousRyanMA(RyanIntake.AutonomousRyanIntake autonomousRyanIntake,
+                                RyanDoubleShooter.AutonomousDoubleShooterBehavior autonomousDoubleShooter,
+                                SpinnyIntake.AutonomousIntakeBehaviors autonomousStopper) {
             this.autonomousRyanIntake = autonomousRyanIntake;
+            this.autonomousDoubleShooter = autonomousDoubleShooter;
+            this.autonomousStopper = autonomousStopper;
         }
     }
 
