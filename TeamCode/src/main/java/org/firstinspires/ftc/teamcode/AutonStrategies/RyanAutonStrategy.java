@@ -127,7 +127,7 @@ public class RyanAutonStrategy {
             robot.getAutonomousRobot().driveTrain.drive(1,1 ,0);
             ThreadExtensions.TrySleep(50);
 
-            return driveTowardPurple(robot, telemetry);
+            return pickUp(robot, telemetry);
         };
     }
 
@@ -218,7 +218,7 @@ public class RyanAutonStrategy {
             robot.getAutonomousRobot().driveTrain.drive(1,1, 0);
             ThreadExtensions.TrySleep(50);
 
-            return driveTowardGreen(robot, telemetry);
+            return pickUp(robot, telemetry);
         };
     }
 
@@ -246,7 +246,31 @@ public class RyanAutonStrategy {
             return null;
         };
     }
+    public static IState pickUp(RyanRobot robot, Telemetry telemetry) {
+        return () ->
+        {
+            telemetry.clear();
+            telemetry.addLine("picking up ball");
+            telemetry.update();
 
+            robot.getAutonomousRobot().mechAssembly.autonomousRyanIntake.rigogo();
+            ThreadExtensions.TrySleep(1000);
+
+
+            return driveToTarget(robot, telemetry);
+        };
+    }
+    //TODO: PLEASE REWRITE THE APRIL TAG CODE
+    public static IState driveToTarget(RyanRobot robot, Telemetry telemetry) {
+        return () ->
+        {
+            telemetry.clear();
+            telemetry.addLine("going to target");
+            telemetry.update();
+
+            return shoot(robot, telemetry);
+        };
+    }
     public static IState shoot(RyanRobot robot, Telemetry telemetry) {
         return () ->
         {
@@ -254,8 +278,10 @@ public class RyanAutonStrategy {
             telemetry.addLine("shooting ball");
             telemetry.update();
 
-            robot.getAutonomousRobot().mechAssembly.autonomousDoubleShooter
-        }
+            robot.getAutonomousRobot().mechAssembly.autonomousDoubleShooter.DoubleShootersGo();
+            ThreadExtensions.TrySleep(1000);
+            return lookForGreen(robot, telemetry);
+        };
     }
 
 }
