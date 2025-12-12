@@ -164,6 +164,7 @@ public class FranklinStateAutonStrategy {
                     telemetry.addData("Next State", "SHOOTING SEQUENCE");
                     telemetry.update();
 
+                    robot.getAutonomousRobot().driveTrain.stop();
                     return shoot(robot, telemetry);
                 }
             }
