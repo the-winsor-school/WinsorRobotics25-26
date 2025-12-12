@@ -65,7 +65,7 @@ public class BACKUPForWhenFranklinRefusesToWork {
 
             // TODO:  Another thing that might be helpful is to modify the "turnRight()" method on the driveTrain
             //        It would be helpful to be able to give it a desired "speed" so you can slow this turning down~
-            robot.getAutonomousRobot().driveTrain.turnLefter(0.3F);
+            robot.getAutonomousRobot().driveTrain.turnLeft(0.3F);
             ThreadExtensions.TrySleep(100);
             robot.getAutonomousRobot().driveTrain.stop();
             ThreadExtensions.TrySleep(50);
