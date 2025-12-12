@@ -48,8 +48,6 @@ public class FranklinStateAutonStrategy {
 
             telemetry.addLine("Forward drive complete - starting tag search");
             telemetry.update();
-            robot.getAutonomousRobot().driveTrain.stop();
-            ThreadExtensions.TrySleep(200);
             return searchForTag(robot, 24, telemetry);
         };
     }
@@ -60,6 +58,8 @@ public class FranklinStateAutonStrategy {
             telemetry.addLine("STATE: Searching for AprilTag");
             telemetry.addData("Target Tag ID", targetTagId);
 
+            robot.getAutonomousRobot().driveTrain.stop();
+            ThreadExtensions.TrySleep(200);
             AprilTagDetection targetTag = findTagById(robot, targetTagId);
 
             int totalTags = robot.aprilTagProcessor.getDetections().size();
