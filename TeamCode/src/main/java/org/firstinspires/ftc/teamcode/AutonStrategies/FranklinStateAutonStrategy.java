@@ -83,8 +83,12 @@ public class FranklinStateAutonStrategy {
                 telemetry.addData("Next Action", "Fine positioning then approach");
                 telemetry.update();
 
+                ///  THIS IS THE BUG
+            /*
                 robot.getAutonomousRobot().driveTrain.turnLeft();
                 ThreadExtensions.TrySleep(375);
+                
+             */
                 robot.getAutonomousRobot().driveTrain.stop();
                 return driveToTag(robot, targetTagId, telemetry);
             }
