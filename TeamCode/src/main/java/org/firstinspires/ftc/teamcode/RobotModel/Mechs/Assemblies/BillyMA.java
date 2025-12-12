@@ -1,57 +1,75 @@
 package org.firstinspires.ftc.teamcode.RobotModel.Mechs.Assemblies;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.FlappyServo;
+import org.firstinspires.ftc.teamcode.Extensions.GamepadExtensions;
+import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.BallDetectionComponent;
+import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.MechComponent;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.Shooter;
+import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.SpinnyIntake;
+import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.SpinnyIntake;
 
+public class BillyMA extends MechAssembly {
+    private final SpinnyIntake intake;
 
-/**
- * TODO:  This is a good example of a thing that we need in this project
- *        An "EmptyMechAssembly" which just ensures that nothing throws
- *        a NullReferenceException when being accessed.  (currently this
- *        still does have a null in it....)  But, otherwise, this is the
- *        EmptyMechAssembly
- */
-public class BillyMA extends MechAssembly
-{
+    private final Shooter shooter;
     public BillyMA(HardwareMap hardwareMap) {
-
-        canon = new Shooter(hardwareMap, "BANGBANGBANG",
+        // gotta declare this variable~
+        intake = new SpinnyIntake(hardwareMap, "billymotor",
                 (motor, gamepad) -> {
-                    motor.setPower(gamepad.right_trigger*-1);
-                });;
-
-        auton = new AutonomousBillyMA(canon.getAutonomousBehaviors());
+                    motor.setPower(gamepad.right_trigger);
+                });
+        shooter = new Shooter(hardwareMap,
+                "doubleshooterleft", "doubleshooterright",
+                ( motor, gamepad )-> {
+                    if (gamepad.b) {
+                        left.setPower(-1);
+                        right.setPower(-1);
+                    }
+                    else{
+                        left.setPower(0);
+                        right.setPower(0);
+                    }
+                });
+        auton = new AutonomousRyanMA(intake.getAutonomousBehaviors(),
+                shooter.getAutonomousBehaviors());
     }
 
-    @Override
-    public <T extends AutonomousMechBehaviors> T getAutonomousBehaviors() {
-        return null;
-    }
+    public class AutonomousRyanMA extends AutonomousMechBehaviors
+    {
+        // Here we need to have the Autonomous parts of each of the components,
+        // so this is the place to have an AutonomousRyanIntake property
+        public final SpinnyIntake.AutonomousIntakeBehaviors autonIntake;
+        public final Shooter.AutonomousShooterBehavior autonShooter;
 
-
-    public class AutonomousBillyMA extends AutonomousMechBehaviors {
-
-        private final Shooter.AutonomousShooterBehavior AutonShooter;
-        public AutonomousBillyMA(Shooter.AutonomousShooterBehavior autonShooter) {
-            AutonShooter = autonShooter;
+        // we also have to have it initialized in the Constructor method~
+        public AutonomousRyanMA(SpinnyIntake.AutonomousIntakeBehaviors autonIntake,
+                                Shooter.AutonomousShooterBehavior autonShooter) {
+            this.autonIntake = autonIntake;
+            this.autonShooter = autonShooter;
         }
     }
 
-    private final BillyMA.AutonomousBillyMA auton;
+    private final AutonomousRyanMA auton;
 
-    private final Shooter canon;
+    @Override
+    public AutonomousRyanMA getAutonomousBehaviors() {
+        return auton;
+    }
 
     @Override
     public void giveInstructions(Gamepad gamepad) {
-
+        // our job here is to pass along instructions to each of the components of the Mech Assembly
+        // So you should invoke ryanintake.move(...) here~
+        intake.move(gamepad);
+        shooter.move(gamepad);
     }
 
     @Override
     public void updateTelemetry(Telemetry telemetry) {
-
+        //balldetector.update(telemetry);
     }
 }
