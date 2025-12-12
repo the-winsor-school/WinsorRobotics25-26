@@ -108,13 +108,15 @@ public class FranklinStateAutonStrategy {
             telemetry.clear();
             telemetry.addLine("STATE: Approaching Target");
 
+            robot.getAutonomousRobot().driveTrain.stop();
+            ThreadExtensions.TrySleep(100);
             AprilTagDetection targetTag = findTagById(robot, tagId);
 
             if (targetTag == null) {
                 telemetry.addLine("❌ Lost target tag!");
                 telemetry.addData("Action", "Returning to search");
                 telemetry.update();
-                return searchForTag(robot, tagId, telemetry);
+                return driveToTag(robot, tagId, telemetry);
             }
 
             telemetry.addData("Target Tag ID", targetTag.id);
