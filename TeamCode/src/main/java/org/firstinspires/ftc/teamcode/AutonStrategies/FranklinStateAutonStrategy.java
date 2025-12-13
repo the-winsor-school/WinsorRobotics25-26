@@ -120,7 +120,7 @@ public class FranklinStateAutonStrategy {
                 telemetry.addLine("❌ Lost target tag!");
                 telemetry.addData("Action", "Returning to search");
                 telemetry.update();
-                return driveToTag(robot, tagId, telemetry);
+                return searchForTag(robot, tagId, telemetry);
             }
 
             telemetry.addData("Target Tag ID", targetTag.id);
@@ -129,7 +129,7 @@ public class FranklinStateAutonStrategy {
             {
                 double range = targetTag.ftcPose.range;
                 double bearing = targetTag.ftcPose.bearing;
-                final double TARGET_DISTANCE = 36.0;
+                final double TARGET_DISTANCE = 50.0;
                 final double DISTANCE_TOLERANCE = 10.0;
 
                 telemetry.addData("Current Range", String.format("%.1f inches", range));
@@ -190,28 +190,24 @@ public class FranklinStateAutonStrategy {
             telemetry.addLine("STATE: SHOOTING SEQUENCE");
             telemetry.addLine("======================");
 
-            // **FIXED: Using correct method names from FlappyServo**
-            telemetry.addData("Step 1", "Positioning FlappyServo UP...");
-            telemetry.update();
-            robot.getAutonomousRobot().mechAssembly.FlappyServo.FlappyPos();  // **Was FlappyPos()**
-            ThreadExtensions.TrySleep(500);
 
-            telemetry.addData("Step 2", "Starting shooter motor...");
+            telemetry.addData("Step 1", "Starting shooter motor...");
             telemetry.update();
             robot.getAutonomousRobot().mechAssembly.AutonShooter.StartShoot();
+            robot.getAutonomousRobot().mechAssembly.AutonShooter.SetSpeed(-1);
             ThreadExtensions.TrySleep(1000);
 
-            telemetry.addData("Step 3", "Releasing balls - FlappyServo DOWN...");
+            telemetry.addData("Step 2", "Releasing balls - FlappyServo DOWN...");
             telemetry.update();
             robot.getAutonomousRobot().mechAssembly.FlappyServo.FlappyNeg();  // **Was FlappyNeg()**
             ThreadExtensions.TrySleep(2000);
 
-            telemetry.addData("Step 4", "Stopping shooter...");
+            telemetry.addData("Step 3", "Stopping shooter...");
             telemetry.update();
             robot.getAutonomousRobot().mechAssembly.AutonShooter.StopShoot();
             ThreadExtensions.TrySleep(500);
 
-            telemetry.addData("Step 5", "Resetting FlappyServo UP...");
+            telemetry.addData("Step 4", "Resetting FlappyServo UP...");
             telemetry.update();
             robot.getAutonomousRobot().mechAssembly.FlappyServo.FlappyPos();  // **Was FlappyPos()**
             ThreadExtensions.TrySleep(500);

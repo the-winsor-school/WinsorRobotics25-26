@@ -38,16 +38,15 @@ public class FranklinMA extends MechAssembly
         public final Shooter.AutonomousShooterBehavior AutonShooter;
         public final FlappyServo.AutonomousFlappyBehavior FlappyServo;
         public AutonomousFranklinMA(Shooter.AutonomousShooterBehavior autonShooter, FlappyServo.AutonomousFlappyBehavior flappyServo) {
-            AutonShooter = autonShooter;
-            FlappyServo = flappyServo;
+            this.AutonShooter = autonShooter;
+            this.FlappyServo = flappyServo;
         }
     }
 
     private final AutonomousFranklinMA auton;
     @Override
-    public <T extends AutonomousMechBehaviors> T getAutonomousBehaviors() {
-        return null;
-    }
+    public AutonomousFranklinMA getAutonomousBehaviors() { return auton; }
+
     private final FlappyServo intake;
     private final Shooter canon;
     @Override
@@ -59,5 +58,6 @@ public class FranklinMA extends MechAssembly
     @Override
     public void updateTelemetry(Telemetry telemetry) {
         intake.update(telemetry);
+        canon.update(telemetry);
     }
 }

@@ -22,6 +22,7 @@ public class Shooter extends MechComponent
         public void StartShoot(){
             shooter.setPower(0.40);
         }
+        public void SetSpeed(double speed) { shooter.setPower(speed); }
         public void StopShoot(){
             shooter.setPower(0);
         }
@@ -47,6 +48,6 @@ public class Shooter extends MechComponent
 
     @Override
     public void update(Telemetry telemetry) {
-
+        telemetry.addData("shooter power", shooter.getPower());
     }
 }
