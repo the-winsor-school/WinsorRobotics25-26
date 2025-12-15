@@ -19,7 +19,7 @@ public class FranklinStateAutonStrategy {
             telemetry.addData("Strategy", "Drive Forward -> Search -> Approach -> Shoot");
             telemetry.update();
 
-            IState currentState = goForwardFor(2000, robot, telemetry);
+            IState currentState = goForwardFor(3750, robot, telemetry);
 
             while(opMode.opModeIsActive() && currentState != null)
             {
@@ -89,6 +89,7 @@ public class FranklinStateAutonStrategy {
                 ThreadExtensions.TrySleep(375);
                 
              */
+
                 robot.getAutonomousRobot().driveTrain.stop();
                 return driveToTag(robot, targetTagId, telemetry);
             }
@@ -167,6 +168,8 @@ public class FranklinStateAutonStrategy {
                     telemetry.addData("Final Range", String.format("%.1f inches", range));
                     telemetry.addData("Next State", "SHOOTING SEQUENCE");
                     telemetry.update();
+                    robot.getAutonomousRobot().driveTrain.turnRight();
+                    ThreadExtensions.TrySleep(100);
 
                     robot.getAutonomousRobot().driveTrain.stop();
                     return shoot(robot, telemetry);
@@ -195,12 +198,13 @@ public class FranklinStateAutonStrategy {
             telemetry.update();
             robot.getAutonomousRobot().mechAssembly.AutonShooter.StartShoot();
             robot.getAutonomousRobot().mechAssembly.AutonShooter.SetSpeed(-1);
-            ThreadExtensions.TrySleep(1000);
+            ThreadExtensions.TrySleep(7000);
 
             telemetry.addData("Step 2", "Releasing balls - FlappyServo DOWN...");
             telemetry.update();
             robot.getAutonomousRobot().mechAssembly.FlappyServo.FlappyNeg();  // **Was FlappyNeg()**
-            ThreadExtensions.TrySleep(2000);
+            ThreadExtensions.TrySleep(7000);
+
 
             telemetry.addData("Step 3", "Stopping shooter...");
             telemetry.update();
