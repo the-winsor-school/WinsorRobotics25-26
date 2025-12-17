@@ -59,5 +59,6 @@ public class FranklinMA extends MechAssembly
     public void updateTelemetry(Telemetry telemetry) {
         intake.update(telemetry);
         canon.update(telemetry);
+
     }
 }
