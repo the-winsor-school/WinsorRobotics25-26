@@ -9,7 +9,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class FlappyServo extends MechComponent{
 
-    public  interface FlappyServoControlStrategy extends IControlStrategy {
+    public interface FlappyServoControlStrategy extends IControlStrategy {
         public void UCS (FlappyServo servo, Gamepad gamepad);
     }
 
