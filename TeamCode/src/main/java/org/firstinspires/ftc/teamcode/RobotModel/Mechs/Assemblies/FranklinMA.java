@@ -65,12 +65,12 @@ public class FranklinMA extends MechAssembly
     public void giveInstructions(Gamepad gamepad) {
         intake.move(gamepad);
         canon.move(gamepad);
+        newintake.move(gamepad);
     }
 
     @Override
     public void updateTelemetry(Telemetry telemetry) {
         intake.update(telemetry);
         canon.update(telemetry);
-
     }
 }
