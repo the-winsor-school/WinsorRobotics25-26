@@ -9,6 +9,10 @@ import org.firstinspires.ftc.teamcode.AutonStrategies.IAutonStrategy;
 import org.firstinspires.ftc.teamcode.RobotModel.Robots.FranklinRobot;
 
 
+
+/**
+ * TODO:  Is this RED or is this BLUE?
+ */
 @Autonomous(name = "Franklin Target Tag 23")
 public class FranklinAuton2 extends LinearOpMode {
     private FranklinRobot robot;

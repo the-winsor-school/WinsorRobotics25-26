@@ -11,6 +11,9 @@ import org.firstinspires.ftc.teamcode.RobotModel.Robots.FranklinRobot;
 import org.firstinspires.ftc.teamcode.RobotModel.Robots.Wildbots2025;
 
 
+/**
+ * TODO:  Is this RED or is this BLUE?
+ */
 @Autonomous(name = "Franklin Target Tag 24")
 public class FranklinAuton extends LinearOpMode {
     private FranklinRobot robot;
