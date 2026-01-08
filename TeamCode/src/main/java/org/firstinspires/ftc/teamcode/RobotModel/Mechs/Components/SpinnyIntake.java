@@ -53,7 +53,6 @@ public class SpinnyIntake extends MechComponent
     {
         super(strategy);
         intake = hardwareMap.get(DcMotor.class, motorName);
-        // pointer magic ... just be clear that THIS strategy is a SpinnyIntakeStrategy.
         this.strategy = (SpinnyIntakeControlStrategy) super.strategy;
     }
 

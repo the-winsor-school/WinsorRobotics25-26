@@ -1,75 +1,86 @@
 package org.firstinspires.ftc.teamcode.RobotModel.Mechs.Assemblies;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.Extensions.GamepadExtensions;
-import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.BallDetectionComponent;
-import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.MechComponent;
-import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.Shooter;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.SpinnyIntake;
-import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.SpinnyIntake;
+import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.PusherServo;
+import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.FlywheelMotor;
 
 public class BillyMA extends MechAssembly {
-    private final SpinnyIntake intake;
 
-    private final Shooter shooter;
+    private final SpinnyIntake intake;
+    private final PusherServo ballPusher;
+    private final FlywheelMotor flywheel;
+
     public BillyMA(HardwareMap hardwareMap) {
-        // gotta declare this variable~
-        intake = new SpinnyIntake(hardwareMap, "billymotor",
+        intake = new SpinnyIntake(hardwareMap, "intakeMotor",
                 (motor, gamepad) -> {
-                    motor.setPower(gamepad.right_trigger);
-                });
-        shooter = new Shooter(hardwareMap,
-                "doubleshooterleft", "doubleshooterright",
-                ( motor, gamepad )-> {
-                    if (gamepad.b) {
-                        left.setPower(-1);
-                        right.setPower(-1);
-                    }
-                    else{
-                        left.setPower(0);
-                        right.setPower(0);
+                    if (gamepad.a) {
+                        motor.setPower(1.0);  // Full speed intake
+                    } else {
+                        motor.setPower(0);
                     }
                 });
-        auton = new AutonomousRyanMA(intake.getAutonomousBehaviors(),
-                shooter.getAutonomousBehaviors());
+
+        ballPusher = new PusherServo(hardwareMap, "ballPusherServo",
+                (servo, gamepad) -> {
+                    if (gamepad.x) {
+                        servo.setPosition(0.22);  // Push position (~40 degrees from 0)
+                    } else {
+                        servo.setPosition(0.0);   // Rest position
+                    }
+                });
+
+        flywheel = new FlywheelMotor(hardwareMap, "flywheelMotor",
+                (motor, gamepad, isRunning) -> {
+                    // Toggle when Y button is pressed (not held)
+                    if (gamepad.y && !motor.wasYPressed()) {
+                        motor.toggleFlywheel();
+                    }
+                    motor.setYPressed(gamepad.y);
+                });
+
+        auton = new AutonomousBillyMA(
+                intake.getAutonomousBehaviors(),
+                ballPusher.getAutonomousBehaviors(),
+                flywheel.getAutonomousBehaviors()
+        );
     }
 
-    public class AutonomousRyanMA extends AutonomousMechBehaviors
-    {
-        // Here we need to have the Autonomous parts of each of the components,
-        // so this is the place to have an AutonomousRyanIntake property
+    public class AutonomousBillyMA extends AutonomousMechBehaviors {
         public final SpinnyIntake.AutonomousIntakeBehaviors autonIntake;
-        public final Shooter.AutonomousShooterBehavior autonShooter;
+        public final PusherServo.AutonomousBallPusherBehaviors autonBallPusher;
+        public final FlywheelMotor.AutonomousFlywheelBehaviors autonFlywheel;
 
-        // we also have to have it initialized in the Constructor method~
-        public AutonomousRyanMA(SpinnyIntake.AutonomousIntakeBehaviors autonIntake,
-                                Shooter.AutonomousShooterBehavior autonShooter) {
+        public AutonomousBillyMA(
+                SpinnyIntake.AutonomousIntakeBehaviors autonIntake,
+                PusherServo.AutonomousBallPusherBehaviors autonBallPusher,
+                FlywheelMotor.AutonomousFlywheelBehaviors autonFlywheel) {
             this.autonIntake = autonIntake;
-            this.autonShooter = autonShooter;
+            this.autonBallPusher = autonBallPusher;
+            this.autonFlywheel = autonFlywheel;
         }
     }
 
-    private final AutonomousRyanMA auton;
+    private final AutonomousBillyMA auton;
 
     @Override
-    public AutonomousRyanMA getAutonomousBehaviors() {
+    public AutonomousBillyMA getAutonomousBehaviors() {
         return auton;
     }
 
     @Override
     public void giveInstructions(Gamepad gamepad) {
-        // our job here is to pass along instructions to each of the components of the Mech Assembly
-        // So you should invoke ryanintake.move(...) here~
         intake.move(gamepad);
-        shooter.move(gamepad);
+        ballPusher.move(gamepad);
+        flywheel.move(gamepad);
     }
 
     @Override
     public void updateTelemetry(Telemetry telemetry) {
-        //balldetector.update(telemetry);
+        ballPusher.update(telemetry);
+        flywheel.update(telemetry);
     }
 }

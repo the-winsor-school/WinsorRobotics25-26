@@ -13,10 +13,14 @@ public class BillyTeleOp extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         robot = new BillyRobot(hardwareMap);
 
+        telemetry.addLine("Billy Initialized");
+        telemetry.update();
+
         waitForStart();
         while(opModeIsActive()){
             robot.update(gamepad1, gamepad2);
             robot.updateTelemetry(telemetry);
+            telemetry.update();
         }
     }
 
