@@ -4,15 +4,15 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.Shooter;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.SpinnyIntake;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.PusherServo;
-import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.FlywheelMotor;
 
 public class BillyMA extends MechAssembly {
 
     private final SpinnyIntake intake;
     private final PusherServo ballPusher;
-    private final FlywheelMotor flywheel;
+    private final Shooter flywheel;
 
     public BillyMA(HardwareMap hardwareMap) {
         intake = new SpinnyIntake(hardwareMap, "intakeMotor",
@@ -33,13 +33,12 @@ public class BillyMA extends MechAssembly {
                     }
                 });
 
-        flywheel = new FlywheelMotor(hardwareMap, "flywheelMotor",
-                (motor, gamepad, isRunning) -> {
+        flywheel = new Shooter(hardwareMap, "flywheelMotor",
+                (motor, gamepad) -> {
                     // Toggle when Y button is pressed (not held)
-                    if (gamepad.y && !motor.wasYPressed()) {
-                        motor.toggleFlywheel();
+                    if (gamepad.y) {
+                        motor.setPower(0.5);
                     }
-                    motor.setYPressed(gamepad.y);
                 });
 
         auton = new AutonomousBillyMA(
@@ -52,12 +51,12 @@ public class BillyMA extends MechAssembly {
     public class AutonomousBillyMA extends AutonomousMechBehaviors {
         public final SpinnyIntake.AutonomousIntakeBehaviors autonIntake;
         public final PusherServo.AutonomousBallPusherBehaviors autonBallPusher;
-        public final FlywheelMotor.AutonomousFlywheelBehaviors autonFlywheel;
+        public final Shooter.AutonomousShooterBehavior autonFlywheel;
 
         public AutonomousBillyMA(
                 SpinnyIntake.AutonomousIntakeBehaviors autonIntake,
                 PusherServo.AutonomousBallPusherBehaviors autonBallPusher,
-                FlywheelMotor.AutonomousFlywheelBehaviors autonFlywheel) {
+                Shooter.AutonomousShooterBehavior autonFlywheel) {
             this.autonIntake = autonIntake;
             this.autonBallPusher = autonBallPusher;
             this.autonFlywheel = autonFlywheel;
