@@ -12,7 +12,9 @@ public class idealAutonStrat {
      */
     public static IAutonStrategy BasicAutonomous(BillyRobot.AutonomousMecanumRobot robot) {
         return () -> {
-            //insert code
+
         };
     }
+
 }
+
