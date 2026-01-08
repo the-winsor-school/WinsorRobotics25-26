@@ -3,22 +3,21 @@ package org.firstinspires.ftc.teamcode.AutonStrategies;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Extensions.IState;
 import org.firstinspires.ftc.teamcode.Extensions.ThreadExtensions;
 import org.firstinspires.ftc.teamcode.Extensions.TurnDirection;
-import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Assemblies.BillyMA;
-import org.firstinspires.ftc.teamcode.RobotModel.Robots.Wildbots2025;
 import org.firstinspires.ftc.teamcode.RobotModel.Robots.BillyRobot;
 import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor;
 
 import java.util.List;
 
-public class idealAutonStrat {
+public class regAutonStrat {
     /*
     the line below i'm not sure about... help
     (the public static one, shouldn't use wildbots2025 but...
     idk what the autonomousmecanumrobot is)
      */
-    public static IAutonStrategy GPP(RyanRobot robot, Telemetry telemetry, LinearOpMode opMode) {
+    public static IAutonStrategy GPP(BillyRobot robot, Telemetry telemetry, LinearOpMode opMode) {
         return () -> {
             IState currentState = lookForGreen(robot, telemetry);
 
@@ -30,7 +29,7 @@ public class idealAutonStrat {
         };
     }
 
-    public static IAutonStrategy Purple(RyanRobot robot, Telemetry telemetry, LinearOpMode opMode) {
+    public static IAutonStrategy Purple(BillyRobot robot, Telemetry telemetry, LinearOpMode opMode) {
         return () -> {
             IState currentState = lookForPurple(robot, telemetry);
 
@@ -42,14 +41,14 @@ public class idealAutonStrat {
         };
     }
 
-    public static IState lookForPurple(RyanRobot robot, Telemetry telemetry) {
+    public static IState lookForPurple(BillyRobot robot, Telemetry telemetry) {
         return () ->
         {
             telemetry.clear();
             telemetry.addLine("Current State: looking for purple");
 
             // Get some purple blobs~
-            List<ColorBlobLocatorProcessor.Blob> blobs = robot.purpleBallProcessor.getBlobs();
+            List<ColorBlobLocatorProcessor.Blob> blobs = robot.purple.getBlobs();
 
             // if there aren't any, or if they're not centered in the frame...
             if(blobs.isEmpty() || blobs.stream().noneMatch(b -> b.getBoxFit().center.x > 300 && b.getBoxFit().center.x < 380))
@@ -85,14 +84,14 @@ public class idealAutonStrat {
      * @param telemetry
      * @return
      */
-    public static IState driveTowardPurple(RyanRobot robot, Telemetry telemetry) {
+    public static IState driveTowardPurple(BillyRobot robot, Telemetry telemetry) {
         return () ->
         {
             telemetry.clear();
             telemetry.addLine("Current State: GETTIN THAT PURPLE THING");
 
             // Get some purple blobs~
-            List<ColorBlobLocatorProcessor.Blob> blobs = robot.purpleBallProcessor.getBlobs();
+            List<ColorBlobLocatorProcessor.Blob> blobs = robot.purple.getBlobs();
 
             // first way out--Lost the PURPLE thing
             if(blobs.isEmpty())
@@ -135,14 +134,14 @@ public class idealAutonStrat {
      * @param telemetry
      * @return either lookForGreen or driveToGreen
      */
-    public static IState lookForGreen(RyanRobot robot, Telemetry telemetry) {
+    public static IState lookForGreen(BillyRobot robot, Telemetry telemetry) {
         return () ->
         {
             telemetry.clear();
             telemetry.addLine("Current State: looking for GREEN");
 
             // Get some green blobs~
-            List<ColorBlobLocatorProcessor.Blob> blobs = robot.greenBallProcessor.getBlobs();
+            List<ColorBlobLocatorProcessor.Blob> blobs = robot.green.getBlobs();
 
             // if there aren't any, or if they're not centered in the frame...
             if(blobs.isEmpty() || blobs.stream().noneMatch(b -> b.getBoxFit().center.x > 300 && b.getBoxFit().center.x < 380))
@@ -176,14 +175,14 @@ public class idealAutonStrat {
      * @param telemetry
      * @return
      */
-    public static IState driveTowardGreen(RyanRobot robot, Telemetry telemetry) {
+    public static IState driveTowardGreen(BillyRobot robot, Telemetry telemetry) {
         return () ->
         {
             telemetry.clear();
             telemetry.addLine("Current State: GETTIN THAT GREEN THING");
 
             // Get some green blobs~
-            List<ColorBlobLocatorProcessor.Blob> blobs = robot.greenBallProcessor.getBlobs();
+            List<ColorBlobLocatorProcessor.Blob> blobs = robot.green.getBlobs();
 
             // first way out--Lost the GREEN thing
             if(blobs.isEmpty())
@@ -214,7 +213,7 @@ public class idealAutonStrat {
         };
     }
 
-    public static IState driveInACircleCW(RyanRobot robot, Telemetry telemetry) {
+    public static IState driveInACircleCW(BillyRobot robot, Telemetry telemetry) {
         return () ->
         {
             telemetry.clear();
@@ -226,7 +225,7 @@ public class idealAutonStrat {
             return lookForGreen(robot, telemetry);
         };
     }
-    public static IState driveInACircleCCW(RyanRobot robot, Telemetry telemetry) {
+    public static IState driveInACircleCCW(BillyRobot robot, Telemetry telemetry) {
         return () ->
         {
             telemetry.clear();
@@ -238,14 +237,14 @@ public class idealAutonStrat {
             return null;
         };
     }
-    public static IState pickUp(RyanRobot robot, Telemetry telemetry) {
+    public static IState pickUp(BillyRobot robot, Telemetry telemetry) {
         return () ->
         {
             telemetry.clear();
             telemetry.addLine("picking up ball");
             telemetry.update();
 
-            robot.getAutonomousRobot().mechAssembly.autonomousRyanIntake.rigogo();
+            robot.getAutonomousRobot().mechAssembly.autonIntake.startIntake();
             ThreadExtensions.TrySleep(1000);
 
 
@@ -253,7 +252,7 @@ public class idealAutonStrat {
         };
     }
     //TODO: PLEASE REWRITE THE APRIL TAG CODE
-    public static IState driveToTarget(RyanRobot robot, Telemetry telemetry) {
+    public static IState driveToTarget(BillyRobot robot, Telemetry telemetry) {
         return () ->
         {
             telemetry.clear();
@@ -263,14 +262,14 @@ public class idealAutonStrat {
             return shoot(robot, telemetry);
         };
     }
-    public static IState shoot(RyanRobot robot, Telemetry telemetry) {
+    public static IState shoot(BillyRobot robot, Telemetry telemetry) {
         return () ->
         {
             telemetry.clear();
             telemetry.addLine("shooting ball");
             telemetry.update();
 
-            robot.getAutonomousRobot().mechAssembly.autonomousDoubleShooter.DoubleShootersGo();
+            robot.getAutonomousRobot().mechAssembly.autonFlywheel.StartShoot();
             ThreadExtensions.TrySleep(1000);
             return lookForGreen(robot, telemetry);
         };

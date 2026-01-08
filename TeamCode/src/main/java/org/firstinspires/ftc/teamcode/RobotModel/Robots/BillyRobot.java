@@ -42,8 +42,8 @@ public class BillyRobot extends Robot {
     }
 
     private final AprilTagProcessor aprilTag;
-    private final ColorBlobLocatorProcessor purple;
-    private final ColorBlobLocatorProcessor green;
+    public final ColorBlobLocatorProcessor purple;
+    public final ColorBlobLocatorProcessor green;
 
 
     private final AutonomousMecanumRobot auton;
