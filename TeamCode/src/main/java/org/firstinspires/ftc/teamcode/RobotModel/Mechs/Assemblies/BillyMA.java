@@ -35,7 +35,6 @@ public class BillyMA extends MechAssembly {
 
         flywheel = new Shooter(hardwareMap, "flywheelMotor",
                 (motor, gamepad) -> {
-                    // Toggle when Y button is pressed (not held)
                     if (gamepad.y) {
                         motor.setPower(0.5);
                     }
