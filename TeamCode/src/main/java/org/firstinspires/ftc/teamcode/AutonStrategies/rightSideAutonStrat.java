@@ -1,11 +1,16 @@
 package org.firstinspires.ftc.teamcode.AutonStrategies;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Extensions.ThreadExtensions;
 import org.firstinspires.ftc.teamcode.RobotModel.Robots.BillyRobot;
 
-public class leftSideAuton
+public class rightSideAutonStrat
 {
-    public static IAutonStrategy left(BillyRobot.AutonomousMecanumRobot robot)
+    public static IAutonStrategy right(BillyRobot.AutonomousMecanumRobot robot,
+                                       Telemetry telemetry,
+                                       LinearOpMode opMode)
     {
         return () ->
         {
@@ -23,7 +28,7 @@ public class leftSideAuton
             //drive to first row
             robot.driveTrain.drive(0,0.5,0);
             ThreadExtensions.TrySleep(500);
-            robot.driveTrain.turnToAngle(-70);
+            robot.driveTrain.turnToAngle(70);
 
             //spinny intake collects 3 balls there
             robot.mechAssembly.autonIntake.startIntake();
@@ -35,7 +40,7 @@ public class leftSideAuton
             //return to reg position
             robot.driveTrain.drive(-0.5,-0.5,0);
             ThreadExtensions.TrySleep(500);
-            robot.driveTrain.turnToAngle(70);
+            robot.driveTrain.turnToAngle(-70);
 
             //shoot balls
             robot.mechAssembly.autonFlywheel.StartShoot();
@@ -51,7 +56,7 @@ public class leftSideAuton
             //go to second row of balls
             robot.driveTrain.drive(0,0.5,0);
             ThreadExtensions.TrySleep(1000);
-            robot.driveTrain.turnToAngle(-70);
+            robot.driveTrain.turnToAngle(70);
 
             //spinny intake collects 3 balls there
             robot.mechAssembly.autonIntake.startIntake();

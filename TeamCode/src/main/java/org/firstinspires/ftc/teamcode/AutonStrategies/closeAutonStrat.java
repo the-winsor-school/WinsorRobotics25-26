@@ -1,10 +1,15 @@
 package org.firstinspires.ftc.teamcode.AutonStrategies;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Extensions.ThreadExtensions;
 import org.firstinspires.ftc.teamcode.RobotModel.Robots.BillyRobot;
 
-public class closeAuton {
-    public static IAutonStrategy close(BillyRobot.AutonomousMecanumRobot robot)
+public class closeAutonStrat {
+    public static IAutonStrategy close(BillyRobot.AutonomousMecanumRobot robot,
+                                       Telemetry telemetry,
+                                       LinearOpMode opMode)
     {
         return() ->
         {
