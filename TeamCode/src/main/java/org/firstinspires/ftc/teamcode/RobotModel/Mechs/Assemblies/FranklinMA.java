@@ -28,7 +28,12 @@ public class FranklinMA extends MechAssembly
                 });
         canon = new Shooter(hardwareMap, "BANGBANGBANG",
                 (motor, gamepad) -> {
-                    motor.setPower(gamepad.right_trigger*-1);
+                    if (gamepad.right_trigger > 0.01)
+                        motor.setPower(gamepad.right_trigger*-1);
+                    else if (gamepad.left_trigger > 0.01)
+                        motor.setPower(gamepad.left_trigger);
+                    else
+                        motor.setPower(0);
                 });;
         auton = new AutonomousFranklinMA(canon.getAutonomousBehaviors(), intake.getAutonomousBehaviors());
         newintake = new NewIntakeServo(hardwareMap, "newintake",
