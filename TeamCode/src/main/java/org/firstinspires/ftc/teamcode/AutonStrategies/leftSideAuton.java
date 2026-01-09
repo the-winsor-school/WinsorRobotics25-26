@@ -3,9 +3,9 @@ package org.firstinspires.ftc.teamcode.AutonStrategies;
 import org.firstinspires.ftc.teamcode.Extensions.ThreadExtensions;
 import org.firstinspires.ftc.teamcode.RobotModel.Robots.BillyRobot;
 
-public class rightSideAuton
+public class leftSideAuton
 {
-    public static IAutonStrategy right(BillyRobot.AutonomousMecanumRobot robot)
+    public static IAutonStrategy left(BillyRobot.AutonomousMecanumRobot robot)
     {
         return () ->
         {
@@ -23,7 +23,7 @@ public class rightSideAuton
             //drive to first row
             robot.driveTrain.drive(0,0.5,0);
             ThreadExtensions.TrySleep(500);
-            robot.driveTrain.turnToAngle(70);
+            robot.driveTrain.turnToAngle(-70);
 
             //spinny intake collects 3 balls there
             robot.mechAssembly.autonIntake.startIntake();
@@ -35,7 +35,7 @@ public class rightSideAuton
             //return to reg position
             robot.driveTrain.drive(-0.5,-0.5,0);
             ThreadExtensions.TrySleep(500);
-            robot.driveTrain.turnToAngle(-70);
+            robot.driveTrain.turnToAngle(70);
 
             //shoot balls
             robot.mechAssembly.autonFlywheel.StartShoot();
@@ -51,7 +51,7 @@ public class rightSideAuton
             //go to second row of balls
             robot.driveTrain.drive(0,0.5,0);
             ThreadExtensions.TrySleep(1000);
-            robot.driveTrain.turnToAngle(70);
+            robot.driveTrain.turnToAngle(-70);
 
             //spinny intake collects 3 balls there
             robot.mechAssembly.autonIntake.startIntake();
