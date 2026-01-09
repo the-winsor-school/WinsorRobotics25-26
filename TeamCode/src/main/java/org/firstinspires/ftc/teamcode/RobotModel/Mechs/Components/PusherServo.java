@@ -10,11 +10,11 @@ public class PusherServo extends MechComponent {
 
     public class AutonomousBallPusherBehaviors extends AutonomousComponentBehaviors {
         public void pushBalls() {
-            servo.setPosition(0.22);  // Push position
+            servo.setPosition(0.22);
         }
 
         public void retractPusher() {
-            servo.setPosition(0.0);   // Rest position
+            servo.setPosition(0.0);
         }
     }
 
