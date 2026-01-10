@@ -33,7 +33,7 @@ public class FranklinMA extends MechAssembly
                     else if (gamepad.left_trigger > 0.01)
                         motor.setPower(gamepad.left_trigger);
                     else if (gamepad.right_bumper)
-                        motor.setPower(-0.702);
+                        motor.setPower(-0.72);
                     else
                         motor.setPower(0);
                 });;
