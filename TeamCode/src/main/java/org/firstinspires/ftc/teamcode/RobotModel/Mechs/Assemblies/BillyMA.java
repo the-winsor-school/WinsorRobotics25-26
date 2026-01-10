@@ -18,10 +18,10 @@ public class BillyMA extends MechAssembly {
         intake = new SpinnyIntake(hardwareMap, "intakeMotor",
                 (motor, gamepad) -> {
                     if (gamepad.a) {
-                        motor.setPower(0.5);
+                        motor.setPower(0.75);
                     }
                     if (gamepad.b) {
-                        motor.setPower(-0.5);
+                        motor.setPower(-0.75);
                     } else {
                         motor.setPower(0);
                     }
