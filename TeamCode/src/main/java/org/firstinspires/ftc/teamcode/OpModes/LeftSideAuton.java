@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.AutonStrategies.leftSideAutonStrat;
 import org.firstinspires.ftc.teamcode.AutonStrategies.IAutonStrategy;
 import org.firstinspires.ftc.teamcode.RobotModel.Robots.BillyRobot;
 
-@Autonomous(name = "close zone auton")
+@Autonomous(name = "left side auton")
 public class LeftSideAuton extends LinearOpMode {
     private BillyRobot robot;
     private IAutonStrategy autonStrategy;

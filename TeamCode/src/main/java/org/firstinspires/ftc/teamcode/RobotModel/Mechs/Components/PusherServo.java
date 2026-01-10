@@ -13,6 +13,10 @@ public class PusherServo extends MechComponent {
             servo.setPosition(0.22);
         }
 
+        public void setPosition(double position) {
+            servo.setPosition(position);
+        }
+
         public void retractPusher() {
             servo.setPosition(0.0);
         }

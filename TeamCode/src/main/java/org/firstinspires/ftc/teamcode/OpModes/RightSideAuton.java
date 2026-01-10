@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.AutonStrategies.rightSideAutonStrat;
 import org.firstinspires.ftc.teamcode.AutonStrategies.IAutonStrategy;
 import org.firstinspires.ftc.teamcode.RobotModel.Robots.BillyRobot;
 
-@Autonomous(name = "close zone auton")
+@Autonomous(name = "right side auton")
 public class RightSideAuton extends LinearOpMode {
     private BillyRobot robot;
     private IAutonStrategy autonStrategy;
@@ -19,7 +19,7 @@ public class RightSideAuton extends LinearOpMode {
         robot = new BillyRobot(hardwareMap);
         autonStrategy = rightSideAutonStrat.right(robot.getAutonomousRobot(), telemetry, this);
 
-        telemetry.addLine("Close Auton Ready");
+        telemetry.addLine("Auton Ready");
         telemetry.update();
 
         waitForStart();

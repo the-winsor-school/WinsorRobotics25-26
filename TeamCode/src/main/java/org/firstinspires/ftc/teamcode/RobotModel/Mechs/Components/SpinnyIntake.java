@@ -12,7 +12,7 @@ public class SpinnyIntake extends MechComponent
     {
         public void startIntake()
         {
-            intake.setPower(1);
+            intake.setPower(-1);
         }
 
         public void stopIntake()
@@ -22,7 +22,7 @@ public class SpinnyIntake extends MechComponent
 
         public void reverseIntake()
         {
-            intake.setPower(-1);
+            intake.setPower(1);
         }
     }
 

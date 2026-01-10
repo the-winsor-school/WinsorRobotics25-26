@@ -16,21 +16,12 @@ public class closeAutonStrat {
             //backs up
             robot.driveTrain.drive(0,-0.5,0);
             /**CHANGE TMR**/
-            ThreadExtensions.TrySleep(200);
+            ThreadExtensions.TrySleep(2000);
+            robot.driveTrain.drive(-0.5,0,0);
+            /**CHANGE TMR**/
+            ThreadExtensions.TrySleep(2000);
 
-            //shoots
-            robot.mechAssembly.autonFlywheel.StartShoot();
-            /**CHANGE TMR**/
-            ThreadExtensions.TrySleep(3000);
-            robot.mechAssembly.autonBallPusher.pushBalls();
-            /**CHANGE TMR**/
-            ThreadExtensions.TrySleep(100);
-            robot.mechAssembly.autonFlywheel.StopShoot();
 
-            //moves out of zone
-            robot.driveTrain.drive(0,-0.5,0);
-            /**CHANGE TMR**/
-            ThreadExtensions.TrySleep(200);
         };
     }
 }

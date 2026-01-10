@@ -18,17 +18,23 @@ public class Shooter extends MechComponent
     }
 
     public class AutonomousShooterBehavior extends AutonomousComponentBehaviors {
-        public void StartShoot(){
-            shooter.setPower(0.67);
+        public void StartShoot() {
+            shooter.setPower(0.815);
         }
         public void StopShoot(){
             shooter.setPower(0);
+        }
+
+        public void shoot(double power){
+            shooter.setPower(power);
         }
     }
 
     @Override
     public <T extends AutonomousComponentBehaviors> T getAutonomousBehaviors() {
-        return null;
+        // Return a new instance of the autonomous behavior so callers get a working object,
+        // not null. Cast is safe because AutonomousShooterBehavior extends AutonomousComponentBehaviors.
+        return (T) new AutonomousShooterBehavior();
     }
 
     public interface ShooterControlStrategy extends IControlStrategy
@@ -38,6 +44,7 @@ public class Shooter extends MechComponent
     private final DcMotor shooter;
 
     protected ShooterControlStrategy pewpew;
+
     @Override
     public void move(Gamepad gamepad) {
         pewpew.shoot(shooter, gamepad);
