@@ -40,9 +40,9 @@ public class FranklinMA extends MechAssembly
         auton = new AutonomousFranklinMA(canon.getAutonomousBehaviors(), intake.getAutonomousBehaviors());
         newintake = new NewIntakeServo(hardwareMap, "newintake",
                 (motor, gamepad) -> {
-                    if (gamepad.a)
+                    if (gamepad.y)
                         motor.setPower(0.25);
-                    else if (gamepad.y) {
+                    else if (gamepad.a) {
                         motor.setPower(-0.25);
                     }
                     else
