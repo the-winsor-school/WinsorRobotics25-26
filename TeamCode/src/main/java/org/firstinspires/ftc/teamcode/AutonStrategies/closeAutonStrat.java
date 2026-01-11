@@ -17,11 +17,10 @@ public class closeAutonStrat {
             robot.driveTrain.drive(0,-0.5,0);
             /**CHANGE TMR**/
             ThreadExtensions.TrySleep(2000);
+
             robot.driveTrain.drive(-0.5,0,0);
             /**CHANGE TMR**/
             ThreadExtensions.TrySleep(2000);
-
-
         };
     }
 }

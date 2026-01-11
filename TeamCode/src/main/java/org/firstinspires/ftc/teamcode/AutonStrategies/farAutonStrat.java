@@ -18,7 +18,7 @@ public class farAutonStrat
 
             //moves out of zone
             //first ball
-            robot.mechAssembly.autonFlywheel.StartShoot();
+            robot.mechAssembly.autonFlywheel.shoot(0.79);
             ThreadExtensions.TrySleep(3500);
             ThreadExtensions.TrySleep(200);
             robot.mechAssembly.autonBallPusher.pushBalls();
@@ -28,7 +28,7 @@ public class farAutonStrat
 
 
             //second ball
-            robot.mechAssembly.autonFlywheel.shoot(0.84);
+            robot.mechAssembly.autonFlywheel.shoot(0.79);
             ThreadExtensions.TrySleep(1000);
             robot.mechAssembly.autonIntake.startIntake();
             ThreadExtensions.TrySleep(200);
@@ -36,6 +36,7 @@ public class farAutonStrat
             ThreadExtensions.TrySleep(200);
             robot.mechAssembly.autonIntake.reverseIntake();
             ThreadExtensions.TrySleep(100);
+            robot.mechAssembly.autonFlywheel.shoot(0.81);
             robot.mechAssembly.autonIntake.stopIntake();
             ThreadExtensions.TrySleep(200);
             ThreadExtensions.TrySleep(200);
@@ -46,7 +47,7 @@ public class farAutonStrat
 
             //third ball
             robot.mechAssembly.autonIntake.startIntake();
-            ThreadExtensions.TrySleep(800);
+            ThreadExtensions.TrySleep(1000);
             robot.mechAssembly.autonIntake.stopIntake();
             ThreadExtensions.TrySleep(200);
             ThreadExtensions.TrySleep(200);
@@ -55,7 +56,8 @@ public class farAutonStrat
             robot.mechAssembly.autonBallPusher.retractPusher();
             ThreadExtensions.TrySleep(200);
 
-
+            robot.driveTrain.drive(0,0.5,0);
+            ThreadExtensions.TrySleep(1000);
         };
     }
 }
