@@ -8,14 +8,14 @@ import org.firstinspires.ftc.teamcode.Extensions.ThreadExtensions;
 import org.firstinspires.ftc.teamcode.RobotModel.Robots.FranklinRobot;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
-public class FranklinStateAutonStrategy {
+public class FranklinStateAutonStrategyForBlue {
 
-    public static IAutonStrategy ShootAtRed(FranklinRobot robot, Telemetry telemetry, LinearOpMode opMode) {
+    public static IAutonStrategy ShootAtBlue(FranklinRobot robot, Telemetry telemetry, LinearOpMode opMode) {
         return () ->
         {
             telemetry.clear();
             telemetry.addLine("=== FRANKLIN AUTONOMOUS STARTED ===");
-            telemetry.addData("Target", "Red AprilTag ID 24 For Far");
+            telemetry.addData("Target", "Red AprilTag ID 20 For Far");
             telemetry.addData("Strategy", "Drive Forward -> Search -> Approach -> Shoot");
             telemetry.update();
 
@@ -48,7 +48,7 @@ public class FranklinStateAutonStrategy {
 
             telemetry.addLine("Forward drive complete - starting tag search");
             telemetry.update();
-            return searchForTag(robot, 24, telemetry);
+            return searchForTag(robot, 20, telemetry);
         };
     }
 
@@ -106,7 +106,7 @@ public class FranklinStateAutonStrategy {
             /*
                 robot.getAutonomousRobot().driveTrain.turnLeft();
                 ThreadExtensions.TrySleep(375);
-                
+
              */
 
                 robot.getAutonomousRobot().driveTrain.stop();
@@ -114,15 +114,15 @@ public class FranklinStateAutonStrategy {
             }
 
             telemetry.addData("Status", "Tag not found - continuing search");
-            telemetry.addData("Action", "Turning right to search");
+            telemetry.addData("Action", "Turning left to search");
             telemetry.update();
 
-            robot.getAutonomousRobot().driveTrain.turnRight();
+            robot.getAutonomousRobot().driveTrain.turnLeft();
             ThreadExtensions.TrySleep(100);
             robot.getAutonomousRobot().driveTrain.stop();
             ThreadExtensions.TrySleep(50);
 
-            return searchForTag(robot, 24, telemetry);
+            return searchForTag(robot, 20, telemetry);
         };
     }
 
@@ -187,7 +187,7 @@ public class FranklinStateAutonStrategy {
                     telemetry.addData("Final Range", String.format("%.1f inches", range));
                     telemetry.addData("Next State", "SHOOTING SEQUENCE");
                     telemetry.update();
-                    robot.getAutonomousRobot().driveTrain.turnRight();
+                    robot.getAutonomousRobot().driveTrain.turnLeft();
                     ThreadExtensions.TrySleep(100);
 
                     robot.getAutonomousRobot().driveTrain.stop();
@@ -238,19 +238,19 @@ public class FranklinStateAutonStrategy {
             telemetry.clear();
             telemetry.addLine("🎯 SHOOTING COMPLETE! 🎯");
             telemetry.update();
-            robot.getAutonomousRobot().driveTrain.turnRight();
+            robot.getAutonomousRobot().driveTrain.turnLeft();
             ThreadExtensions.TrySleep(1000);
             robot.getAutonomousRobot().driveTrain.driveForward();
             ThreadExtensions.TrySleep(1000);
             return goBackwardFor(20, robot, telemetry);  // End state machine
         };
     }
-    public static IAutonStrategy ShootAtRedFromGoal(FranklinRobot robot, Telemetry telemetry, LinearOpMode opMode) {
+    public static IAutonStrategy ShootAtBlueFromGoal(FranklinRobot robot, Telemetry telemetry, LinearOpMode opMode) {
         return () ->
         {
             telemetry.clear();
             telemetry.addLine("=== FRANKLIN AUTONOMOUS STARTED ===");
-            telemetry.addData("Target From Goal", "Red AprilTag ID 24");
+            telemetry.addData("Target From Goal", "Red AprilTag ID 20");
             telemetry.addData("Strategy", "Drive Forward -> Turn 180 -> Shoot -> Exit Launch Zone");
             telemetry.update();
 
@@ -291,14 +291,14 @@ public class FranklinStateAutonStrategy {
             telemetry.clear();
             telemetry.addLine("STATE: Initial Forward Drive");
             telemetry.addData("Duration", duration + " ms");
-            telemetry.addData("Action", "Turning right to shoot");
+            telemetry.addData("Action", "Turning left to shoot");
             telemetry.update();
 
-            robot.getAutonomousRobot().driveTrain.turnRight();
+            robot.getAutonomousRobot().driveTrain.turnLeft();
             ThreadExtensions.TrySleep(duration);
             robot.getAutonomousRobot().driveTrain.stop();
 
-            telemetry.addLine("Turning right to shoot complete - starting shooter");
+            telemetry.addLine("Turning left to shoot complete - starting shooter");
             telemetry.update();
             return shooter(robot, telemetry);
         };
@@ -336,7 +336,7 @@ public class FranklinStateAutonStrategy {
             telemetry.clear();
             telemetry.addLine("🎯 SHOOTING COMPLETE! 🎯");
             telemetry.update();
-            robot.getAutonomousRobot().driveTrain.turnRight();
+            robot.getAutonomousRobot().driveTrain.turnLeft();
             ThreadExtensions.TrySleep(/*tweak this and below*/ 1000);
             robot.getAutonomousRobot().driveTrain.driveForward();
             ThreadExtensions.TrySleep(1000);
@@ -352,3 +352,4 @@ public class FranklinStateAutonStrategy {
         return null;
     }
 }
+
