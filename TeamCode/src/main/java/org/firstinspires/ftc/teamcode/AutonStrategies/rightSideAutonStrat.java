@@ -57,26 +57,32 @@ public class rightSideAutonStrat
             robot.driveTrain.drive(0,0.5,0);
             ThreadExtensions.TrySleep(1000);
 
+            //drive forward
+            robot.driveTrain.drive(0,0.5,0);
+            ThreadExtensions.TrySleep(500);
+            robot.mechAssembly.autonIntake.startIntake();
+
             //turn
             robot.driveTrain.turnToAngle(70);
+
             //first ball
-            robot.mechAssembly.autonIntake.startIntake();
-            robot.driveTrain.drive(0,0.5,0);
-            ThreadExtensions.TrySleep(1000);
-            robot.driveTrain.drive(0,-0.5,0);
+
+            robot.driveTrain.drive(0,0.1,0);
+            ThreadExtensions.TrySleep(500);
+            robot.driveTrain.drive(0,0,0);
             ThreadExtensions.TrySleep(500);
 
             //second ball
-            robot.driveTrain.drive(0,0.5,0);
+            robot.driveTrain.drive(0,0.1,0);
             ThreadExtensions.TrySleep(500);
-            robot.driveTrain.drive(0,-0.5,0);
+            robot.driveTrain.drive(0,0,0);
             ThreadExtensions.TrySleep(500);
 
             //third ball
-            robot.driveTrain.drive(0,0.5,0);
+            robot.driveTrain.drive(0,0.1,0);
             ThreadExtensions.TrySleep(500);
-            robot.driveTrain.drive(0,-0.5,0);
-            ThreadExtensions.TrySleep(1000);
+            robot.driveTrain.drive(0,0,0);
+            ThreadExtensions.TrySleep(500);
 
             //turn again
             robot.driveTrain.turnToAngle(-70);
@@ -85,8 +91,8 @@ public class rightSideAutonStrat
             robot.mechAssembly.autonIntake.stopIntake();
             robot.mechAssembly.autonIntake.reverseIntake();
             ThreadExtensions.TrySleep(500);
-            //shoot all three??
 
+            //shoot all three??
             robot.mechAssembly.autonFlywheel.shoot(0.79);
             ThreadExtensions.TrySleep(3500);
             ThreadExtensions.TrySleep(200);
