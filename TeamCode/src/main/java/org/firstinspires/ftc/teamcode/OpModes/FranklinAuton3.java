@@ -15,8 +15,8 @@ import org.firstinspires.ftc.teamcode.RobotModel.Robots.Wildbots2025;
 /**
  * TODO:  Is this RED or is this BLUE?
  */
-@Autonomous(name = "Franklin Red Auton From Far Launch Zone")
-public class FranklinAuton extends LinearOpMode {
+@Autonomous(name = "Franklin Red Auton From Close Launch Zone")
+public class FranklinAuton3 extends LinearOpMode {
     private FranklinRobot robot;
     private IAutonStrategy autonStrategy;
     private final int TARGET_TAG_ID = 24; // Red
@@ -24,17 +24,17 @@ public class FranklinAuton extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new FranklinRobot(hardwareMap);
-        autonStrategy = 
+        autonStrategy =
             /*FranklinAutonStrategy.TargetSpecificAprilTag(
                 robot.getAutonomousRobot(),
                 robot,
                 TARGET_TAG_ID,
                 telemetry
         );*/
-            FranklinStateAutonStrategy.ShootAtRed(
-                robot,
-                telemetry,
-                this);
+                FranklinStateAutonStrategy.ShootAtRedFromGoal(
+                        robot,
+                        telemetry,
+                        this);
 
         telemetry.addLine("Franklin Autonomous Ready");
         telemetry.addData("Target AprilTag ID", TARGET_TAG_ID);

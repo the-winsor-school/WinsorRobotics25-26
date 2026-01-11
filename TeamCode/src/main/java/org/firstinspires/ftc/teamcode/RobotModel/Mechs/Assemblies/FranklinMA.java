@@ -36,8 +36,7 @@ public class FranklinMA extends MechAssembly
                         motor.setPower(-0.72);
                     else
                         motor.setPower(0);
-                });;
-        auton = new AutonomousFranklinMA(canon.getAutonomousBehaviors(), intake.getAutonomousBehaviors());
+                });
         newintake = new NewIntakeServo(hardwareMap, "newintake",
                 (motor, gamepad) -> {
                     if (gamepad.y)
@@ -48,6 +47,11 @@ public class FranklinMA extends MechAssembly
                     else
                         motor.setPower(0);
                 });
+        auton = new AutonomousFranklinMA(
+                canon.getAutonomousBehaviors(),
+                intake.getAutonomousBehaviors(),
+                newintake.getAutonomousBehaviors());
+
     }
 
     //5 sec spinny spinny
@@ -55,9 +59,16 @@ public class FranklinMA extends MechAssembly
     public class AutonomousFranklinMA extends AutonomousMechBehaviors {
         public final Shooter.AutonomousShooterBehavior AutonShooter;
         public final FlappyServo.AutonomousFlappyBehavior FlappyServo;
-        public AutonomousFranklinMA(Shooter.AutonomousShooterBehavior autonShooter, FlappyServo.AutonomousFlappyBehavior flappyServo) {
+
+        public final NewIntakeServo.AutonomousNewIntakeBehaviors NewIntakeServo;
+        public AutonomousFranklinMA(
+                Shooter.AutonomousShooterBehavior autonShooter,
+                FlappyServo.AutonomousFlappyBehavior flappyServo,
+                NewIntakeServo.AutonomousNewIntakeBehaviors newIntake
+        ) {
             this.AutonShooter = autonShooter;
             this.FlappyServo = flappyServo;
+            this.NewIntakeServo = newIntake;
         }
     }
 

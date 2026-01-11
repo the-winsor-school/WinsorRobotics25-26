@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.AutonStrategies.FranklinBlueAuton;
 import org.firstinspires.ftc.teamcode.AutonStrategies.FranklinStateAutonStrategy;
+import org.firstinspires.ftc.teamcode.AutonStrategies.FranklinStateAutonStrategyForBlue;
 import org.firstinspires.ftc.teamcode.AutonStrategies.IAutonStrategy;
 import org.firstinspires.ftc.teamcode.RobotModel.Robots.FranklinRobot;
 
@@ -13,11 +14,11 @@ import org.firstinspires.ftc.teamcode.RobotModel.Robots.FranklinRobot;
 /**
  * TODO:  Is this RED or is this BLUE?
  */
-@Autonomous(name = "Franklin Target Tag 23")
+@Autonomous(name = "Franklin Blue Auton From Far Launch Zone")
 public class FranklinAuton2 extends LinearOpMode {
     private FranklinRobot robot;
     private IAutonStrategy autonStrategy;
-    private final int TARGET_TAG_ID = 24; // Red
+    private final int TARGET_TAG_ID = 20; //Blue
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -29,7 +30,7 @@ public class FranklinAuton2 extends LinearOpMode {
                 TARGET_TAG_ID,
                 telemetry
         );*/
-            FranklinBlueAuton.ShootAtBlue(
+                FranklinStateAutonStrategyForBlue.ShootAtBlue(
                 robot,
                 telemetry,
             this);

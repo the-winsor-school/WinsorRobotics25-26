@@ -199,6 +199,8 @@ public class FranklinStateAutonStrategy {
                 telemetry.addLine("⚠ No pose data available");
                 telemetry.addData("Action", "Proceeding to shoot anyway");
                 telemetry.update();
+                robot.getAutonomousRobot().driveTrain.turnRight();
+                ThreadExtensions.TrySleep(100);
                 return shoot(robot, telemetry);
             }
         };
@@ -215,7 +217,7 @@ public class FranklinStateAutonStrategy {
 
             telemetry.addData("Step 1", "Starting shooter motor...");
             telemetry.update();
-            robot.getAutonomousRobot().mechAssembly.AutonShooter.SetSpeed(-0.74);
+            robot.getAutonomousRobot().mechAssembly.AutonShooter.SetSpeed(-0.8);
             ThreadExtensions.TrySleep(1000);
 
             telemetry.addData("Step 2", "Releasing balls - FlappyServo DOWN...");
@@ -226,9 +228,12 @@ public class FranklinStateAutonStrategy {
             telemetry.addData("Step 3", "Opening Churro Intake...");
             telemetry.update();
 
-            //robot.getAutonomousRobot().mechAssembly.;  // **needs to be churro**
+            robot.getAutonomousRobot().mechAssembly.NewIntakeServo.newIntakeUp();  // **needs to be churro**
 
-            ThreadExtensions.TrySleep(5000);
+            ThreadExtensions.TrySleep(2000);
+
+            robot.getAutonomousRobot().mechAssembly.NewIntakeServo.newIntakeStop();
+            ThreadExtensions.TrySleep(2000);
 
             telemetry.addData("Step 4", "Stopping shooter...");
             telemetry.update();
@@ -254,7 +259,7 @@ public class FranklinStateAutonStrategy {
             telemetry.addData("Strategy", "Drive Forward -> Turn 180 -> Shoot -> Exit Launch Zone");
             telemetry.update();
 
-            IState currentState = goForwardsForFar(4000, robot, telemetry);
+            IState currentState = goForwardsForFar(1500, robot, telemetry);
 
             while(opMode.opModeIsActive() && currentState != null)
             {
@@ -282,7 +287,7 @@ public class FranklinStateAutonStrategy {
 
             telemetry.addLine("Forward drive complete - turning");
             telemetry.update();
-            return turnAround(/*figure out duration*/1000, robot, telemetry);
+            return turnAround(/*figure out duration*/1200, robot, telemetry);
         };
     }
     public static IState turnAround(long duration, FranklinRobot robot, Telemetry telemetry) {
@@ -313,7 +318,7 @@ public class FranklinStateAutonStrategy {
 
             telemetry.addData("Step 1", "Starting shooter motor...");
             telemetry.update();
-            robot.getAutonomousRobot().mechAssembly.AutonShooter.SetSpeed(-0.74);
+            robot.getAutonomousRobot().mechAssembly.AutonShooter.SetSpeed(-0.8);
             ThreadExtensions.TrySleep(1000);
 
             telemetry.addData("Step 2", "Releasing balls - FlappyServo DOWN...");
@@ -324,9 +329,12 @@ public class FranklinStateAutonStrategy {
             telemetry.addData("Step 3", "Opening Churro Intake...");
             telemetry.update();
 
-            //robot.getAutonomousRobot().mechAssembly.;  // **needs to be churro**
+            robot.getAutonomousRobot().mechAssembly.NewIntakeServo.newIntakeUp();  // **needs to be churro**
 
-            ThreadExtensions.TrySleep(5000);
+            ThreadExtensions.TrySleep(2000);
+
+            robot.getAutonomousRobot().mechAssembly.NewIntakeServo.newIntakeStop();
+            ThreadExtensions.TrySleep(2000);
 
             telemetry.addData("Step 4", "Stopping shooter...");
             telemetry.update();

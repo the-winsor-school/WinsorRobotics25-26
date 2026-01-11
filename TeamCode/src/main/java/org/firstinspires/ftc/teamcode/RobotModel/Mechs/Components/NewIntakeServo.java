@@ -14,6 +14,9 @@ public class NewIntakeServo extends MechComponent {
         public void newIntakeDown(){
             newintake.setPower(-0.25);
         }
+        public void newIntakeStop(){
+            newintake.setPower(0);
+        }
     }
 
     public interface NewIntakeControlStrategy extends IControlStrategy {
