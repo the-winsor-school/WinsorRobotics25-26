@@ -288,7 +288,7 @@ public class FranklinStateAutonStrategyForBlue {
 
             telemetry.addLine("Forward drive complete - turning");
             telemetry.update();
-            return turnAround(/*figure out duration*/125[piu0, robot, telemetry);
+            return turnAround(/*figure out duration*/1250, robot, telemetry);
         };
     }
     public static IState turnAround(long duration, FranklinRobot robot, Telemetry telemetry) {
