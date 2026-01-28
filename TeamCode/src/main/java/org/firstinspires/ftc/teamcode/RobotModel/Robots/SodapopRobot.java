@@ -2,11 +2,13 @@ package org.firstinspires.ftc.teamcode.RobotModel.Robots;
 
 import android.util.Size;
 
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.RobotModel.DriveTrain.Mecanum.MecanumDrive;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Assemblies.SodapopMA;
+import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.LimelightForSoda;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor;
@@ -14,9 +16,25 @@ import org.firstinspires.ftc.vision.opencv.ColorRange;
 import org.firstinspires.ftc.vision.opencv.ImageRegion;
 
 public class SodapopRobot extends Robot{
+
+    public class AutonomousSodapopRobot extends AutonomousRobot {
+        public final MecanumDrive.AutonomousMecanumDrive driveTrain;
+        public final SodapopMA.AutonomousSodapopMA mechAssembly;
+
+        public AutonomousSodapopRobot(
+                MecanumDrive.AutonomousMecanumDrive driveTrain,
+                SodapopMA.AutonomousSodapopMA mechAssembly) {
+            super(driveTrain, mechAssembly);
+            this.driveTrain = driveTrain;
+            this.mechAssembly = mechAssembly;
+        }
+    }
+
+    private final AutonomousSodapopRobot auton;
+
     @Override
-    public <T extends AutonomousRobot> T getAutonomousRobot() {
-        return null;
+    public AutonomousSodapopRobot getAutonomousRobot() {
+        return auton;
     }
 
     private final AprilTagProcessor aprilTagProcessor;
@@ -24,9 +42,16 @@ public class SodapopRobot extends Robot{
     private final ColorBlobLocatorProcessor greenBallProcessor;
 
     public SodapopRobot(HardwareMap hardwareMap) {
-        driveTrain = new MecanumDrive(hardwareMap);
+        // Initialize drive train with proper motor orientation
+        driveTrain = new MecanumDrive(hardwareMap,
+                new MecanumDrive.OrientationConfiguration(
+                        DcMotorSimple.Direction.REVERSE,
+                        DcMotorSimple.Direction.FORWARD,
+                        DcMotorSimple.Direction.FORWARD,
+                        DcMotorSimple.Direction.REVERSE
+                ));
 
-        //TODO: review next ~25 lines because mr cox ordered a new cam i think
+        // Initialize backup AprilTag system (webcam-based)
         aprilTagProcessor = AprilTagProcessor.easyCreateWithDefaults();
 
         purpleBallProcessor = new ColorBlobLocatorProcessor.Builder()
@@ -43,18 +68,42 @@ public class SodapopRobot extends Robot{
                 .setDrawContours(true)
                 .build();
 
+        // Set up backup webcam vision system
         visionPortal = new VisionPortal.Builder()
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
                 .setCameraResolution(new Size(640, 480))
                 .addProcessor(purpleBallProcessor)
                 .addProcessor(greenBallProcessor)
                 .addProcessor(aprilTagProcessor)
-                // this is supposed to make it show up on the driver station....
-                // it works, but you can only do it at a very specific time...
                 .setStreamFormat(org.firstinspires.ftc.vision.VisionPortal.StreamFormat.YUY2)
                 .enableLiveView(true)
                 .build();
 
+        // Initialize the SodapopMA (which includes LimelightForSoda)
         mechAssembly = new SodapopMA(hardwareMap);
+
+        // Create autonomous robot
+        auton = new AutonomousSodapopRobot(
+                driveTrain.getAutonomousDriving(),
+                mechAssembly.getAutonomousBehaviors()
+        );
+    }
+
+    // Convenience method to access Limelight through the mech assembly
+    public LimelightForSoda getLimelightForSoda() {
+        return ((SodapopMA) mechAssembly).limelightForSoda;
+    }
+
+    // Convenience method to access color processors for backup vision
+    public ColorBlobLocatorProcessor getPurpleBallProcessor() {
+        return purpleBallProcessor;
+    }
+
+    public ColorBlobLocatorProcessor getGreenBallProcessor() {
+        return greenBallProcessor;
+    }
+
+    public AprilTagProcessor getAprilTagProcessor() {
+        return aprilTagProcessor;
     }
 }
