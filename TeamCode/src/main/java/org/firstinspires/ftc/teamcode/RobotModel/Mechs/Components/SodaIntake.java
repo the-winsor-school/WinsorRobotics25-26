@@ -33,7 +33,7 @@ public class SodaIntake extends MechComponent {
     protected SoInControlStrategy soinstrat;
 
     @Override
-    public void sodamove(Gamepad gamepad) {soinstrat.soinisgooo(sodaintake, gamepad);}
+    public void move(Gamepad gamepad) {soinstrat.soinisgooo(sodaintake, gamepad);}
 
     @Override
     public void update(Telemetry telemetry) {

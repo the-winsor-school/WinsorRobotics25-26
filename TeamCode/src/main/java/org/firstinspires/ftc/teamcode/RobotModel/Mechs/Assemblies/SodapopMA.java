@@ -4,13 +4,12 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.FlappyServo;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.SodaFlywheel;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.SodaIntake;
+import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.SodaSpindexServo;
 
 public class SodapopMA extends MechAssembly{
     public SodapopMA(HardwareMap hardwareMap) {
-        //spindex (servo)
         //color sensor???
         //not sure how to code the cam yet
         //lift (2)
@@ -20,6 +19,10 @@ public class SodapopMA extends MechAssembly{
         sodaflywheel = new SodaFlywheel(hardwareMap, "soflymotor",
                 //controls
                 );
+        sodaspindex = new SodaSpindexServo(hardwareMap, "sospinservo",
+                //controls
+                );
+
 
 
         //insert parameters for the line below
@@ -29,6 +32,18 @@ public class SodapopMA extends MechAssembly{
     public class AutonomousSodapopMA extends AutonomousMechBehaviors {
         //parameters/behaviors for each component
         private final SodaIntake.AutonomousSodaIntake AutonSOIN;
+        private final SodaFlywheel.AutonomousSoFly AutonSOFLY;
+        private final SodaSpindexServo.AutonomousSpindy AutonSOSS;
+
+        public SodapopMA.AutonomousSodapopMA(
+                SodaSpindexServo.AutonomousSpindy autonSOIN,
+                SodaFlywheel.AutonomousSoFly autonSOFLY,
+                SodaSpindexServo.AutonomousSpindy autonSOSS) {
+            AutonSOIN = autonSOIN;
+            AutonSOFLY = autonSOFLY;
+            AutonSOSS = autonSOSS;
+
+        }
     }
 
     private final AutonomousSodapopMA auton;
@@ -37,10 +52,12 @@ public class SodapopMA extends MechAssembly{
 
     private final SodaIntake sodamouth;
     private final SodaFlywheel sodaflywheel;
+    private final SodaSpindexServo sodaspindex;
     @Override
     public void giveInstructions(Gamepad gamepad) {
-        sodamouth.sodamove(gamepad);
+        sodamouth.move(gamepad);
         sodaflywheel.move(gamepad);
+        sodaspindex.move(gamepad);
     }
 
     @Override
