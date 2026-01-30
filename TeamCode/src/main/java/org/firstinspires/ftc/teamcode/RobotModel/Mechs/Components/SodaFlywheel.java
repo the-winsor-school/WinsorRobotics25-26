@@ -12,7 +12,7 @@ public class SodaFlywheel extends MechComponent {
             String motorName,
             SoFlyControlStrategy soflygo) {
         super(soflygo);
-        sodaflywheel = hardwareMap.get(DCMotor.class, motorName);
+        sodaflywheel = hardwareMap.get(DcMotor.class, motorName);
         this.soflygo = soflygo;
     }
 

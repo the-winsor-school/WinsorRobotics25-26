@@ -8,7 +8,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class SodaIntake extends MechComponent {
     public SodaIntake(
-            HardwareMap hardwareMap
+            HardwareMap hardwareMap,
             String motorName,
             SoInControlStrategy sodaintake) {
         super(sodaintake);
