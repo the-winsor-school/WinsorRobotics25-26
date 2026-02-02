@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Extensions.GamepadExtensions;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Assemblies.CascadeArm;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Assemblies.MechAssembly;
 
@@ -32,8 +33,17 @@ public  class DoublyLimitedMotor extends MechComponent{
             setPower(-1);
         }
     }
-    public interface DoublyLimitedMotorControlStrategy extends IControlStrategy{
-        public void move(Gamepad gamepad, DoublyLimitedMotor doublyLimitedMotor);
+
+    /**
+     * Control Strategy for the DoublyLimitedMotor
+     */
+    public interface DoublyLimitedMotorControlStrategy extends IControlStrategy {
+        /**
+         * define the translation of Gamepad Input to Motor Output behavior.
+         * @param gamepad the gamepad controlling this motor
+         * @param doublyLimitedMotor pass `this` from the move(...) method.
+         */
+        void move(Gamepad gamepad, DoublyLimitedMotor doublyLimitedMotor);
     }
 
     public interface DoublyLimitedMotorTelemetryStrategy {
@@ -94,9 +104,9 @@ public  class DoublyLimitedMotor extends MechComponent{
     }
 
     @Override
-    public void move(Gamepad gamepad) {
+    public void move(Gamepad gamepad)
+    {
         strategy.move(gamepad, this);
-
     }
 
     @Override

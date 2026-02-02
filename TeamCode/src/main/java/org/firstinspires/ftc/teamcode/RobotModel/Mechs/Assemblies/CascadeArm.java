@@ -50,6 +50,7 @@ public class CascadeArm extends MechAssembly
                      double power = GamepadExtensions.GetLeftStickY(gamepad);
                      dlm.setPower(power);
                 },
+                // Telemetry strategy
                 ((dlm, telemetry) ->
                 {
                     telemetry.addData("Can Go Up", dlm.canGoForward());
@@ -66,10 +67,13 @@ public class CascadeArm extends MechAssembly
                     double power = GamepadExtensions.GetRightStickY(gamepad);
                     dlm.setPower(power);
                 },
+                // Telemetry strategy
                 ((dlm, telemetry) -> {
                     telemetry.addData("Can Go Up", dlm.canGoForward());
                     telemetry.addData("Can Go Down", dlm.canGoReverse());
                 }));
+
+
         claw = new Claw(
                 hardwareMap,
                 "servo",
