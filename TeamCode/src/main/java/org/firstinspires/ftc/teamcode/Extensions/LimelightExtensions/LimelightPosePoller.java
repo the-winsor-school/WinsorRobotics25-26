@@ -64,6 +64,22 @@ public class LimelightPosePoller implements AutoCloseable {
     }
 
     /**
+     * Returns the first fiducial with the given tag ID from the latest snapshot.
+     *
+     * @param id AprilTag ID to search for.
+     * @return the matching tag, or null if not present.
+     */
+    public AprilTagPoseData tryGetTagId(int id) {
+        List<AprilTagPoseData> snapshot = latest.get();
+        for (AprilTagPoseData tag : snapshot) {
+            if (tag.fID == id) {
+                return tag;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Returns the most recent IOException encountered during polling, or null.
      */
     public IOException getLastError() {

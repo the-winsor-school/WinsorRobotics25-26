@@ -77,13 +77,7 @@ This pattern searches the latest fiducials for a target ID and prints its pose t
 
 ```java
 int targetId = 24;
-AprilTagPoseData match = null;
-for (AprilTagPoseData tag : poller.getLatest()) {
-    if (tag.fID == targetId) {
-        match = tag;
-        break;
-    }
-}
+AprilTagPoseData match = poller.tryGetTagId(targetId);
 
 if (match != null && match.t6t_rs != null) {
     telemetry.addData("Tag", "ID %d fam %s", match.fID, match.fam);
@@ -98,3 +92,27 @@ if (match != null && match.t6t_rs != null) {
 }
 telemetry.update();
 ```
+
+## What does "Target pose in robot space" mean?
+
+The `t6t_rs` pose is the AprilTag's position and orientation expressed in the robot's coordinate frame.
+Put another way: it answers "Where is the tag relative to the robot right now?"
+
+- **Origin:** the robot's coordinate origin (as defined by Limelight's robot-frame configuration).
+- **Axes:** x/y/z are measured along the robot's axes in meters.
+- **Rotation:** pitch/yaw/roll are the tag's orientation relative to the robot in degrees.
+
+This is the most convenient pose if you want to navigate *from the robot* to the tag, because it is already
+described in the robot's own frame of reference.
+
+## Pose field glossary
+
+These names follow Limelight's naming convention: `t6` = 6‑DOF pose, and the suffixes describe the
+transform "thing in frame".
+
+- **t6c_ts (Camera pose in target space):** Where the camera is, expressed in the tag's coordinate frame.
+- **t6r_ts (Robot pose in target space):** Where the robot is, expressed in the tag's coordinate frame.
+- **t6t_cs (Target pose in camera space):** Where the tag is, expressed in the camera's coordinate frame.
+- **t6t_rs (Target pose in robot space):** Where the tag is, expressed in the robot's coordinate frame.
+- **t6r_fs (Robot pose in field space):** Where the robot is, expressed in the field's coordinate frame.
+- **t6r_fs_orb (Robot pose in field space, Megatag2):** Same as `t6r_fs`, but computed by the Megatag2 pipeline.
