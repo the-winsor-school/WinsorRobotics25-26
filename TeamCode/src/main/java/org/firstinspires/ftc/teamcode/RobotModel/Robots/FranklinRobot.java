@@ -14,15 +14,29 @@ import org.firstinspires.ftc.vision.opencv.ColorRange;
 import org.firstinspires.ftc.vision.opencv.ImageRegion;
 
 public class FranklinRobot extends Robot {
-    @Override
-    public <T extends AutonomousRobot> T getAutonomousRobot() {
+    public class AutonomousFranklinRobot extends AutonomousRobot {
+        public final StandardTankDrive.AutonomousTankDrive driveTrain;
+        public final FranklinMA.AutonomousFranklinMA mechAssembly;
 
-        return null;
+        public AutonomousFranklinRobot(
+                StandardTankDrive.AutonomousTankDrive driveTrain,
+                FranklinMA.AutonomousFranklinMA mechAssembly) {
+            super(driveTrain, mechAssembly);
+            this.driveTrain = driveTrain;
+            this.mechAssembly = mechAssembly;
+        }
     }
 
-    private final AprilTagProcessor aprilTagProcessor;
-    private final ColorBlobLocatorProcessor purpleBallProcessor;
-    private final ColorBlobLocatorProcessor greenBallProcessor;
+    private final AutonomousFranklinRobot auton;
+
+    @Override
+    public AutonomousFranklinRobot getAutonomousRobot() {
+        return auton; // Return the stored instance instead of null
+    }
+
+    public final AprilTagProcessor aprilTagProcessor;
+    public final ColorBlobLocatorProcessor purpleBallProcessor;
+    public final ColorBlobLocatorProcessor greenBallProcessor;
 
     public FranklinRobot(HardwareMap hardwareMap) {
         driveTrain = new StandardTankDrive(hardwareMap);
@@ -55,5 +69,10 @@ public class FranklinRobot extends Robot {
                 .enableLiveView(true)
                 .build();
         mechAssembly = new FranklinMA(hardwareMap);
+
+        auton = new AutonomousFranklinRobot(
+                driveTrain.getAutonomousDriving(),
+                mechAssembly.getAutonomousBehaviors()
+        );
     }
 }

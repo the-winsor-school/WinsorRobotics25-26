@@ -11,30 +11,51 @@ import org.firstinspires.ftc.teamcode.RobotModel.DriveTrain.DriveTrain;
 
 public class StandardTankDrive extends DriveTrain
 {
+    /**
+     * TODO:  Make Parameterized overloads for the moving methods that have a "speed" parameter.
+     * i.e. driveForward(double speed), driveBackward(double speed)
+     */
     public class AutonomousTankDrive extends AutonomousDriving
     {
         //make it move for a set amount of time/distance using millis and trysleep.
         //make it turn for a set amount of degrees using millis
 
         public void driveForward() {
-            left.setPower(1);
-            right.setPower(1);
+            left.setPower(0.4);
+            right.setPower(0.4);
+        }
+        public void driveForward(float power) {
+            left.setPower(power);
+            right.setPower(power);
         }
         public void driveBackward() {
-            left.setPower(-1);
-            right.setPower(-1);
+            left.setPower(-0.4);
+            right.setPower(-0.4);
         }
+        public void driveBackward(float power) {
+            left.setPower(-power);
+            right.setPower(-power);
+        }
+
         public void stop() {
             left.setPower(0);
             right.setPower(0);
         }
         public void turnLeft() {
-            left.setPower(-1);
-            right.setPower(1);
+            left.setPower(-0.5);
+            right.setPower(0.5);
+        }
+        public void turnLeft(float x) {
+            left.setPower(-x);
+            right.setPower(x);
+        }
+        public void turnRight(float x) {
+            left.setPower(x);
+            right.setPower(-x);
         }
         public void turnRight() {
-            left.setPower(1);
-            right.setPower(-1);
+            left.setPower(0.5);
+            right.setPower(-0.5);
         }
     }
 

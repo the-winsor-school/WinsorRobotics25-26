@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Extensions.ThreadExtensions;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.FlappyServo;
+import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.NewIntakeServo;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.Shooter;
 
 public class FranklinMA extends MechAssembly
@@ -27,37 +28,67 @@ public class FranklinMA extends MechAssembly
                 });
         canon = new Shooter(hardwareMap, "BANGBANGBANG",
                 (motor, gamepad) -> {
-                    motor.setPower(gamepad.right_trigger*-1);
-                });;
-        auton = new AutonomousFranklinMA(canon.getAutonomousBehaviors(), intake.getAutonomousBehaviors());
+                    if (gamepad.right_trigger > 0.01)
+                        motor.setPower(gamepad.right_trigger*-1);
+                    else if (gamepad.left_trigger > 0.01)
+                        motor.setPower(gamepad.left_trigger);
+                    else if (gamepad.right_bumper)
+                        motor.setPower(-0.72);
+                    else
+                        motor.setPower(0);
+                });
+        newintake = new NewIntakeServo(hardwareMap, "newintake",
+                (motor, gamepad) -> {
+                    if (gamepad.y)
+                        motor.setPower(0.25);
+                    else if (gamepad.a) {
+                        motor.setPower(-0.25);
+                    }
+                    else
+                        motor.setPower(0);
+                });
+        auton = new AutonomousFranklinMA(
+                canon.getAutonomousBehaviors(),
+                intake.getAutonomousBehaviors(),
+                newintake.getAutonomousBehaviors());
+
     }
 
     //5 sec spinny spinny
 
     public class AutonomousFranklinMA extends AutonomousMechBehaviors {
-        private final Shooter.AutonomousShooterBehavior AutonShooter;
+        public final Shooter.AutonomousShooterBehavior AutonShooter;
         public final FlappyServo.AutonomousFlappyBehavior FlappyServo;
-        public AutonomousFranklinMA(Shooter.AutonomousShooterBehavior autonShooter, FlappyServo.AutonomousFlappyBehavior flappyServo) {
-            AutonShooter = autonShooter;
-            FlappyServo = flappyServo;
+
+        public final NewIntakeServo.AutonomousNewIntakeBehaviors NewIntakeServo;
+        public AutonomousFranklinMA(
+                Shooter.AutonomousShooterBehavior autonShooter,
+                FlappyServo.AutonomousFlappyBehavior flappyServo,
+                NewIntakeServo.AutonomousNewIntakeBehaviors newIntake
+        ) {
+            this.AutonShooter = autonShooter;
+            this.FlappyServo = flappyServo;
+            this.NewIntakeServo = newIntake;
         }
     }
 
     private final AutonomousFranklinMA auton;
     @Override
-    public <T extends AutonomousMechBehaviors> T getAutonomousBehaviors() {
-        return null;
-    }
+    public AutonomousFranklinMA getAutonomousBehaviors() { return auton; }
+
     private final FlappyServo intake;
     private final Shooter canon;
+    private final NewIntakeServo newintake;
     @Override
     public void giveInstructions(Gamepad gamepad) {
         intake.move(gamepad);
         canon.move(gamepad);
+        newintake.move(gamepad);
     }
 
     @Override
     public void updateTelemetry(Telemetry telemetry) {
         intake.update(telemetry);
+        canon.update(telemetry);
     }
 }

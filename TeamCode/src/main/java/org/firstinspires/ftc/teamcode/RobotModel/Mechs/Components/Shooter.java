@@ -15,20 +15,22 @@ public class Shooter extends MechComponent
         super(pewpew);
         shooter = hardwareMap.get(DcMotor.class, motorName);
         this.pewpew = pewpew;
+        auton = new AutonomousShooterBehavior();
     }
 
     public class AutonomousShooterBehavior extends AutonomousComponentBehaviors {
         public void StartShoot(){
-            shooter.setPower(0.67);
+            shooter.setPower(0.40);
         }
+        public void SetSpeed(double speed) { shooter.setPower(speed); }
         public void StopShoot(){
             shooter.setPower(0);
         }
     }
 
     @Override
-    public <T extends AutonomousComponentBehaviors> T getAutonomousBehaviors() {
-        return null;
+    public AutonomousShooterBehavior getAutonomousBehaviors() {
+        return auton;
     }
 
     public interface ShooterControlStrategy extends IControlStrategy
@@ -36,6 +38,7 @@ public class Shooter extends MechComponent
         void shoot(DcMotor motor, Gamepad gamepad);
     }
     private final DcMotor shooter;
+    private final AutonomousShooterBehavior auton;
 
     protected ShooterControlStrategy pewpew;
     @Override
@@ -45,6 +48,6 @@ public class Shooter extends MechComponent
 
     @Override
     public void update(Telemetry telemetry) {
-
+        telemetry.addData("shooter power", shooter.getPower());
     }
 }

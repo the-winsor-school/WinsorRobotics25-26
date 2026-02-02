@@ -2,24 +2,23 @@ package org.firstinspires.ftc.teamcode.OpModes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.AutonStrategies.FranklinAutonStrategy;
 import org.firstinspires.ftc.teamcode.AutonStrategies.FranklinBlueAuton;
 import org.firstinspires.ftc.teamcode.AutonStrategies.FranklinStateAutonStrategy;
+import org.firstinspires.ftc.teamcode.AutonStrategies.FranklinStateAutonStrategyForBlue;
 import org.firstinspires.ftc.teamcode.AutonStrategies.IAutonStrategy;
 import org.firstinspires.ftc.teamcode.RobotModel.Robots.FranklinRobot;
-import org.firstinspires.ftc.teamcode.RobotModel.Robots.Wildbots2025;
+
 
 
 /**
  * TODO:  Is this RED or is this BLUE?
  */
-@Autonomous(name = "Franklin Red Auton From Far Launch Zone")
-public class FranklinAuton extends LinearOpMode {
+@Autonomous(name = "Franklin Blue Auton From Far Launch Zone")
+public class FranklinAuton2 extends LinearOpMode {
     private FranklinRobot robot;
     private IAutonStrategy autonStrategy;
-    private final int TARGET_TAG_ID = 24; // Red
+    private final int TARGET_TAG_ID = 20; //Blue
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -31,10 +30,10 @@ public class FranklinAuton extends LinearOpMode {
                 TARGET_TAG_ID,
                 telemetry
         );*/
-            FranklinStateAutonStrategy.ShootAtRed(
+                FranklinStateAutonStrategyForBlue.ShootAtBlue(
                 robot,
                 telemetry,
-                this);
+            this);
 
         telemetry.addLine("Franklin Autonomous Ready");
         telemetry.addData("Target AprilTag ID", TARGET_TAG_ID);
@@ -45,3 +44,4 @@ public class FranklinAuton extends LinearOpMode {
     }
 
 }
+
