@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Extensions.GamepadExtensions;
+import org.firstinspires.ftc.teamcode.Extensions.ThreadExtensions;
 import org.firstinspires.ftc.teamcode.RobotModel.DriveTrain.DriveTrain;
 
 public class StandardTankDrive extends DriveTrain
@@ -90,6 +91,7 @@ public class StandardTankDrive extends DriveTrain
         float rightDrive = GamepadExtensions.GetRightStickY(gamepad);
         left.setPower(leftDrive);
         right.setPower(rightDrive);
+        ThreadExtensions.TrySleep(5000);
     }
 
     /**

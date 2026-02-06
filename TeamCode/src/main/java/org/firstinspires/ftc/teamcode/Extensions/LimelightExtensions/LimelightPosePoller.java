@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.Extensions.LimelightExtensions;
 
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * Background poller that fetches Limelight fiducials on a fixed interval.
  */
 public class LimelightPosePoller implements AutoCloseable {
-    private final OpMode opMode;
+    private final LinearOpMode opMode;
     private final LimelightResultsClient client;
     private final long pollIntervalMs;
     private final AtomicReference<List<AprilTagPoseData>> latest;
@@ -20,7 +20,7 @@ public class LimelightPosePoller implements AutoCloseable {
     private volatile boolean running;
     private Thread worker;
 
-    public LimelightPosePoller(OpMode opMode, LimelightResultsClient client, long pollIntervalMs) {
+    public LimelightPosePoller(LinearOpMode opMode, LimelightResultsClient client, long pollIntervalMs) {
         this.opMode = opMode;
         this.client = client;
         this.pollIntervalMs = pollIntervalMs;

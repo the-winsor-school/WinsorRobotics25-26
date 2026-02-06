@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Extensions.LimelightExtensions;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,21 +24,29 @@ import java.util.List;
  * Call from a background thread to avoid NetworkOnMainThreadException.
  */
 public class LimelightResultsClient {
-    public static final String DEFAULT_RESULTS_URL = "http://172.28.0.1:5807/results";
-
-    private final String resultsUrl;
     private final String baseUrl;
-    private int connectTimeoutMs = 250;
-    private int readTimeoutMs = 500;
+    private int connectTimeoutMs = 1000;
+    private int readTimeoutMs = 1000;
 
-    public LimelightResultsClient() {
-        this(DEFAULT_RESULTS_URL);
+    /**
+     * Builds a client using the given Limelight IP (or hostname) and the default port 5807.
+     *
+     * @param ipAddress e.g. "172.28.0.1" or "limelight.local"
+     */
+    public LimelightResultsClient(String ipAddress) {
+        this(ipAddress, 5807);
     }
 
-    public LimelightResultsClient(String resultsUrl) {
-        this.resultsUrl = resultsUrl;
-        this.baseUrl = deriveBaseUrl(resultsUrl);
+    /**
+     * Builds a client using the given IP/host and port, targeting /results.
+     *
+     * @param ipAddress e.g. "172.28.0.1" or "limelight.local"
+     * @param port      HTTP port configured on the Limelight
+     */
+    public LimelightResultsClient(String ipAddress, int port) {
+        baseUrl = "http://" + ipAddress + ":" + port;
     }
+
 
     public void setConnectTimeoutMs(int connectTimeoutMs) {
         this.connectTimeoutMs = connectTimeoutMs;
@@ -62,7 +71,13 @@ public class LimelightResultsClient {
         if (resultsJson == null || resultsJson.isEmpty()) {
             return Collections.emptyList();
         }
-        JSONObject root = new JSONObject(resultsJson);
+        JSONObject root;
+        try {
+            root = new JSONObject(resultsJson);
+        } catch (JSONException e) {
+            // Malformed JSON; treat as no detections.
+            return Collections.emptyList();
+        }
         JSONArray fiducials = root.optJSONArray("Fiducial");
         if (fiducials == null || fiducials.length() == 0) {
             return Collections.emptyList();
