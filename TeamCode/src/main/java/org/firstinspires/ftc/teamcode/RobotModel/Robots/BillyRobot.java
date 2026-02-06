@@ -46,8 +46,6 @@ public class BillyRobot extends Robot {
     public final ColorBlobLocatorProcessor green;
 
 
-
-
     private final AutonomousMecanumRobot auton;
     @Override
     public BillyRobot.AutonomousMecanumRobot getAutonomousRobot() {
