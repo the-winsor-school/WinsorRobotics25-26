@@ -1,27 +1,18 @@
 package org.firstinspires.ftc.teamcode.RobotModel.Robots;
 
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.util.Size;
-
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.robotcore.external.function.Consumer;
-import org.firstinspires.ftc.robotcore.external.function.Continuation;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.CameraControl;
-import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
 import org.firstinspires.ftc.teamcode.RobotModel.DriveTrain.Mecanum.MecanumDrive;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Assemblies.BillyMA;
-import org.firstinspires.ftc.vision.VisionPortal;
-import org.firstinspires.ftc.vision.VisionProcessor;
+
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
-import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor;
-import org.firstinspires.ftc.vision.opencv.ColorRange;
-import org.firstinspires.ftc.vision.opencv.ImageRegion;
-import org.opencv.core.Mat;
+
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
+import com.qualcomm.hardware.limelightvision.LLStatus;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 
 import java.util.Collections;
 import java.util.List;
@@ -42,13 +33,9 @@ public class BillyRobot extends Robot {
     }
 
     private final AprilTagProcessor aprilTag;
-    public final ColorBlobLocatorProcessor purple;
-    public final ColorBlobLocatorProcessor green;
-
-
-
-
     private final AutonomousMecanumRobot auton;
+    public final Limelight3A limelight;
+
     @Override
     public BillyRobot.AutonomousMecanumRobot getAutonomousRobot() {
         return auton;
@@ -64,31 +51,11 @@ public class BillyRobot extends Robot {
 
         mechAssembly = new BillyMA(hardwareMap);
 
+        limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        limelight.setPollRateHz(100);
+        limelight.start();
+
         aprilTag = AprilTagProcessor.easyCreateWithDefaults();
-        purple = new ColorBlobLocatorProcessor.Builder()
-                .setTargetColorRange(ColorRange.ARTIFACT_PURPLE)
-                .setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)
-                .setRoi(ImageRegion.entireFrame())
-                .setDrawContours(true)
-                .build();
-
-        green = new ColorBlobLocatorProcessor.Builder()
-                .setTargetColorRange(ColorRange.GREEN)
-                .setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)
-                .setRoi(ImageRegion.entireFrame())
-                .setDrawContours(true)
-                .build();
-
-        visionPortal = new VisionPortal.Builder()
-                .setCamera(hardwareMap.get(WebcamName.class, "webcam"))
-                .setCameraResolution(new Size(640, 480))
-                .addProcessor(aprilTag)
-                .addProcessor(purple)
-                .addProcessor(green)
-                .setStreamFormat(VisionPortal.StreamFormat.YUY2)
-                .enableLiveView(true)
-                .build();
-
 
         auton = new BillyRobot.AutonomousMecanumRobot(
                 driveTrain.getAutonomousDriving(),

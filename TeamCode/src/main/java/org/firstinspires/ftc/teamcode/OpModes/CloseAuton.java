@@ -17,7 +17,7 @@ public class CloseAuton extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         robot = new BillyRobot(hardwareMap);
-        autonStrategy = closeAutonStrat.close(robot.getAutonomousRobot(), telemetry, this);
+        autonStrategy = closeAutonStrat.close(robot, telemetry, this);
 
         telemetry.addLine("Close Auton Ready");
         telemetry.update();
