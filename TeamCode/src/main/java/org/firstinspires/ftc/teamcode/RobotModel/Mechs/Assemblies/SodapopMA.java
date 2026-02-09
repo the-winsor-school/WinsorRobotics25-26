@@ -27,7 +27,9 @@ public class SodapopMA extends MechAssembly{
                 //controls
         );
         limelightVision = new LimelightVision(hardwareMap, "limelight",
-                //controls
+                gamepad -> {
+                    // Add Limelight control strategy here
+                }
         );
 
         //insert parameters for the line below
@@ -46,14 +48,14 @@ public class SodapopMA extends MechAssembly{
         private final SodaFlywheel.AutonomousSoFly AutonSOFLY;
         private final SodaSpindexServo.AutonomousSpindy AutonSOSS;
         private final SodaLift.AutonomousSodaLift AutonSOLIFT;
-        private final LimelightVision.AutonomousLimelightBehaviors AutonLIMELIGHT;
+        private final LimelightVision.AutonomousLimelightVision AutonLIMELIGHT;
 
         public SodapopMA.AutonomousSodapopMA(
         SodaIntake.AutonomousSodaIntake autonSOIN,
         SodaFlywheel.AutonomousSoFly autonSOFLY,
         SodaSpindexServo.AutonomousSpindy autonSOSS,
         SodaLift.AutonomousSodaLift autonSOLIFT,
-        LimelightVision.AutonomousLimelightBehaviors autonLIMELIGHT) {
+        LimelightVision.AutonomousLimelightVision autonLIMELIGHT) {
             AutonSOIN = autonSOIN;
             AutonSOFLY = autonSOFLY;
             AutonSOSS = autonSOSS;
