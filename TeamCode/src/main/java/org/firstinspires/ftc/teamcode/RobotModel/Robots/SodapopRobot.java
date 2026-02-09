@@ -52,7 +52,7 @@ public class SodapopRobot extends Robot {
         aprilTagProcessor = AprilTagProcessor.easyCreateWithDefaults();
 
         limelightVision = new LimelightVision(hardwareMap, "limelight",
-                gamepad -> {
+                (gamepad) -> {
                     // Add Limelight control strategy here
                 });
 

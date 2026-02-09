@@ -15,13 +15,32 @@ public class SodapopMA extends MechAssembly{
         //color sensor???
         //lift (2)
         sodamouth = new SodaIntake(hardwareMap, "soinmotor",
-                //controls
-        );
+                (motor, gamepad) -> {
+                    if (gamepad.right_trigger!=0){
+                        motor.setPower(gamepad.right_trigger); //Tweak if we want a set intake speed
+                    }
+                    else {
+                        motor.setPower(gamepad.left_trigger);
+                    }
+                }
+                );
         sodaflywheel = new SodaFlywheel(hardwareMap, "soflymotor",
-                //controls
+                (motor, gamepad) -> {
+                    if (gamepad.right_bumper){
+                        motor.setPower(0.75); //Tweak if we want an adaptive shooter flywheel speed or if it is too slow/fast
+                    }
+                    else if (gamepad.left_bumper){
+                        motor.setPower(-1); //In case of jamming
+                    }
+                }
+                //(based on limelight???)
         );
         sodaspindex = new SodaSpindexServo(hardwareMap, "sospinservo",
-                //controls
+                (servo, gamepad) -> {
+                    if (gamepad.x){
+                        servo.move(); //Tweak if we want an adaptive shooter flywheel speed or if it is too slow/fast
+                    }
+                }
         );
         sodalift = new SodaLift(hardwareMap, "solift",
                 //controls
