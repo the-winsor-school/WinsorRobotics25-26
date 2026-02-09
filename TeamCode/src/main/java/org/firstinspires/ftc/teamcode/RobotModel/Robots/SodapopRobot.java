@@ -37,10 +37,6 @@ public class SodapopRobot extends Robot{
         return auton;
     }
 
-    private final AprilTagProcessor aprilTagProcessor;
-    private final ColorBlobLocatorProcessor purpleBallProcessor;
-    private final ColorBlobLocatorProcessor greenBallProcessor;
-
     public SodapopRobot(HardwareMap hardwareMap) {
         // Initialize drive train with proper motor orientation
         driveTrain = new MecanumDrive(hardwareMap,
