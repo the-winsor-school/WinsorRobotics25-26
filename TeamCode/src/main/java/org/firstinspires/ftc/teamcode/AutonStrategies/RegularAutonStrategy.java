@@ -11,7 +11,7 @@ import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor;
 
 import java.util.List;
 
-public class regAutonStrat {
+public class RegularAutonStrategy {
     /*
     the line below i'm not sure about... help
     (the public static one, shouldn't use wildbots2025 but...

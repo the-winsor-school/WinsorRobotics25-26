@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.RobotModel.Robots;
 
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.RobotModel.DriveTrain.Mecanum.MecanumDrive;
@@ -9,13 +8,7 @@ import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Assemblies.BillyMA;
 
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
-import com.qualcomm.hardware.limelightvision.LLResult;
-import com.qualcomm.hardware.limelightvision.LLResultTypes;
-import com.qualcomm.hardware.limelightvision.LLStatus;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
-
-import java.util.Collections;
-import java.util.List;
 
 public class BillyRobot extends Robot {
     public class AutonomousMecanumRobot extends AutonomousRobot

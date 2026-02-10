@@ -9,18 +9,21 @@ import org.firstinspires.ftc.teamcode.Extensions.ThreadExtensions;
 import org.firstinspires.ftc.teamcode.RobotModel.Robots.BillyRobot;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
-import com.qualcomm.hardware.limelightvision.LLResultTypes;
-import com.qualcomm.hardware.limelightvision.LLStatus;
-import com.qualcomm.hardware.limelightvision.Limelight3A;
 
-public class closeAutonStrat {
-    public static IAutonStrategy close(BillyRobot robot,
+public class BasicApriltagTracking {
+    public static IAutonStrategy trackTag(BillyRobot robot,
                                        Telemetry telemetry,
                                        LinearOpMode opMode)
     {
         return() ->
         {
             IState currentState = lookForTag(robot, telemetry);
+
+            while (opMode.opModeIsActive() && currentState != null )
+            {
+                currentState = currentState.execute();
+                opMode.idle();
+            }
         };
     }
 
@@ -35,6 +38,8 @@ public class closeAutonStrat {
         LLResult result = limelight.getLatestResult();
         if (result != null && result.isValid())
         {
+            result.getPipelineIndex();
+
             double tx = result.getTx(); // How far left or right the target is (degrees)
             double ty = result.getTy(); // How far up or down the target is (degrees)
             double ta = result.getTa(); // How big the target looks (0%-100% of the image)
@@ -42,17 +47,28 @@ public class closeAutonStrat {
             telemetry.addData("Target X", tx);
             telemetry.addData("Target Y", ty);
             telemetry.addData("Target Area", ta);
+
+            return turnToTag(robot, telemetry, tx);
         }
         else
         {
             telemetry.addData("Limelight", "No Targets");
-        }
 
-        return turnToTag(robot, telemetry);
+            return turnToTag(robot, telemetry, 0.0);
+        }
     }
 
-    public static IState turnToTag(BillyRobot robot, Telemetry telemetry)
+    public static IState turnToTag(BillyRobot robot, Telemetry telemetry, Double angle)
     {
+        if (angle == 0)
+        {
+            return lookForTag(robot, telemetry);
+        }
+
+        robot.getAutonomousRobot().driveTrain.turnToAngle(angle);
+
+        ThreadExtensions.TrySleep(100);
+
         return lookForTag(robot, telemetry);
     }
 }

@@ -6,7 +6,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Extensions.ThreadExtensions;
 import org.firstinspires.ftc.teamcode.RobotModel.Robots.BillyRobot;
 
-public class farAutonStrat
+public class FarStrategy
 {
     //shoots preloaded and moves out of zone
     public static IAutonStrategy far(BillyRobot.AutonomousMecanumRobot robot,
