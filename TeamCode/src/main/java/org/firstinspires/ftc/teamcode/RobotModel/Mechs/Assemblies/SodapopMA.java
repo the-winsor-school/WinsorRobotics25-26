@@ -38,7 +38,7 @@ public class SodapopMA extends MechAssembly{
         sodaspindex = new SodaSpindexServo(hardwareMap, "sospinservo",
                 (servo, gamepad) -> {
                     if (gamepad.x){
-                        servo.move(); //Tweak if we want an adaptive shooter flywheel speed or if it is too slow/fast
+                        servo.; //Tweak if we want an adaptive shooter flywheel speed or if it is too slow/fast
                     }
                 }
         );
