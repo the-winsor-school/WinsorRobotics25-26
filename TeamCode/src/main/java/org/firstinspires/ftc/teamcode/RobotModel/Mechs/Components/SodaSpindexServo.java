@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.Extensions.ThreadExtensions;
 
 public class SodaSpindexServo extends MechComponent {
     public interface SoSpinSerControlStrategy extends IControlStrategy {
-        public void SCS(SodaSpindexServo servo, Gamepad gamepad);
+        public void SCS(CRServo servo, Gamepad gamepad);
     }
 
     public SodaSpindexServo(HardwareMap hardwareMap, String servoName, SoSpinSerControlStrategy strategy) {
