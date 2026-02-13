@@ -12,8 +12,8 @@ import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.SodaSpindexSer
 
 public class SodapopMA extends MechAssembly{
     public SodapopMA(HardwareMap hardwareMap) {
-        //color sensor???
-        //lift (2)
+        //color sensor are a need ???
+        //lift?? (2)
         sodamouth = new SodaIntake(hardwareMap, "soinmotor",
                 (motor, gamepad) -> {
                     if (gamepad.right_trigger!=0){
@@ -38,13 +38,13 @@ public class SodapopMA extends MechAssembly{
         sodaspindex = new SodaSpindexServo(hardwareMap, "sospinservo",
                 (servo, gamepad) -> {
                     if (gamepad.x){
-                        servo.; //Tweak if we want an adaptive shooter flywheel speed or if it is too slow/fast
+                        servo.getAutonomousBehaviors().rotateTo120Degrees(); //Tweak if we want an adaptive shooter flywheel speed or if it is too slow/fast
                     }
                 }
         );
-        sodalift = new SodaLift(hardwareMap, "solift",
+        //sodalift = new SodaLift(hardwareMap, "solift",
                 //controls
-        );
+        //);
         limelightVision = new LimelightVision(hardwareMap, "limelight",
                 gamepad -> {
                     // Add Limelight control strategy here
@@ -56,7 +56,7 @@ public class SodapopMA extends MechAssembly{
                 sodamouth.getAutonomousBehaviors(),
                 sodaflywheel.getAutonomousBehaviors(),
                 sodaspindex.getAutonomousBehaviors(),
-                sodalift.getAutonomousBehaviors(),
+                //sodalift.getAutonomousBehaviors(),
                 limelightVision.getAutonomousBehaviors()
         );
     }
