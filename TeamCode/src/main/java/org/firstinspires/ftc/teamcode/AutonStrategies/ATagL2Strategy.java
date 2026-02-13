@@ -12,8 +12,6 @@ import org.firstinspires.ftc.teamcode.RobotModel.Robots.BillyRobot;
 public class ATagL2Strategy {
     public static IAutonStrategy track(BillyRobot robot, Telemetry telemetry, LinearOpMode opMode)
                  {
-
-
         return () ->
         {
             robot.getAutonomousRobot().mechAssembly.autonFlywheel.shoot(0.77);
@@ -69,47 +67,52 @@ public class ATagL2Strategy {
 
     public static IState lookForTag(BillyRobot robot, Telemetry telemetry)
     {
-        Limelight3A limelight = robot.limelight;
-
-        limelight.setPollRateHz(100);
-        limelight.start();
-        limelight.pipelineSwitch(0);
-
-        LLResult result = limelight.getLatestResult();
-        if (result != null && result.isValid())
+        return () ->
         {
-            result.getPipelineIndex();
+            Limelight3A limelight = robot.limelight;
 
-            double tx = result.getTx(); // How far left or right the target is (degrees)
-            double ty = result.getTy(); // How far up or down the target is (degrees)
-            double ta = result.getTa(); // How big the target looks (0%-100% of the image)
+            limelight.setPollRateHz(100);
+            limelight.start();
+            limelight.pipelineSwitch(0);
 
-            telemetry.addData("Target X", tx);
-            telemetry.addData("Target Y", ty);
-            telemetry.addData("Target Area", ta);
+            LLResult result = limelight.getLatestResult();
+            if (result != null && result.isValid())
+            {
+                result.getPipelineIndex();
 
-            return turnToTag(robot, telemetry, tx);
-        }
-        else
-        {
-            telemetry.addData("Limelight", "No Targets");
+                double tx = result.getTx(); // How far left or right the target is (degrees)
+                double ty = result.getTy(); // How far up or down the target is (degrees)
+                double ta = result.getTa(); // How big the target looks (0%-100% of the image)
 
-            return turnToTag(robot, telemetry, 0.0);
-        }
+                telemetry.addData("Target X", tx);
+                telemetry.addData("Target Y", ty);
+                telemetry.addData("Target Area", ta);
+
+                return turnToTag(robot, telemetry, tx);
+            }
+            else
+            {
+                telemetry.addData("Limelight", "No Targets");
+
+                return turnToTag(robot, telemetry, 0.0);
+            }
+        };
     }
 
     public static IState turnToTag(BillyRobot robot, Telemetry telemetry, Double angle)
     {
-        if (angle == 0)
+        return () ->
         {
+            if (angle == 0) {
+                return lookForTag(robot, telemetry);
+            }
+
+            robot.getAutonomousRobot().driveTrain.turnToAngle(angle);
+
+            ThreadExtensions.TrySleep(100);
+
             return lookForTag(robot, telemetry);
-        }
-
-        robot.getAutonomousRobot().driveTrain.turnToAngle(angle);
-
-        ThreadExtensions.TrySleep(100);
-
-        return lookForTag(robot, telemetry);
+        };
     }
 
 
@@ -117,9 +120,9 @@ public class ATagL2Strategy {
     {
         return () ->
         {
-            double currentHeading = robot.getHeading();
+            double currentHeading = robot.getAutonomousRobot().getHeading();
 
-            double error = robot.angleWrap(targetAngle - currentHeading);
+            double error = robot.getAutonomousRobot().angleWrap(targetAngle - currentHeading);
 
             double kP = 0.01;   //have to test this
             double turnPower = error * kP;
@@ -150,15 +153,15 @@ public class ATagL2Strategy {
     {
         long startTime = System.currentTimeMillis();
 
-        double targetHeading = robot.getHeading();
+        double targetHeading = robot.getAutonomousRobot().getHeading();
 
         return new IState() {
             @Override
             public IState execute()
             {
-                double currentHeading = robot.getHeading();
+                double currentHeading = robot.getAutonomousRobot().getHeading();
 
-                double error = robot.angleWrap(targetHeading - currentHeading);
+                double error = robot.getAutonomousRobot().angleWrap(targetHeading - currentHeading);
 
                 double kP = 0.02;   //have to test this
                 double correction = error * kP;

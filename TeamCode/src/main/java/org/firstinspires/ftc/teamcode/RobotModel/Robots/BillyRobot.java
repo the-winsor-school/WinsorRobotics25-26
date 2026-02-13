@@ -30,6 +30,18 @@ public class BillyRobot extends Robot {
             this.driveTrain = driveTrain;
             this.mechAssembly = mechAssembly;
         }
+
+
+        public double getHeading() {
+            YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
+            return orientation.getYaw(AngleUnit.DEGREES);
+        }
+        public double angleWrap(double angle)
+        {
+            while (angle > 180) angle -= 360;
+            while (angle < -180) angle += 360;
+            return angle;
+        }
     }
 
     private final AprilTagProcessor aprilTag;
@@ -76,16 +88,4 @@ public class BillyRobot extends Robot {
                 driveTrain.getAutonomousDriving(),
                 mechAssembly.getAutonomousBehaviors());
     }
-    public double getHeading() {
-        YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
-        return orientation.getYaw(AngleUnit.DEGREES);
-    }
-    public static double angleWrap(double angle)
-    {
-        while (angle > 180) angle -= 360;
-        while (angle < -180) angle += 360;
-        return angle;
-    }
-
-
 }

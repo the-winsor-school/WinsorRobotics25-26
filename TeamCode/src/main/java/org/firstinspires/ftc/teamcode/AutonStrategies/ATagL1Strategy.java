@@ -67,46 +67,48 @@ public class ATagL1Strategy {
 
     public static IState lookForTag(BillyRobot robot, Telemetry telemetry)
     {
-        Limelight3A limelight = robot.limelight;
-
-        limelight.setPollRateHz(100);
-        limelight.start();
-        limelight.pipelineSwitch(0);
-
-        LLResult result = limelight.getLatestResult();
-        if (result != null && result.isValid())
+        return () ->
         {
-            result.getPipelineIndex();
+            Limelight3A limelight = robot.limelight;
 
-            double tx = result.getTx(); // How far left or right the target is (degrees)
-            double ty = result.getTy(); // How far up or down the target is (degrees)
-            double ta = result.getTa(); // How big the target looks (0%-100% of the image)
+            limelight.setPollRateHz(100);
+            limelight.start();
+            limelight.pipelineSwitch(0);
 
-            telemetry.addData("Target X", tx);
-            telemetry.addData("Target Y", ty);
-            telemetry.addData("Target Area", ta);
+            LLResult result = limelight.getLatestResult();
+            if (result != null && result.isValid()) {
+                result.getPipelineIndex();
 
-            return turnToTag(robot, telemetry, tx);
-        }
-        else
-        {
-            telemetry.addData("Limelight", "No Targets");
+                double tx = result.getTx(); // How far left or right the target is (degrees)
+                double ty = result.getTy(); // How far up or down the target is (degrees)
+                double ta = result.getTa(); // How big the target looks (0%-100% of the image)
 
-            return turnToTag(robot, telemetry, 0.0);
-        }
+                telemetry.addData("Target X", tx);
+                telemetry.addData("Target Y", ty);
+                telemetry.addData("Target Area", ta);
+
+                return turnToTag(robot, telemetry, tx);
+            } else {
+                telemetry.addData("Limelight", "No Targets");
+
+                return turnToTag(robot, telemetry, 0.0);
+            }
+        };
     }
 
     public static IState turnToTag(BillyRobot robot, Telemetry telemetry, Double angle)
     {
-        if (angle == 0)
+        return () ->
         {
+            if (angle == 0) {
+                return lookForTag(robot, telemetry);
+            }
+
+            robot.getAutonomousRobot().driveTrain.turnToAngle(angle);
+
+            ThreadExtensions.TrySleep(100);
+
             return lookForTag(robot, telemetry);
-        }
-
-        robot.getAutonomousRobot().driveTrain.turnToAngle(angle);
-
-        ThreadExtensions.TrySleep(100);
-
-        return lookForTag(robot, telemetry);
+        };
     }
 }
