@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.Extensions.IState;
 import org.firstinspires.ftc.teamcode.Extensions.ThreadExtensions;
 import org.firstinspires.ftc.teamcode.RobotModel.Robots.BillyRobot;
 
-public class Combined {
+public class ATagL1Strategy {
     public static IAutonStrategy track(BillyRobot robot, Telemetry telemetry, LinearOpMode opMode)
     {
         return () ->

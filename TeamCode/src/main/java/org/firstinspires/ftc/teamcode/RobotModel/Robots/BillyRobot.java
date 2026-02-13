@@ -10,6 +10,13 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 
+import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.
+        ftc.robotcore.external.navigation.YawPitchRollAngles;
+
+
 public class BillyRobot extends Robot {
     public class AutonomousMecanumRobot extends AutonomousRobot
     {
@@ -28,6 +35,8 @@ public class BillyRobot extends Robot {
     private final AprilTagProcessor aprilTag;
     private final AutonomousMecanumRobot auton;
     public final Limelight3A limelight;
+    public final IMU imu;
+
 
     @Override
     public BillyRobot.AutonomousMecanumRobot getAutonomousRobot() {
@@ -48,10 +57,35 @@ public class BillyRobot extends Robot {
         limelight.setPollRateHz(100);
         limelight.start();
 
+        imu = hardwareMap.get(IMU.class, "imu");
+
+        IMU.Parameters parameters = new IMU.Parameters(
+                new RevHubOrientationOnRobot(
+                        RevHubOrientationOnRobot.LogoFacingDirection.UP,
+                        RevHubOrientationOnRobot.UsbFacingDirection.FORWARD
+                )
+        );
+
+        imu.initialize(parameters);
+        imu.resetYaw();
+
+
         aprilTag = AprilTagProcessor.easyCreateWithDefaults();
 
         auton = new BillyRobot.AutonomousMecanumRobot(
                 driveTrain.getAutonomousDriving(),
                 mechAssembly.getAutonomousBehaviors());
     }
+    public double getHeading() {
+        YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
+        return orientation.getYaw(AngleUnit.DEGREES);
+    }
+    public static double angleWrap(double angle)
+    {
+        while (angle > 180) angle -= 360;
+        while (angle < -180) angle += 360;
+        return angle;
+    }
+
+
 }
