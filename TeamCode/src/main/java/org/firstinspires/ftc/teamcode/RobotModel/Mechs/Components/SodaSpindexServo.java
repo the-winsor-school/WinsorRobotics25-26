@@ -59,7 +59,7 @@ public class SodaSpindexServo extends MechComponent {
 
     @Override
     public void move(Gamepad gamepad) {
-        SpindyCS.SCS(this, gamepad);
+        SpindyCS.SCS(spindy, gamepad);
     }
 
     public void update(Telemetry telemetry) {

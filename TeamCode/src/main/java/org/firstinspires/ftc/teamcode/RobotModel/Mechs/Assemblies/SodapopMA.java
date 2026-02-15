@@ -13,7 +13,6 @@ import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.SodaSpindexSer
 public class SodapopMA extends MechAssembly{
     public SodapopMA(HardwareMap hardwareMap) {
         //color sensor are a need ???
-        //lift?? (2)
         sodamouth = new SodaIntake(hardwareMap, "soinmotor",
                 (motor, gamepad) -> {
                     if (gamepad.right_trigger!=0){
@@ -38,7 +37,8 @@ public class SodapopMA extends MechAssembly{
         sodaspindex = new SodaSpindexServo(hardwareMap, "sospinservo",
                 (servo, gamepad) -> {
                     if (gamepad.x){
-                        servo.getAutonomousBehaviors().rotateTo120Degrees(); //Tweak if we want an adaptive shooter flywheel speed or if it is too slow/fast
+                        ((SodaSpindexServo.AutonomousSpindy)
+                                SodapopMA.this.sodaspindex.getAutonomousBehaviors()).rotateTo120Degrees();  //Tweak if we want an adaptive shooter flywheel speed or if it is too slow/fast
                     }
                 }
         );
@@ -66,31 +66,31 @@ public class SodapopMA extends MechAssembly{
         private final SodaIntake.AutonomousSodaIntake AutonSOIN;
         private final SodaFlywheel.AutonomousSoFly AutonSOFLY;
         private final SodaSpindexServo.AutonomousSpindy AutonSOSS;
-        private final SodaLift.AutonomousSodaLift AutonSOLIFT;
+//        private final SodaLift.AutonomousSodaLift AutonSOLIFT;
         private final LimelightVision.AutonomousLimelightVision AutonLIMELIGHT;
 
-        public SodapopMA.AutonomousSodapopMA(
+        public AutonomousSodapopMA(
         SodaIntake.AutonomousSodaIntake autonSOIN,
         SodaFlywheel.AutonomousSoFly autonSOFLY,
         SodaSpindexServo.AutonomousSpindy autonSOSS,
-        SodaLift.AutonomousSodaLift autonSOLIFT,
+     //   SodaLift.AutonomousSodaLift autonSOLIFT,
         LimelightVision.AutonomousLimelightVision autonLIMELIGHT) {
             AutonSOIN = autonSOIN;
             AutonSOFLY = autonSOFLY;
             AutonSOSS = autonSOSS;
-            AutonSOLIFT = autonSOLIFT;
+    //        AutonSOLIFT = autonSOLIFT;
             AutonLIMELIGHT = autonLIMELIGHT;
         }
     }
 
     private final AutonomousSodapopMA auton;
     @Override
-    public <T extends AutonomousMechBehaviors> T getAutonomousBehaviors() {return auton;}
+    public AutonomousSodapopMA getAutonomousBehaviors() {return auton;}
 
     private final SodaIntake sodamouth;
     private final SodaFlywheel sodaflywheel;
     private final SodaSpindexServo sodaspindex;
-    private final SodaLift sodalift;
+    //private final SodaLift sodalift;
     private final LimelightVision limelightVision;
 
     @Override
@@ -98,7 +98,7 @@ public class SodapopMA extends MechAssembly{
         sodamouth.move(gamepad);
         sodaflywheel.move(gamepad);
         sodaspindex.move(gamepad);
-        sodalift.move(gamepad);
+    //    sodalift.move(gamepad);
         limelightVision.move(gamepad);
     }
 
