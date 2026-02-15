@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.BallDetectionComponent;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.LimelightVision;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.SodaFlywheel;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.SodaIntake;
@@ -59,6 +60,8 @@ public class SodapopMA extends MechAssembly{
                 //sodalift.getAutonomousBehaviors(),
                 limelightVision.getAutonomousBehaviors()
         );
+        balldetector = new BallDetectionComponent(hardwareMap, "Webcam 1",
+                (purpleProcessor, greenProcessor, gamepad) -> {});
     }
 
     public class AutonomousSodapopMA extends AutonomousMechBehaviors {
@@ -92,7 +95,7 @@ public class SodapopMA extends MechAssembly{
     private final SodaSpindexServo sodaspindex;
     //private final SodaLift sodalift;
     private final LimelightVision limelightVision;
-
+    private final BallDetectionComponent balldetector;
     @Override
     public void giveInstructions(Gamepad gamepad) {
         sodamouth.move(gamepad);
@@ -105,5 +108,6 @@ public class SodapopMA extends MechAssembly{
     @Override
     public void updateTelemetry(Telemetry telemetry) {
         limelightVision.update(telemetry);
+        balldetector.update(telemetry);
     }
 }
