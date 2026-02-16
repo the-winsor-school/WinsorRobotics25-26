@@ -5,196 +5,168 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.vision.VisionPortal;
-import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
-import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
-
-import java.util.List;
 
 /**
- * Limelight replacement using FTC's built-in AprilTag vision
- * This uses the standard FTC SDK without external NetworkTables dependency
+ * Limelight integration for Sodapop
+ * Connects to Limelight via NetworkTables for AprilTag detection and tracking
+ *
+ * SETUP REQUIRED:
+ * 1. Limelight must be on same network as Control Hub/RC phone
+ * 2. Limelight IP: http://limelight.local:5801 (default)
+ * 3. Set pipeline to AprilTag detection in Limelight web interface
  */
 public class LimelightForSoda extends MechComponent {
 
-    private final AprilTagProcessor aprilTagProcessor;
-    private final VisionPortal visionPortal;
-    private final String cameraName;
+    private final String limelightName;
     private boolean isConnected = false;
+
+    // NetworkTables objects (using reflection to avoid import errors)
+    private Object networkTableInstance;
+    private Object limelightTable;
 
     public class AutonomousLimelightForSodaBehaviors extends AutonomousComponentBehaviors {
 
         /**
-         * Check if we have a valid AprilTag target
-         * @return true if at least one AprilTag is detected
+         * Check if Limelight has a valid AprilTag target
+         * @return true if tv (valid target) == 1
          */
         public boolean hasAprilTagTarget() {
             if (!isConnected) return false;
             try {
-                List<AprilTagDetection> detections = aprilTagProcessor.getDetections();
-                return detections != null && detections.size() > 0;
+                return getNetworkTableDouble("tv", 0) == 1.0;
             } catch (Exception e) {
                 return false;
             }
         }
 
         /**
-         * Get horizontal offset to first detected tag (in degrees)
-         * Negative = left, Positive = right
+         * Get horizontal offset from crosshair to target (-27 to 27 degrees)
+         * Negative = target is to the left, Positive = target is to the right
          * @return tx value in degrees
          */
         public double getTargetX() {
-            if (!isConnected || !hasAprilTagTarget()) return 0.0;
+            if (!isConnected) return 0.0;
             try {
-                AprilTagDetection tag = aprilTagProcessor.getDetections().get(0);
-                if (tag != null && tag.ftcPose != null) {
-                    return tag.ftcPose.bearing;  // Horizontal angle
-                }
+                return getNetworkTableDouble("tx", 0.0);
             } catch (Exception e) {
-                // Silently fail
+                return 0.0;
             }
-            return 0.0;
         }
 
         /**
-         * Get vertical offset to first detected tag (in degrees)
-         * Negative = below, Positive = above
+         * Get vertical offset from crosshair to target (-20.5 to 20.5 degrees)
+         * Negative = target is below, Positive = target is above
          * @return ty value in degrees
          */
         public double getTargetY() {
-            if (!isConnected || !hasAprilTagTarget()) return 0.0;
+            if (!isConnected) return 0.0;
             try {
-                AprilTagDetection tag = aprilTagProcessor.getDetections().get(0);
-                if (tag != null && tag.ftcPose != null) {
-                    return tag.ftcPose.elevation;  // Vertical angle
-                }
+                return getNetworkTableDouble("ty", 0.0);
             } catch (Exception e) {
-                // Silently fail
+                return 0.0;
             }
-            return 0.0;
         }
 
         /**
-         * Get distance to first detected tag (in inches)
-         * @return range in inches
+         * Get target area as percentage of image (0-100)
+         * Larger area = closer to target
+         * @return ta value
          */
         public double getTargetArea() {
-            if (!isConnected || !hasAprilTagTarget()) return 0.0;
+            if (!isConnected) return 0.0;
             try {
-                AprilTagDetection tag = aprilTagProcessor.getDetections().get(0);
-                if (tag != null && tag.ftcPose != null) {
-                    return tag.ftcPose.range;  // Distance in inches
-                }
+                return getNetworkTableDouble("ta", 0.0);
             } catch (Exception e) {
-                // Silently fail
+                return 0.0;
             }
-            return 0.0;
         }
 
         /**
          * Get detected AprilTag ID
-         * @return tag ID, or -1 if none
+         * @return tid (tag ID), or -1 if none
          */
         public int getAprilTagId() {
-            if (!isConnected || !hasAprilTagTarget()) return -1;
+            if (!isConnected) return -1;
             try {
-                AprilTagDetection tag = aprilTagProcessor.getDetections().get(0);
-                if (tag != null) {
-                    return tag.id;
-                }
+                return (int) getNetworkTableDouble("tid", -1);
             } catch (Exception e) {
-                // Silently fail
+                return -1;
             }
-            return -1;
         }
 
         /**
-         * Get robot's X position on field
-         * @return x position in inches
+         * Get robot's X position on field (requires AprilTag calibration)
+         * @return botpose[0]
          */
         public double getRobotPoseX() {
-            if (!isConnected || !hasAprilTagTarget()) return 0.0;
+            if (!isConnected) return 0.0;
             try {
-                AprilTagDetection tag = aprilTagProcessor.getDetections().get(0);
-                if (tag != null && tag.ftcPose != null) {
-                    return tag.ftcPose.x;
-                }
+                double[] botpose = getNetworkTableDoubleArray("botpose", new double[6]);
+                return botpose.length > 0 ? botpose[0] : 0.0;
             } catch (Exception e) {
-                // Silently fail
+                return 0.0;
             }
-            return 0.0;
         }
 
         /**
          * Get robot's Y position on field
-         * @return y position in inches
+         * @return botpose[1]
          */
         public double getRobotPoseY() {
-            if (!isConnected || !hasAprilTagTarget()) return 0.0;
+            if (!isConnected) return 0.0;
             try {
-                AprilTagDetection tag = aprilTagProcessor.getDetections().get(0);
-                if (tag != null && tag.ftcPose != null) {
-                    return tag.ftcPose.y;
-                }
+                double[] botpose = getNetworkTableDoubleArray("botpose", new double[6]);
+                return botpose.length > 1 ? botpose[1] : 0.0;
             } catch (Exception e) {
-                // Silently fail
+                return 0.0;
             }
-            return 0.0;
         }
 
         /**
-         * Get robot's rotation on field (in degrees)
-         * @return heading in degrees
+         * Get robot's rotation on field (0-360 degrees)
+         * @return botpose[5]
          */
         public double getRobotPoseRotation() {
-            if (!isConnected || !hasAprilTagTarget()) return 0.0;
+            if (!isConnected) return 0.0;
             try {
-                AprilTagDetection tag = aprilTagProcessor.getDetections().get(0);
-                if (tag != null && tag.ftcPose != null) {
-                    return tag.ftcPose.yaw;  // Heading/yaw
-                }
+                double[] botpose = getNetworkTableDoubleArray("botpose", new double[6]);
+                return botpose.length > 5 ? botpose[5] : 0.0;
             } catch (Exception e) {
-                // Silently fail
+                return 0.0;
             }
-            return 0.0;
         }
 
         /**
-         * Check if vision system is connected
+         * Set Limelight LED mode
+         * @param mode 0=pipeline default, 1=off, 2=blink, 3=on
+         */
+        public void setLEDMode(int mode) {
+            if (!isConnected) return;
+            try {
+                setNetworkTableNumber("ledMode", mode);
+            } catch (Exception e) {
+                // Silently fail
+            }
+        }
+
+        /**
+         * Set Limelight pipeline (0-9)
+         * @param pipeline pipeline index
+         */
+        public void setPipeline(int pipeline) {
+            if (!isConnected) return;
+            try {
+                setNetworkTableNumber("pipeline", pipeline);
+            } catch (Exception e) {
+                // Silently fail
+            }
+        }
+
+        /**
+         * Check if Limelight is connected
          */
         public boolean isLimelightConnected() {
             return isConnected;
-        }
-
-        /**
-         * Get all detected AprilTags
-         */
-        public List<AprilTagDetection> getAllDetections() {
-            if (!isConnected) return null;
-            try {
-                return aprilTagProcessor.getDetections();
-            } catch (Exception e) {
-                return null;
-            }
-        }
-
-        /**
-         * Find a specific AprilTag by ID
-         */
-        public AprilTagDetection findTagById(int tagId) {
-            if (!isConnected) return null;
-            try {
-                List<AprilTagDetection> detections = aprilTagProcessor.getDetections();
-                if (detections == null) return null;
-                for (AprilTagDetection tag : detections) {
-                    if (tag.id == tagId) {
-                        return tag;
-                    }
-                }
-            } catch (Exception e) {
-                // Silently fail
-            }
-            return null;
         }
     }
 
@@ -206,36 +178,85 @@ public class LimelightForSoda extends MechComponent {
     private final AutonomousLimelightForSodaBehaviors auton;
 
     /**
-     * Initialize vision system with AprilTag detection
+     * Initialize Limelight component with NetworkTables
      * @param hardwareMap HardwareMap from OpMode
-     * @param cameraName Name of camera in hardware config
+     * @param limelightName Name of Limelight in NetworkTables (typically "limelight")
      * @param strategy Control strategy for teleop
      */
     public LimelightForSoda(HardwareMap hardwareMap,
-                            String cameraName,
+                            String limelightName,
                             LimelightForSodaControlStrategy strategy) {
         super(strategy);
-        this.cameraName = cameraName;
+        this.limelightName = limelightName;
         this.strategy = strategy;
 
-        try {
-            // Create AprilTag processor
-            aprilTagProcessor = AprilTagProcessor.easyCreateWithDefaults();
+        // Initialize NetworkTables connection to Limelight
+        initializeNetworkTables(limelightName);
 
-            // Create vision portal with AprilTag processor
-            visionPortal = new VisionPortal.Builder()
-                    .setCamera(hardwareMap.get(com.qualcomm.robotcore.hardware.WebcamName.class, cameraName))
-                    .addProcessor(aprilTagProcessor)
-                    .build();
+        this.auton = new AutonomousLimelightForSodaBehaviors();
+    }
+
+    /**
+     * Initialize NetworkTables using reflection (avoids import issues)
+     */
+    private void initializeNetworkTables(String tableName) {
+        try {
+            // Get NetworkTableInstance using reflection
+            Class<?> ntClass = Class.forName("edu.wpi.first.networktables.NetworkTableInstance");
+            java.lang.reflect.Method getDefaultMethod = ntClass.getMethod("getDefault");
+            networkTableInstance = getDefaultMethod.invoke(null);
+
+            // Get the Limelight table
+            java.lang.reflect.Method getTableMethod = ntClass.getMethod("getTable", String.class);
+            limelightTable = getTableMethod.invoke(networkTableInstance, tableName);
+
+            // Set LED mode to on
+            setNetworkTableNumber("ledMode", 3);
 
             isConnected = true;
         } catch (Exception e) {
-            aprilTagProcessor = null;
-            visionPortal = null;
             isConnected = false;
+            // Will fall back to mock mode
         }
+    }
 
-        this.auton = new AutonomousLimelightForSodaBehaviors();
+    /**
+     * Get a double value from NetworkTables
+     */
+    private double getNetworkTableDouble(String key, double defaultValue) throws Exception {
+        Class<?> tableClass = limelightTable.getClass();
+        java.lang.reflect.Method getEntryMethod = tableClass.getMethod("getEntry", String.class);
+        Object entry = getEntryMethod.invoke(limelightTable, key);
+
+        Class<?> entryClass = entry.getClass();
+        java.lang.reflect.Method getDoubleMethod = entryClass.getMethod("getDouble", double.class);
+        return (double) getDoubleMethod.invoke(entry, defaultValue);
+    }
+
+    /**
+     * Get a double array from NetworkTables
+     */
+    private double[] getNetworkTableDoubleArray(String key, double[] defaultValue) throws Exception {
+        Class<?> tableClass = limelightTable.getClass();
+        java.lang.reflect.Method getEntryMethod = tableClass.getMethod("getEntry", String.class);
+        Object entry = getEntryMethod.invoke(limelightTable, key);
+
+        Class<?> entryClass = entry.getClass();
+        java.lang.reflect.Method getArrayMethod = entryClass.getMethod("getDoubleArray", double[].class);
+        return (double[]) getArrayMethod.invoke(entry, (Object) defaultValue);
+    }
+
+    /**
+     * Set a number value in NetworkTables
+     */
+    private void setNetworkTableNumber(String key, Number value) throws Exception {
+        Class<?> tableClass = limelightTable.getClass();
+        java.lang.reflect.Method getEntryMethod = tableClass.getMethod("getEntry", String.class);
+        Object entry = getEntryMethod.invoke(limelightTable, key);
+
+        Class<?> entryClass = entry.getClass();
+        java.lang.reflect.Method setMethod = entryClass.getMethod("setNumber", Number.class);
+        setMethod.invoke(entry, value);
     }
 
     @Override
@@ -251,35 +272,26 @@ public class LimelightForSoda extends MechComponent {
     @Override
     public void update(Telemetry telemetry) {
         if (!isConnected) {
-            telemetry.addData("Vision System", cameraName + " - NOT CONNECTED");
-            telemetry.addLine("Check camera configuration");
+            telemetry.addData("Limelight", limelightName + " - NOT CONNECTED");
+            telemetry.addLine("Check: 1) Limelight on network, 2) AprilTag pipeline enabled");
+            telemetry.addLine("Limelight IP: http://limelight.local:5801");
             return;
         }
 
         boolean hasTarget = auton.hasAprilTagTarget();
-        telemetry.addData("Vision System", cameraName + " - Connected");
-        telemetry.addData("AprilTags Detected", hasTarget);
+        telemetry.addData("Limelight", limelightName + " - Connected");
+        telemetry.addData("Has AprilTag Target", hasTarget);
 
         if (hasTarget) {
-            AprilTagDetection firstTag = aprilTagProcessor.getDetections().get(0);
-            telemetry.addData("First Tag ID", firstTag.id);
-            if (firstTag.ftcPose != null) {
-                telemetry.addData("Bearing (X degrees)", String.format("%.2f", auton.getTargetX()));
-                telemetry.addData("Elevation (Y degrees)", String.format("%.2f", auton.getTargetY()));
-                telemetry.addData("Range (inches)", String.format("%.2f", auton.getTargetArea()));
-                telemetry.addData("Yaw (rotation)", String.format("%.2f°", auton.getRobotPoseRotation()));
-            }
+            telemetry.addData("Target X (degrees)", String.format("%.2f", auton.getTargetX()));
+            telemetry.addData("Target Y (degrees)", String.format("%.2f", auton.getTargetY()));
+            telemetry.addData("Target Distance (in)", String.format("%.2f", auton.getTargetArea()));
+            telemetry.addData("AprilTag ID", auton.getAprilTagId());
+            telemetry.addData("Robot Pose X", String.format("%.2f", auton.getRobotPoseX()));
+            telemetry.addData("Robot Pose Y", String.format("%.2f", auton.getRobotPoseY()));
+            telemetry.addData("Robot Rotation", String.format("%.2f°", auton.getRobotPoseRotation()));
         } else {
-            telemetry.addData("Status", "No AprilTag in view");
-        }
-    }
-
-    /**
-     * Close the vision portal when done
-     */
-    public void closeVision() {
-        if (visionPortal != null) {
-            visionPortal.close();
+            telemetry.addData("Status", "No AprilTag in view - searching...");
         }
     }
 }
