@@ -4,13 +4,12 @@ package org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.Extensions.TurnDirection;
 
 /**
- * Handles auto-aiming logic for the shooter
- * Works with Limelight 3A AprilTag detection
+ * Calculates auto-aiming values based on Limelight AprilTag detection
+ * Returns turn power, angle adjustment, and aimed status
  */
-public class AimingAssistant {
+public class AimingAssistant extends MechComponent {
 
     public enum AimingMode {
         MANUAL,           // No auto-aim
@@ -18,8 +17,59 @@ public class AimingAssistant {
         FULL_AUTO         // Auto-turn + angle adjustment
     }
 
+    public class AutonomousAimingAssistant extends AutonomousComponentBehaviors {
+        /**
+         * Get turn power for autonomous driving toward target
+         */
+        public double getAutonTurnPower() {
+            if (!limelightData.hasAprilTagTarget()) {
+                return 0.0;
+            }
+
+            double tx = limelightData.getTargetBearing();
+            if (Math.abs(tx) < HORIZONTAL_TOLERANCE) {
+                return 0.0;
+            }
+
+            return tx > 0 ? TURN_POWER : -TURN_POWER;
+        }
+
+        /**
+         * Get shooter angle adjustment for autonomous
+         */
+        public double getAutonShooterAngleAdjustment() {
+            if (!limelightData.hasAprilTagTarget()) {
+                return 0.0;
+            }
+
+            double ty = limelightData.getTargetElevation();
+            return ty * ANGLE_ADJUSTMENT_RATE;
+        }
+
+        /**
+         * Check if properly aimed for autonomous
+         */
+        public boolean isAutonAimed() {
+            if (!limelightData.hasAprilTagTarget()) {
+                return false;
+            }
+
+            double tx = limelightData.getTargetBearing();
+            double ty = limelightData.getTargetElevation();
+
+            return Math.abs(tx) < HORIZONTAL_TOLERANCE &&
+                    Math.abs(ty) < VERTICAL_TOLERANCE;
+        }
+    }
+
+    public interface AimingControlStrategy extends IControlStrategy {
+        void updateAiming(Gamepad gamepad);
+    }
+
     private AimingMode currentMode = AimingMode.MANUAL;
     private boolean aimingActive = false;
+    private final LimelightForSoda.AutonomousLimelightForSodaBehaviors limelightData;
+    private final AutonomousAimingAssistant auton = new AutonomousAimingAssistant();
 
     // Tuning parameters
     private static final double HORIZONTAL_TOLERANCE = 2.0;  // degrees
@@ -27,19 +77,32 @@ public class AimingAssistant {
     private static final double TURN_POWER = 0.3;
     private static final double ANGLE_ADJUSTMENT_RATE = 0.02; // per degree offset
 
-    public AimingAssistant() {
+    /**
+     * Initialize AimingAssistant with Limelight data source
+     */
+    public AimingAssistant(LimelightForSoda.AutonomousLimelightForSodaBehaviors limelightData) {
+        super(new AimingControlStrategy() {
+            @Override
+            public void updateAiming(Gamepad gamepad) {
+                // No-op
+            }
+        });
+        this.limelightData = limelightData;
+    }
+
+    @Override
+    public AutonomousAimingAssistant getAutonomousBehaviors() {
+        return auton;
     }
 
     /**
-     * Enable/disable aiming based on gamepad input
+     * Update aiming mode based on gamepad input
      */
     public void updateAimingMode(Gamepad gamepad) {
-        // Right bumper = toggle aiming
         if (gamepad.right_bumper) {
             aimingActive = !aimingActive;
         }
 
-        // D-pad to select aiming mode
         if (gamepad.dpad_up) {
             currentMode = AimingMode.FULL_AUTO;
         } else if (gamepad.dpad_right) {
@@ -50,10 +113,9 @@ public class AimingAssistant {
     }
 
     /**
-     * Auto-aim during TeleOp
-     * Returns motor powers for the drive train
+     * Get turn power for TeleOp
      */
-    public double getTurnPower(LimelightForSoda.AutonomousLimelightForSodaBehaviors limelightData) {
+    public double getTurnPower() {
         if (!aimingActive || currentMode == AimingMode.MANUAL) {
             return 0.0;
         }
@@ -62,25 +124,19 @@ public class AimingAssistant {
             return 0.0;
         }
 
-        double tx = limelightData.getTargetX(); // Horizontal offset
+        double tx = limelightData.getTargetBearing();
 
-        // If target is centered, no turn needed
         if (Math.abs(tx) < HORIZONTAL_TOLERANCE) {
             return 0.0;
         }
 
-        // Turn toward target
-        if (tx > 0) {
-            return TURN_POWER; // Turn right
-        } else {
-            return -TURN_POWER; // Turn left
-        }
+        return tx > 0 ? TURN_POWER : -TURN_POWER;
     }
 
     /**
-     * Get shooter angle adjustment for full auto mode
+     * Get shooter angle adjustment for TeleOp
      */
-    public double getShooterAngleAdjustment(LimelightForSoda.AutonomousLimelightForSodaBehaviors limelightData) {
+    public double getShooterAngleAdjustment() {
         if (currentMode != AimingMode.FULL_AUTO || !aimingActive) {
             return 0.0;
         }
@@ -89,27 +145,26 @@ public class AimingAssistant {
             return 0.0;
         }
 
-        double ty = limelightData.getTargetY(); // Vertical offset
-
-        // Adjust shooter angle based on vertical offset
+        double ty = limelightData.getTargetElevation();
         return ty * ANGLE_ADJUSTMENT_RATE;
     }
 
     /**
      * Check if robot is properly aimed
      */
-    public boolean isAimed(LimelightForSoda.AutonomousLimelightForSodaBehaviors limelightData) {
+    public boolean isAimed() {
         if (!limelightData.hasAprilTagTarget()) {
             return false;
         }
 
-        double tx = limelightData.getTargetX();
-        double ty = limelightData.getTargetY();
+        double tx = limelightData.getTargetBearing();
+        double ty = limelightData.getTargetElevation();
 
         return Math.abs(tx) < HORIZONTAL_TOLERANCE &&
                 Math.abs(ty) < VERTICAL_TOLERANCE;
     }
 
+    // Getters
     public AimingMode getCurrentMode() {
         return currentMode;
     }
@@ -122,17 +177,27 @@ public class AimingAssistant {
         this.aimingActive = active;
     }
 
-    public void updateTelemetry(Telemetry telemetry, LimelightForSoda.AutonomousLimelightForSodaBehaviors limelightData) {
+    @Override
+    public void move(Gamepad gamepad) {
+        updateAimingMode(gamepad);
+    }
+
+    @Override
+    public void update(Telemetry telemetry) {
         telemetry.addLine("=== Aiming Assistant ===");
         telemetry.addData("Mode", currentMode);
         telemetry.addData("Active", aimingActive ? "YES" : "NO");
 
         if (limelightData.hasAprilTagTarget()) {
-            telemetry.addData("Aimed", isAimed(limelightData) ? "✓ YES" : "✗ NO");
-            telemetry.addData("Horizontal Error", String.format("%.2f°", limelightData.getTargetX()));
-            telemetry.addData("Vertical Error", String.format("%.2f°", limelightData.getTargetY()));
+            telemetry.addData("Target ID", limelightData.getAprilTagId());
+            telemetry.addData("Aimed", isAimed() ? "✓ YES" : "✗ NO");
+            telemetry.addData("Horizontal Error", String.format("%.2f°", limelightData.getTargetBearing()));
+            telemetry.addData("Vertical Error", String.format("%.2f°", limelightData.getTargetElevation()));
+            telemetry.addData("Distance", String.format("%.2f in", limelightData.getDistanceToTarget()));
+            telemetry.addData("Turn Power", String.format("%.2f", getTurnPower()));
+            telemetry.addData("Angle Adjustment", String.format("%.2f", getShooterAngleAdjustment()));
         } else {
-            telemetry.addData("Target", "Not in view");
+            telemetry.addData("Target", "✗ Not in view");
         }
     }
 }

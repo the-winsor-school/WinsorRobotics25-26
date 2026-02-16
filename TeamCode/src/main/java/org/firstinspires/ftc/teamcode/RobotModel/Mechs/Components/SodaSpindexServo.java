@@ -27,9 +27,15 @@ public class SodaSpindexServo extends MechComponent {
          * Rotate exactly 120 degrees
          * 120° / 360° = 1/3 of full rotation
          */
-        public void rotateTo120Degrees() {
+        public void rotateTo120DegreesRight() {
             long timeNeeded = (long) (FULL_ROTATION_MS * (120.0 / 360.0));
             spindy.setPower(1);
+            ThreadExtensions.TrySleep(timeNeeded);
+            spindy.setPower(0);
+        }
+        public void rotateTo120DegreesLeft() {
+            long timeNeeded = (long) (FULL_ROTATION_MS * (120.0 / 360.0));
+            spindy.setPower(-1);
             ThreadExtensions.TrySleep(timeNeeded);
             spindy.setPower(0);
         }
@@ -38,9 +44,15 @@ public class SodaSpindexServo extends MechComponent {
          * Rotate exactly 60 degrees
          * 60° / 360° = 1/6 of full rotation
          */
-        public void rotateTo60Degrees() {
+        public void rotateTo60DegreesRight() {
             long timeNeeded = (long) (FULL_ROTATION_MS * (60.0 / 360.0));
             spindy.setPower(1);
+            ThreadExtensions.TrySleep(timeNeeded);
+            spindy.setPower(0);
+        }
+        public void rotateTo60DegreesLeft() {
+            long timeNeeded = (long) (FULL_ROTATION_MS * (60.0 / 360.0));
+            spindy.setPower(-1);
             ThreadExtensions.TrySleep(timeNeeded);
             spindy.setPower(0);
         }
