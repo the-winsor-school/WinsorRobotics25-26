@@ -1,28 +1,82 @@
-//
-// build.gradle in TeamCode
-//
-// Most of the definitions for building your module reside in a common, shared
-// file 'build.common.gradle'. Being factored in this way makes it easier to
-// integrate updates to the FTC into your code. If you really need to customize
-// the build definitions, you can place those customizations in this file, but
-// please think carefully as to whether such customizations are really necessary
-// before doing so.
-
-
-// Custom definitions may go here
-
-// Include common definitions from above.
-apply from: '../build.common.gradle'
-apply from: '../build.dependencies.gradle'
+apply plugin: 'com.android.application'
 
 android {
-    namespace = 'org.firstinspires.ftc.teamcode'
+    compileSdkVersion 33
+
+`    POM_ARTIFACT_ID = 'teamcode'
+
+    signingConfigs {
+        release {
+            keyStore file('../../android_keystore')
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+            storePassword 'android'
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            debuggable true
+        }
+    }
+
+    flavorDimensions "gms"
+    productFlavors {
+        gms {
+            dimension "gms"
+            ndk {
+                abiFilters "armeabi-v7a"
+            }
+        }
+        noGms {
+            dimension "gms"
+            ndk {
+                abiFilters "armeabi-v7a"
+            }
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
 
     packagingOptions {
-        jniLibs.useLegacyPackaging true
+        pickFirst 'META-INF/proguard/androidx-*.pro'
     }
 }
 
+repositories {
+    flatDir {
+        dirs '../libs'
+    }
+}
+
+apply from: '../build.common.gradle'
+apply from: '../stubs.gradle'
+
 dependencies {
-    implementation project(':FtcRobotController')
+    implementation 'org.firstinspires.ftc:Inspection-8.2.0'
+    implementation 'org.firstinspires.ftc:Blocks-8.2.0'
+    implementation 'org.firstinspires.ftc:Tfod-8.2.0'
+    implementation 'org.firstinspires.ftc:RobotCore-8.2.0'
+    implementation 'org.firstinspires.ftc:RobotServer-8.2.0'
+    implementation 'org.firstinspires.ftc:OnBotJava-8.2.0'
+    implementation 'org.firstinspires.ftc:Hardware-8.2.0'
+    implementation 'org.firstinspires.ftc:FtcCommon-8.2.0'
+    implementation 'org.firstinspires.ftc:Vision-8.2.0'
+    implementation 'org.firstinspires.ftc:WirelessP2p-8.2.0'
+
+    // AndroidX
+    implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+
+    // Google Play Services
+    gmsImplementation 'com.google.android.gms:play-services-location:21.0.1'
 }

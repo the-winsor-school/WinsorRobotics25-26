@@ -1,113 +1,206 @@
+/* RobotModel/Mechs/Assemblies/SodapopMA.java */
 package org.firstinspires.ftc.teamcode.RobotModel.Mechs.Assemblies;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.BallDetectionComponent;
-import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.LimelightVision;
-import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.SodaFlywheel;
+import org.firstinspires.ftc.teamcode.Extensions.GamepadExtensions;
+import org.firstinspires.ftc.teamcode.Extensions.ThreadExtensions;
+import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.LimelightForSoda;
+import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.SodaColorSensorArray;
+import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.SodaFlywheelWithPID;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.SodaIntake;
-import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.SodaLift;
-import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.SodaSpindexServo;
+import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.SodaSpindexerWithEncoder;
+import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.SodaTurretAdjuster;
+import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.SodaTurretTurner;
 
-public class SodapopMA extends MechAssembly{
+public class SodapopMA extends MechAssembly {
+
+    // ===== COMPONENT DECLARATIONS =====
+    private final SodaIntake sodaIntake;
+    private final SodaSpindexerWithEncoder sodaSpindexer;
+    private final SodaColorSensorArray sodaColorSensors;
+    private final SodaFlywheelWithPID sodaFlywheel;
+    private final SodaTurretTurner sodaTurretTurner;
+    private final SodaTurretAdjuster sodaHoodAdjuster;
+    private final LimelightForSoda sodaLimelight;
+    private final AutonomousSodapopMA auton;
+
     public SodapopMA(HardwareMap hardwareMap) {
-        //color sensor are a need ???
-        sodamouth = new SodaIntake(hardwareMap, "soinmotor",
+
+        // ===== INTAKE SYSTEM =====
+        sodaIntake = new SodaIntake(hardwareMap, "intakeMotor",
                 (motor, gamepad) -> {
-                    if (gamepad.right_trigger!=0){
-                        motor.setPower(gamepad.right_trigger); //Tweak if we want a set intake speed
+                    // Right trigger = intake in
+                    if (gamepad.right_trigger > 0.1) {
+                        motor.setPower(gamepad.right_trigger);
                     }
+                    // Left trigger = intake out (reverse, for jamming)
+                    else if (gamepad.left_trigger > 0.1) {
+                        motor.setPower(-gamepad.left_trigger);
+                    }
+                    // Otherwise stop
                     else {
-                        motor.setPower(gamepad.left_trigger);
+                        motor.setPower(0);
                     }
-                }
-                );
-        sodaflywheel = new SodaFlywheel(hardwareMap, "soflymotor",
-                (motor, gamepad) -> {
-                    if (gamepad.right_bumper){
-                        motor.setPower(0.75); //Tweak if we want an adaptive shooter flywheel speed or if it is too slow/fast
-                    }
-                    else if (gamepad.left_bumper){
-                        motor.setPower(-1); //In case of jamming
-                    }
-                }
-                //(based on limelight???)
-        );
-        sodaspindex = new SodaSpindexServo(hardwareMap, "sospinservo",
-                (servo, gamepad) -> {
-                    if (gamepad.x){
-                        ((SodaSpindexServo.AutonomousSpindy)
-                                SodapopMA.this.sodaspindex.getAutonomousBehaviors()).rotateTo120Degrees();  //Tweak if we want an adaptive shooter flywheel speed or if it is too slow/fast
-                    }
-                }
-        );
-        //sodalift = new SodaLift(hardwareMap, "solift",
-                //controls
-        //);
-        limelightVision = new LimelightVision(hardwareMap, "limelight",
-                gamepad -> {
-                    // Add Limelight control strategy here
                 }
         );
 
-        //insert parameters for the line below
-        auton = new AutonomousSodapopMA(
-                sodamouth.getAutonomousBehaviors(),
-                sodaflywheel.getAutonomousBehaviors(),
-                sodaspindex.getAutonomousBehaviors(),
-                //sodalift.getAutonomousBehaviors(),
-                limelightVision.getAutonomousBehaviors()
+        // ===== SPINDEXER WITH ENCODER =====
+        // Simple control: just control servo power directly, no autonomous calls
+        sodaSpindexer = new SodaSpindexerWithEncoder(hardwareMap, "spindexerServo", "encoderMotor",
+                (servo, encoder, gamepad) -> {
+                    // X button = rotate forward (shoot 1)
+                    if (gamepad.x) {
+                        servo.setPower(1.0);
+                        ThreadExtensions.TrySleep(667);  // 1/3 of rotation time
+                        servo.setPower(0);
+                    }
+                    // B button = rotate forward 3 times (shoot 3)
+                    else if (gamepad.b) {
+                        for (int i = 0; i < 3; i++) {
+                            servo.setPower(1.0);
+                            ThreadExtensions.TrySleep(667);
+                            servo.setPower(0);
+                            ThreadExtensions.TrySleep(300);
+                        }
+                    }
+                    // Left arrow = rotate backwards
+                    else if (gamepad.dpad_left) {
+                        servo.setPower(-1.0);
+                        ThreadExtensions.TrySleep(667);
+                        servo.setPower(0);
+                    }
+                    // Right arrow = rotate forwards
+                    else if (gamepad.dpad_right) {
+                        servo.setPower(1.0);
+                        ThreadExtensions.TrySleep(667);
+                        servo.setPower(0);
+                    }
+                    // Otherwise stop
+                    else {
+                        servo.setPower(0);
+                    }
+                }
         );
-        balldetector = new BallDetectionComponent(hardwareMap, "Webcam 1",
-                (purpleProcessor, greenProcessor, gamepad) -> {});
+
+        // ===== COLOR SENSOR ARRAY =====
+        sodaColorSensors = new SodaColorSensorArray(hardwareMap,
+                new String[]{"colorSensor0", "colorSensor1", "colorSensor2"},
+                (sensors, gamepad) -> {
+                    // Color sensors are read-only in teleop
+                }
+        );
+
+        // ===== FLYWHEEL WITH VELOCITY PID =====
+        sodaFlywheel = new SodaFlywheelWithPID(hardwareMap, "flywheelMotor",
+                (motor, flywheelComponent, gamepad) -> {
+                    // Right bumper = shoot (flywheel at full power)
+                    if (gamepad.right_bumper) {
+                        motor.setPower(0.8);
+                    }
+                    // Left bumper = reverse (unjam)
+                    else if (gamepad.left_bumper) {
+                        motor.setPower(-0.5);
+                    }
+                    // Otherwise stop
+                    else {
+                        motor.setPower(0);
+                    }
+                }
+        );
+
+        // ===== TURRET TURNER (CONTINUOUS ROTATION SERVO) =====
+        sodaTurretTurner = new SodaTurretTurner(hardwareMap, "turretServo",
+                (servo, gamepad) -> {
+                    float rightStickX = GamepadExtensions.GetRightStickX(gamepad);
+                    servo.setPower(rightStickX);
+                }
+        );
+
+        // ===== HOOD ADJUSTER (STANDARD SERVO) =====
+        sodaHoodAdjuster = new SodaTurretAdjuster(hardwareMap, "hoodServo",
+                (servo, gamepad) -> {
+                    float rightStickY = GamepadExtensions.GetRightStickY(gamepad);
+                    double position = (rightStickY + 1.0) / 2.0;
+                    servo.setPosition(Math.max(0, Math.min(1, position)));
+                }
+        );
+
+        // ===== LIMELIGHT VISION =====
+        sodaLimelight = new LimelightForSoda(hardwareMap, "limelight",
+                (gamepad) -> {
+                    // Limelight is read-only in teleop
+                }
+        );
+
+        // ===== CREATE AUTONOMOUS BEHAVIORS =====
+        auton = new AutonomousSodapopMA(
+                sodaIntake.getAutonomousBehaviors(),
+                sodaSpindexer.getAutonomousBehaviors(),
+                sodaColorSensors.getAutonomousBehaviors(),
+                sodaFlywheel.getAutonomousBehaviors(),
+                sodaTurretTurner.getAutonomousBehaviors(),
+                sodaHoodAdjuster.getAutonomousBehaviors(),
+                sodaLimelight.getAutonomousBehaviors()
+        );
     }
 
+    // ===== AUTONOMOUS BEHAVIORS CLASS =====
     public class AutonomousSodapopMA extends AutonomousMechBehaviors {
-        //parameters/behaviors for each component
-        private final SodaIntake.AutonomousSodaIntake AutonSOIN;
-        private final SodaFlywheel.AutonomousSoFly AutonSOFLY;
-        private final SodaSpindexServo.AutonomousSpindy AutonSOSS;
-//        private final SodaLift.AutonomousSodaLift AutonSOLIFT;
-        private final LimelightVision.AutonomousLimelightVision AutonLIMELIGHT;
+
+        public final SodaIntake.AutonomousSodaIntake sodaIntake;
+        public final SodaSpindexerWithEncoder.AutonomousSpindexer sodaSpindexer;
+        public final SodaColorSensorArray.AutonomousColorSensors sodaColorSensors;
+        public final SodaFlywheelWithPID.AutonomousFlywheel sodaFlywheel;
+        public final SodaTurretTurner.AutonomousTurretTurner sodaTurretTurner;
+        public final SodaTurretAdjuster.AutonomousHoodAdjuster sodaHoodAdjuster;
+        public final LimelightForSoda.AutonomousLimelightForSodaBehaviors sodaLimelight;
 
         public AutonomousSodapopMA(
-        SodaIntake.AutonomousSodaIntake autonSOIN,
-        SodaFlywheel.AutonomousSoFly autonSOFLY,
-        SodaSpindexServo.AutonomousSpindy autonSOSS,
-     //   SodaLift.AutonomousSodaLift autonSOLIFT,
-        LimelightVision.AutonomousLimelightVision autonLIMELIGHT) {
-            AutonSOIN = autonSOIN;
-            AutonSOFLY = autonSOFLY;
-            AutonSOSS = autonSOSS;
-    //        AutonSOLIFT = autonSOLIFT;
-            AutonLIMELIGHT = autonLIMELIGHT;
+                SodaIntake.AutonomousSodaIntake sodaIntake,
+                SodaSpindexerWithEncoder.AutonomousSpindexer sodaSpindexer,
+                SodaColorSensorArray.AutonomousColorSensors sodaColorSensors,
+                SodaFlywheelWithPID.AutonomousFlywheel sodaFlywheel,
+                SodaTurretTurner.AutonomousTurretTurner sodaTurretTurner,
+                SodaTurretAdjuster.AutonomousHoodAdjuster sodaHoodAdjuster,
+                LimelightForSoda.AutonomousLimelightForSodaBehaviors sodaLimelight) {
+            this.sodaIntake = sodaIntake;
+            this.sodaSpindexer = sodaSpindexer;
+            this.sodaColorSensors = sodaColorSensors;
+            this.sodaFlywheel = sodaFlywheel;
+            this.sodaTurretTurner = sodaTurretTurner;
+            this.sodaHoodAdjuster = sodaHoodAdjuster;
+            this.sodaLimelight = sodaLimelight;
         }
     }
 
-    private final AutonomousSodapopMA auton;
     @Override
-    public AutonomousSodapopMA getAutonomousBehaviors() {return auton;}
+    public <T extends AutonomousMechBehaviors> T getAutonomousBehaviors() {
+        return (T) auton;
+    }
 
-    private final SodaIntake sodamouth;
-    private final SodaFlywheel sodaflywheel;
-    private final SodaSpindexServo sodaspindex;
-    //private final SodaLift sodalift;
-    private final LimelightVision limelightVision;
-    private final BallDetectionComponent balldetector;
     @Override
     public void giveInstructions(Gamepad gamepad) {
-        sodamouth.move(gamepad);
-        sodaflywheel.move(gamepad);
-        sodaspindex.move(gamepad);
-    //    sodalift.move(gamepad);
-        limelightVision.move(gamepad);
+        sodaIntake.move(gamepad);
+        sodaSpindexer.move(gamepad);
+        sodaFlywheel.move(gamepad);
+        sodaTurretTurner.move(gamepad);
+        sodaHoodAdjuster.move(gamepad);
+        sodaLimelight.move(gamepad);
     }
 
     @Override
     public void updateTelemetry(Telemetry telemetry) {
-        limelightVision.update(telemetry);
-        balldetector.update(telemetry);
+        telemetry.addLine("===== SODAPOP MECH ASSEMBLY =====");
+        sodaIntake.update(telemetry);
+        sodaSpindexer.update(telemetry);
+        sodaColorSensors.update(telemetry);
+        sodaFlywheel.update(telemetry);
+        sodaTurretTurner.update(telemetry);
+        sodaHoodAdjuster.update(telemetry);
+        sodaLimelight.update(telemetry);
+        telemetry.addLine("==================================");
     }
 }
