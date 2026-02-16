@@ -1,3 +1,4 @@
+/* RobotModel/Robots/SodapopRobot.java */
 package org.firstinspires.ftc.teamcode.RobotModel.Robots;
 
 import android.util.Size;
@@ -28,6 +29,7 @@ public class SodapopRobot extends Robot {
     }
 
     private final AutonomousSodapopRobot auton;
+    private final SodapopMA sodapopMA;  // NEW: Store reference
 
     @Override
     public AutonomousSodapopRobot getAutonomousRobot() {
@@ -53,7 +55,7 @@ public class SodapopRobot extends Robot {
 
         limelightVision = new LimelightVision(hardwareMap, "limelight",
                 (gamepad) -> {
-                    // Add Limelight control strategy here
+                    // Limelight control strategy (passive reading)
                 });
 
         visionPortal = new VisionPortal.Builder()
@@ -64,11 +66,17 @@ public class SodapopRobot extends Robot {
                 .enableLiveView(true)
                 .build();
 
-        mechAssembly = new SodapopMA(hardwareMap);
+        sodapopMA = new SodapopMA(hardwareMap);  // NEW: Store reference
+        mechAssembly = sodapopMA;
 
         auton = new AutonomousSodapopRobot(
                 driveTrain.getAutonomousDriving(),
-                mechAssembly.getAutonomousBehaviors()
+                sodapopMA.getAutonomousBehaviors()
         );
+    }
+
+    // NEW: Public getter for mech assembly
+    public SodapopMA getMechAssembly() {
+        return sodapopMA;
     }
 }
