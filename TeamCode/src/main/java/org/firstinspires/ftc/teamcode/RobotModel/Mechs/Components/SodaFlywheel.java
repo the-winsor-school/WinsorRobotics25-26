@@ -14,12 +14,10 @@ public class SodaFlywheel extends MechComponent {
         super(soflygo);
         sodaflywheel = hardwareMap.get(DcMotor.class, motorName);
         this.soflygo = soflygo;
-        sodaflywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     public class AutonomousSoFly extends AutonomousComponentBehaviors {
-
-        public void StartSoFly(){sodaflywheel.setPower(0.8);}
+        public void StartSoFly(){sodaflywheel.setPower(1);}
         public void StopSoFly(){sodaflywheel.setPower(0);}
     }
 
