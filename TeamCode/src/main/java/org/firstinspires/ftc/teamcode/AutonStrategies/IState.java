@@ -1,10 +1,14 @@
-/* AutonStrategies/IState.java */
 package org.firstinspires.ftc.teamcode.AutonStrategies;
 
-public interface IState {
+/**
+ * IState is an interface for State Machine states.
+ * Each state executes once and returns the next state to execute.
+ */
+public interface IState
+{
     /**
-     * Execute this state and return the next state to execute
-     * @return the next IState, or null to end the state machine
+     * Execute this state once.
+     * @return the next IState to execute, or null to end the state machine
      */
     IState execute();
 }
