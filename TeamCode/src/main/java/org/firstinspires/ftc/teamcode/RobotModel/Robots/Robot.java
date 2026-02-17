@@ -23,7 +23,10 @@ public abstract class Robot
         {
             // this requires that any inheriting classes must provide these types of parameters.
         }
+
     }
+
+    protected interface IControlStrategy {  }
 
     /**
      * This abstract method definition tells inheriting classes that they MUST define a
