@@ -7,12 +7,14 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.Shooter;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.SpinnyIntake;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.PusherServo;
+import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.Turret;
 
 public class BillyMA extends MechAssembly {
 
     private final SpinnyIntake intake;
     private final PusherServo ballPusher;
     private final Shooter flywheel;
+    private final Turret turret;
 
     public BillyMA(HardwareMap hardwareMap) {
         intake = new SpinnyIntake(hardwareMap, "intakeMotor",
@@ -39,11 +41,22 @@ public class BillyMA extends MechAssembly {
         flywheel = new Shooter(hardwareMap, "flywheelMotor",
                 (motor, gamepad) -> {
                     if (gamepad.y) {
-                        motor.setPower(0.81                                       );
+                        motor.setPower(0.81);
                     } else {
                         motor.setPower(0);
                     }
                 });
+        // idk how to add nothing for this so i added smth random
+        // just don't press the right bumper ig
+        turret = new Turret(hardwareMap, "turretMotor",
+                (servo, gamepad) -> {
+                    if (gamepad.right_bumper) {
+                        servo.setPosition(0.5);
+                    }
+                },
+                ((servo, telemetry) -> {
+                    telemetry.addData("turret position", servo.getPosition());
+                }));
 
         auton = new AutonomousBillyMA(
                 intake.getAutonomousBehaviors(),
