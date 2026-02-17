@@ -10,23 +10,27 @@ public class Shooter extends MechComponent
 {
     public Shooter(
             HardwareMap hardwareMap,
-            String motorName,
+            String motorNameF, String motorNameB,
             ShooterControlStrategy pewpew) {
         super(pewpew);
-        shooter = hardwareMap.get(DcMotor.class, motorName);
+        shooterF = hardwareMap.get(DcMotor.class, motorNameF);
+        shooterB = hardwareMap.get(DcMotor.class, motorNameB);
         this.pewpew = pewpew;
     }
 
     public class AutonomousShooterBehavior extends AutonomousComponentBehaviors {
         public void StartShoot() {
-            shooter.setPower(0.76);
+            shooterF.setPower(0.76);
+            shooterB.setPower(0.76);
         }
         public void StopShoot(){
-            shooter.setPower(0);
+            shooterF.setPower(0);
+            shooterB.setPower(0);
         }
 
         public void shoot(double power){
-            shooter.setPower(power);
+            shooterF.setPower(power);
+            shooterB.setPower(power);
         }
     }
 
@@ -39,15 +43,16 @@ public class Shooter extends MechComponent
 
     public interface ShooterControlStrategy extends IControlStrategy
     {
-        void shoot(DcMotor motor, Gamepad gamepad);
+        void shoot(DcMotor motorF, DcMotor motorB, Gamepad gamepad);
     }
-    private final DcMotor shooter;
+    private final DcMotor shooterF;
+    private final DcMotor shooterB;
 
     protected ShooterControlStrategy pewpew;
 
     @Override
     public void move(Gamepad gamepad) {
-        pewpew.shoot(shooter, gamepad);
+        pewpew.shoot(shooterF, shooterB, gamepad);
     }
 
     @Override

@@ -41,12 +41,14 @@ public class BillyMA extends MechAssembly {
                     }
                 });
 
-        flywheel = new Shooter(hardwareMap, "flywheelMotor",
-                (motor, gamepad) -> {
+        flywheel = new Shooter(hardwareMap, "flywheelMotorF", "flywheelMotorB",
+                (motorF, motorB,gamepad) -> {
                     if (gamepad.y) {
-                        motor.setPower(0.81);
+                        motorF.setPower(0.81);
+                        motorB.setPower(0.81);
                     } else {
-                        motor.setPower(0);
+                        motorF.setPower(0);
+                        motorB.setPower(0);
                     }
                 });
         // idk how to add nothing for this so i added smth random
