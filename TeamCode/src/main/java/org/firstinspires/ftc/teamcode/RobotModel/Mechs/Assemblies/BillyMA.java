@@ -61,7 +61,8 @@ public class BillyMA extends MechAssembly {
         auton = new AutonomousBillyMA(
                 intake.getAutonomousBehaviors(),
                 ballPusher.getAutonomousBehaviors(),
-                flywheel.getAutonomousBehaviors()
+                flywheel.getAutonomousBehaviors(),
+                turret.getAutonomousBehaviors()
         );
     }
 
@@ -69,14 +70,17 @@ public class BillyMA extends MechAssembly {
         public final SpinnyIntake.AutonomousIntakeBehaviors autonIntake;
         public final PusherServo.AutonomousBallPusherBehaviors autonBallPusher;
         public final Shooter.AutonomousShooterBehavior autonFlywheel;
+        public final Turret.AutonomousTurretBehaviors autonTurret;
 
         public AutonomousBillyMA(
                 SpinnyIntake.AutonomousIntakeBehaviors autonIntake,
                 PusherServo.AutonomousBallPusherBehaviors autonBallPusher,
-                Shooter.AutonomousShooterBehavior autonFlywheel) {
+                Shooter.AutonomousShooterBehavior autonFlywheel,
+                Turret.AutonomousTurretBehaviors autonTurret) {
             this.autonIntake = autonIntake;
             this.autonBallPusher = autonBallPusher;
             this.autonFlywheel = autonFlywheel;
+            this.autonTurret = autonTurret;
         }
     }
 
@@ -92,11 +96,13 @@ public class BillyMA extends MechAssembly {
         intake.move(gamepad);
         ballPusher.move(gamepad);
         flywheel.move(gamepad);
+        turret.move(gamepad);
     }
 
     @Override
     public void updateTelemetry(Telemetry telemetry) {
         ballPusher.update(telemetry);
         flywheel.update(telemetry);
+        turret.update(telemetry);
     }
 }
