@@ -6,9 +6,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-public class Shooter extends MechComponent
+public class DoubleShooter extends MechComponent
 {
-    public Shooter(
+    public DoubleShooter(
             HardwareMap hardwareMap,
             String motorNameF, String motorNameB,
             ShooterControlStrategy pewpew) {
