@@ -14,6 +14,16 @@ public class ATagL2Strategy {
                  {
         return () ->
         {
+
+            IState currentState = lookForTag(robot, telemetry);
+
+            while (opMode.opModeIsActive() && currentState != null )
+            {
+                currentState = currentState.execute();
+                opMode.idle();
+            }
+
+            
             robot.getAutonomousRobot().mechAssembly.autonFlywheel.shoot(0.77);
             ThreadExtensions.TrySleep(3500);
             ThreadExtensions.TrySleep(200);
@@ -54,14 +64,6 @@ public class ATagL2Strategy {
 
             robot.getAutonomousRobot().driveTrain.drive(0,0.5,0);
             ThreadExtensions.TrySleep(1000);
-
-            IState currentState = lookForTag(robot, telemetry);
-
-            while (opMode.opModeIsActive() && currentState != null )
-            {
-                currentState = currentState.execute();
-                opMode.idle();
-            }
         };
     }
 
