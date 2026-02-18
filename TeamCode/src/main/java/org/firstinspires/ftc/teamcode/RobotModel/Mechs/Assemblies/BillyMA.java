@@ -7,12 +7,14 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.Shooter;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.SpinnyIntake;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.PusherServo;
+import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.Turret;
 
 public class BillyMA extends MechAssembly {
 
     private final SpinnyIntake intake;
     private final PusherServo ballPusher;
     private final Shooter flywheel;
+    private final Turret turret;
 
     public BillyMA(HardwareMap hardwareMap) {
         intake = new SpinnyIntake(hardwareMap, "intakeMotor",
@@ -27,28 +29,45 @@ public class BillyMA extends MechAssembly {
                     }
                 });
 
-        ballPusher = new PusherServo(hardwareMap, "ballPusherServo",
-                (servo, gamepad) -> {
+        ballPusher = new PusherServo(hardwareMap,
+                "ballPusherServoR",
+                (servoR, gamepad) -> {
                     if (gamepad.x) {
-                        servo.setPosition(0.22);  // Push position (~40 degrees from 0)
+                        servoR.setPosition(0.22);
+                        //servoL.setPosition(0.22); // Push position (~40 degrees from 0)
                     } else {
-                        servo.setPosition(0);   // Rest position
+                        servoR.setPosition(0.0);
+                        //servoL.setPosition(0.0);// Rest position
                     }
                 });
 
-        flywheel = new Shooter(hardwareMap, "flywheelMotor",
-                (motor, gamepad) -> {
+        flywheel = new Shooter(hardwareMap, "flywheelMotorF", "flywheelMotorB",
+                (motorF, motorB,gamepad) -> {
                     if (gamepad.y) {
-                        motor.setPower(0.81                                       );
+                        motorF.setPower(0.81);
+                        motorB.setPower(0.81);
                     } else {
-                        motor.setPower(0);
+                        motorF.setPower(0);
+                        motorB.setPower(0);
                     }
                 });
+        // idk how to add nothing for this so i added smth random
+        // just don't press the right bumper ig
+        turret = new Turret(hardwareMap, "turretMotor",
+                (servo, gamepad) -> {
+                    if (gamepad.right_bumper) {
+                        servo.setPosition(0.5);
+                    }
+                },
+                ((servo, telemetry) -> {
+                    telemetry.addData("turret position", servo.getPosition());
+                }));
 
         auton = new AutonomousBillyMA(
                 intake.getAutonomousBehaviors(),
                 ballPusher.getAutonomousBehaviors(),
-                flywheel.getAutonomousBehaviors()
+                flywheel.getAutonomousBehaviors(),
+                turret.getAutonomousBehaviors()
         );
     }
 
@@ -56,14 +75,17 @@ public class BillyMA extends MechAssembly {
         public final SpinnyIntake.AutonomousIntakeBehaviors autonIntake;
         public final PusherServo.AutonomousBallPusherBehaviors autonBallPusher;
         public final Shooter.AutonomousShooterBehavior autonFlywheel;
+        public final Turret.AutonomousTurretBehaviors autonTurret;
 
         public AutonomousBillyMA(
                 SpinnyIntake.AutonomousIntakeBehaviors autonIntake,
                 PusherServo.AutonomousBallPusherBehaviors autonBallPusher,
-                Shooter.AutonomousShooterBehavior autonFlywheel) {
+                Shooter.AutonomousShooterBehavior autonFlywheel,
+                Turret.AutonomousTurretBehaviors autonTurret) {
             this.autonIntake = autonIntake;
             this.autonBallPusher = autonBallPusher;
             this.autonFlywheel = autonFlywheel;
+            this.autonTurret = autonTurret;
         }
     }
 
@@ -79,11 +101,13 @@ public class BillyMA extends MechAssembly {
         intake.move(gamepad);
         ballPusher.move(gamepad);
         flywheel.move(gamepad);
+        turret.move(gamepad);
     }
 
     @Override
     public void updateTelemetry(Telemetry telemetry) {
         ballPusher.update(telemetry);
         flywheel.update(telemetry);
+        turret.update(telemetry);
     }
 }
