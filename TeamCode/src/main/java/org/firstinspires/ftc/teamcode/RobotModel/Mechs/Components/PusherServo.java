@@ -11,33 +11,33 @@ public class PusherServo extends MechComponent {
     public class AutonomousBallPusherBehaviors extends AutonomousComponentBehaviors {
         public void pushBalls() {
             servoR.setPosition(0.22);
-            servoL.setPosition(0.22);
+            //servoL.setPosition(0.22);
         }
 
         public void setPosition(double position) {
             servoR.setPosition(position);
-            servoL.setPosition(position);
+            //servoL.setPosition(position);
         }
 
         public void retractPusher() {
             servoR.setPosition(0.0);
-            servoL.setPosition(0.0);
+            //servoL.setPosition(0.0);
         }
     }
 
     public interface BallPusherControlStrategy extends IControlStrategy {
-        void controlPusher(Servo servoR, Servo servoL, Gamepad gamepad);
+        void controlPusher(Servo servoR, Gamepad gamepad);
     }
 
     private final Servo servoR;
-    private final Servo servoL;
+    //private final Servo servoL;
     private final BallPusherControlStrategy strategy;
     private final AutonomousBallPusherBehaviors auton = new AutonomousBallPusherBehaviors();
 
-    public PusherServo(HardwareMap hardwareMap, String servoNameR, String servoNameL, BallPusherControlStrategy strategy) {
+    public PusherServo(HardwareMap hardwareMap, String servoNameR, BallPusherControlStrategy strategy) {
         super(strategy);
         this.servoR = hardwareMap.get(Servo.class, servoNameR);
-        this.servoL = hardwareMap.get(Servo.class, servoNameL);
+        //this.servoL = hardwareMap.get(Servo.class, servoNameL);
         this.strategy = strategy;
     }
 
@@ -48,12 +48,12 @@ public class PusherServo extends MechComponent {
 
     @Override
     public void move(Gamepad gamepad) {
-        strategy.controlPusher(servoR, servoL, gamepad);
+        strategy.controlPusher(servoR, gamepad);
     }
 
     @Override
     public void update(Telemetry telemetry) {
         telemetry.addData("Right Pusher Position", "%.2f", servoR.getPosition());
-        telemetry.addData("Left Pusher Position", "%.2f", servoL.getPosition());
+       // telemetry.addData("Left Pusher Position", "%.2f", servoL.getPosition());
     }
 }

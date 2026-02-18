@@ -30,14 +30,14 @@ public class BillyMA extends MechAssembly {
                 });
 
         ballPusher = new PusherServo(hardwareMap,
-                "ballPusherServoR", "ballPusherServoL",
-                (servoR, servoL, gamepad) -> {
+                "ballPusherServoR",
+                (servoR, gamepad) -> {
                     if (gamepad.x) {
                         servoR.setPosition(0.22);
-                        servoL.setPosition(0.22); // Push position (~40 degrees from 0)
+                        //servoL.setPosition(0.22); // Push position (~40 degrees from 0)
                     } else {
                         servoR.setPosition(0.0);
-                        servoL.setPosition(0.0);// Rest position
+                        //servoL.setPosition(0.0);// Rest position
                     }
                 });
 
