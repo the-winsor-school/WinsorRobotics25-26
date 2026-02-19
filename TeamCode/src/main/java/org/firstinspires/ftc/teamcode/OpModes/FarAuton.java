@@ -17,7 +17,7 @@ public class FarAuton extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        robot = new BillyRobot(hardwareMap);
+        robot = new BillyRobot(hardwareMap, telemetry);
         autonStrategy = FarStrategy.far(robot.getAutonomousRobot(), telemetry, this);
 
         telemetry.addLine("Far Auton Ready");

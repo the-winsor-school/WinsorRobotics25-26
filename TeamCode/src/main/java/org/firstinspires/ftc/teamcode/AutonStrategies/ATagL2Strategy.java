@@ -23,7 +23,94 @@ public class ATagL2Strategy {
                 opMode.idle();
             }
 
-            
+        };
+    }
+
+    public static IState lookForTag(BillyRobot robot, Telemetry telemetry)
+    {
+        return () ->
+        {
+            telemetry.clear();
+            telemetry.addLine("looking for tag");
+            telemetry.update();
+
+            Limelight3A limelight = robot.limelight;
+
+            limelight.setPollRateHz(100);
+            limelight.start();
+            limelight.pipelineSwitch(0);
+
+            LLResult result = limelight.getLatestResult();
+
+            result.getPipelineIndex();
+
+            double tx = result.getTx(); // How far left or right the target is (degrees)
+            double ty = result.getTy(); // How far up or down the target is (degrees)
+            double ta = result.getTa(); // How big the target looks (0%-100% of the image)
+
+            if (result.isValid())
+            {
+
+                telemetry.addData("Target X", tx);
+                telemetry.addData("Target Y", ty);
+                telemetry.addData("Target Area", ta);
+
+                return lookForTag(robot, telemetry);
+
+            }
+            else if (result.isValid() && tx > 0) //tag is to the right
+            {
+                robot.getAutonomousRobot().mechAssembly.autonTurret.turnCCW();
+                ThreadExtensions.TrySleep(10);
+
+                return lookForTag(robot, telemetry);
+            }
+            else if (result.isValid() && tx < 0) //tag is to the left
+            {
+                robot.getAutonomousRobot().mechAssembly.autonTurret.turnCW();
+                ThreadExtensions.TrySleep(10);
+
+                return lookForTag(robot, telemetry);
+            }
+            return lookForTag(robot, telemetry);
+        };
+    }
+
+
+    public static IState turnToAngle(BillyRobot robot, Telemetry telemetry, double targetAngle)
+    {
+        return () ->
+        {
+            double currentHeading = robot.getAutonomousRobot().getHeading();
+
+            double error = robot.getAutonomousRobot().angleWrap(targetAngle - currentHeading);
+
+            double kP = 0.01;   //have to test this
+            double turnPower = error * kP;
+
+            turnPower = Math.max(-0.4, Math.min(0.4, turnPower));
+
+            telemetry.addData("Target", targetAngle);
+            telemetry.addData("Heading", currentHeading);
+            telemetry.addData("Error", error);
+
+            if (Math.abs(error) < 2)
+            {
+                robot.getAutonomousRobot().driveTrain.drive(0,0,0);
+                return null;
+            }
+
+            robot.getAutonomousRobot().mechAssembly.autonTurret.setPower(turnPower);
+
+            return turnToAngle(robot, telemetry, targetAngle);
+        };
+    }
+
+    public static IState ShootBalls(BillyRobot robot, Telemetry telemetry)
+    {
+
+        return() ->
+        {
             robot.getAutonomousRobot().mechAssembly.autonFlywheel.shoot(0.77);
             ThreadExtensions.TrySleep(3500);
             ThreadExtensions.TrySleep(200);
@@ -64,87 +151,10 @@ public class ATagL2Strategy {
 
             robot.getAutonomousRobot().driveTrain.drive(0,0.5,0);
             ThreadExtensions.TrySleep(1000);
-        };
-    }
-
-    public static IState lookForTag(BillyRobot robot, Telemetry telemetry)
-    {
-        return () ->
-        {
-            Limelight3A limelight = robot.limelight;
-
-            limelight.setPollRateHz(100);
-            limelight.start();
-            limelight.pipelineSwitch(0);
-
-            LLResult result = limelight.getLatestResult();
-            if (result != null && result.isValid())
-            {
-                result.getPipelineIndex();
-
-                double tx = result.getTx(); // How far left or right the target is (degrees)
-                double ty = result.getTy(); // How far up or down the target is (degrees)
-                double ta = result.getTa(); // How big the target looks (0%-100% of the image)
-
-                telemetry.addData("Target X", tx);
-                telemetry.addData("Target Y", ty);
-                telemetry.addData("Target Area", ta);
-
-                return turnToTag(robot, telemetry, tx);
-            }
-            else
-            {
-                telemetry.addData("Limelight", "No Targets");
-
-                return turnToTag(robot, telemetry, 0.0);
-            }
-        };
-    }
-
-    public static IState turnToTag(BillyRobot robot, Telemetry telemetry, Double angle)
-    {
-        return () ->
-        {
-            if (angle == 0) {
-                return lookForTag(robot, telemetry);
-            }
-
-            robot.getAutonomousRobot().driveTrain.turnToAngle(angle);
-
-            ThreadExtensions.TrySleep(100);
 
             return lookForTag(robot, telemetry);
         };
-    }
 
-
-    public static IState turnToAngle(BillyRobot robot, Telemetry telemetry, double targetAngle)
-    {
-        return () ->
-        {
-            double currentHeading = robot.getAutonomousRobot().getHeading();
-
-            double error = robot.getAutonomousRobot().angleWrap(targetAngle - currentHeading);
-
-            double kP = 0.01;   //have to test this
-            double turnPower = error * kP;
-
-            turnPower = Math.max(-0.4, Math.min(0.4, turnPower));
-
-            telemetry.addData("Target", targetAngle);
-            telemetry.addData("Heading", currentHeading);
-            telemetry.addData("Error", error);
-
-            if (Math.abs(error) < 2)
-            {
-                robot.getAutonomousRobot().driveTrain.drive(0,0,0);
-                return null;
-            }
-
-            robot.getAutonomousRobot().driveTrain.drive(0, 0, turnPower);
-
-            return turnToAngle(robot, telemetry, targetAngle);
-        };
     }
 
     public static IState StraightDrive(BillyRobot robot,

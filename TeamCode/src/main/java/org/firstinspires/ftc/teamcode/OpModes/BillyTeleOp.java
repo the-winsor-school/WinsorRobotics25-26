@@ -11,7 +11,7 @@ public class BillyTeleOp extends LinearOpMode {
     Robot robot;
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new BillyRobot(hardwareMap);
+        robot = new BillyRobot(hardwareMap, telemetry);
 
         telemetry.addLine("Billy Initialized");
         telemetry.update();

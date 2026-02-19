@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.Shooter;
+import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.DoubleShooter;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.SpinnyIntake;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.PusherServo;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.Turret;
@@ -13,7 +13,7 @@ public class BillyMA extends MechAssembly {
 
     private final SpinnyIntake intake;
     private final PusherServo ballPusher;
-    private final Shooter flywheel;
+    private final DoubleShooter flywheel;
     private final Turret turret;
 
     public BillyMA(HardwareMap hardwareMap) {
@@ -30,10 +30,10 @@ public class BillyMA extends MechAssembly {
                 });
 
         ballPusher = new PusherServo(hardwareMap,
-                "ballPusherServoR",
+                "ballPusherServo",
                 (servoR, gamepad) -> {
                     if (gamepad.x) {
-                        servoR.setPosition(0.22);
+                        servoR.setPosition(0.0);
                         //servoL.setPosition(0.22); // Push position (~40 degrees from 0)
                     } else {
                         servoR.setPosition(0.0);
@@ -41,7 +41,7 @@ public class BillyMA extends MechAssembly {
                     }
                 });
 
-        flywheel = new Shooter(hardwareMap, "flywheelMotorF", "flywheelMotorB",
+        flywheel = new DoubleShooter(hardwareMap, "flywheelMotorF", "flywheelMotorB",
                 (motorF, motorB,gamepad) -> {
                     if (gamepad.y) {
                         motorF.setPower(0.81);
@@ -53,14 +53,22 @@ public class BillyMA extends MechAssembly {
                 });
         // idk how to add nothing for this so i added smth random
         // just don't press the right bumper ig
-        turret = new Turret(hardwareMap, "turretMotor",
+        turret = new Turret(hardwareMap, "turretServo",
                 (servo, gamepad) -> {
-                    if (gamepad.right_bumper) {
-                        servo.setPosition(0.5);
+                    if (gamepad.right_bumper)
+                    {
+                        servo.setPower(1);
+                    }
+                    else if (gamepad.left_bumper)
+                    {
+                        servo.setPower(-1);
+                    }
+                    else {
+                        servo.setPower(0);
                     }
                 },
                 ((servo, telemetry) -> {
-                    telemetry.addData("turret position", servo.getPosition());
+                    telemetry.addData("turret position", servo.getPower());
                 }));
 
         auton = new AutonomousBillyMA(
@@ -74,13 +82,13 @@ public class BillyMA extends MechAssembly {
     public class AutonomousBillyMA extends AutonomousMechBehaviors {
         public final SpinnyIntake.AutonomousIntakeBehaviors autonIntake;
         public final PusherServo.AutonomousBallPusherBehaviors autonBallPusher;
-        public final Shooter.AutonomousShooterBehavior autonFlywheel;
+        public final DoubleShooter.AutonomousShooterBehavior autonFlywheel;
         public final Turret.AutonomousTurretBehaviors autonTurret;
 
         public AutonomousBillyMA(
                 SpinnyIntake.AutonomousIntakeBehaviors autonIntake,
                 PusherServo.AutonomousBallPusherBehaviors autonBallPusher,
-                Shooter.AutonomousShooterBehavior autonFlywheel,
+                DoubleShooter.AutonomousShooterBehavior autonFlywheel,
                 Turret.AutonomousTurretBehaviors autonTurret) {
             this.autonIntake = autonIntake;
             this.autonBallPusher = autonBallPusher;

@@ -1,8 +1,17 @@
 package org.firstinspires.ftc.teamcode.RobotModel.Robots;
 
+import static org.firstinspires.ftc.teamcode.AutonStrategies.ATagL2Strategy.lookForTag;
+
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.AutonStrategies.IAutonStrategy;
+import org.firstinspires.ftc.teamcode.Extensions.IState;
+import org.firstinspires.ftc.teamcode.Extensions.ThreadExtensions;
 import org.firstinspires.ftc.teamcode.RobotModel.DriveTrain.Mecanum.MecanumDrive;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Assemblies.BillyMA;
 
@@ -55,7 +64,7 @@ public class BillyRobot extends Robot {
         return auton;
     }
 
-    public BillyRobot(HardwareMap hardwareMap) {
+    public BillyRobot(HardwareMap hardwareMap, Telemetry telemetry) {
         driveTrain = new MecanumDrive(hardwareMap, new MecanumDrive.OrientationConfiguration(
                 DcMotorSimple.Direction.FORWARD,
                 DcMotorSimple.Direction.FORWARD,
@@ -87,5 +96,14 @@ public class BillyRobot extends Robot {
         auton = new BillyRobot.AutonomousMecanumRobot(
                 driveTrain.getAutonomousDriving(),
                 mechAssembly.getAutonomousBehaviors());
+
+//        currentState = lookForTag(this, telemetry);
     }
+
+//    @Override
+//    public void update(Gamepad gamepad1, Gamepad gamepad2) {
+//        super.update(gamepad1, gamepad2);
+//        currentState = currentState.execute();
+//    }
+//    IState currentState;
 }

@@ -14,7 +14,7 @@ public class ATagL1Auton extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new BillyRobot(hardwareMap);
+        robot = new BillyRobot(hardwareMap, telemetry);
         strategy = ATagL1Strategy.track(robot, telemetry, this);
 
         telemetry.addLine("auton ready");
