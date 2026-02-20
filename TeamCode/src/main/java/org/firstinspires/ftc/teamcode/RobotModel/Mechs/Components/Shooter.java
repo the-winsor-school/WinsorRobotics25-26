@@ -22,6 +22,13 @@ public class Shooter extends MechComponent
         public void StartShoot(){
             shooter.setPower(0.40);
         }
+
+        public void StartShootHarder(){
+            shooter.setPower(0.50);
+        }
+
+
+
         public void SetSpeed(double speed) { shooter.setPower(speed); }
         public void StopShoot(){
             shooter.setPower(0);
