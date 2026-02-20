@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.RobotModel.Mechs.Assemblies;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.DoubleShooter;
@@ -20,6 +21,7 @@ public class BillyMA extends MechAssembly {
         intake = new SpinnyIntake(hardwareMap, "intakeMotor",
                 (motor, gamepad) -> {
                     if (gamepad.a) {
+
                         motor.setPower(0.75);
                     }
                     if (gamepad.b) {
@@ -32,20 +34,24 @@ public class BillyMA extends MechAssembly {
         ballPusher = new PusherServo(hardwareMap,
                 "ballPusherServo",
                 (servoR, gamepad) -> {
+                    servoR.setDirection(Servo.Direction.REVERSE);
                     if (gamepad.x) {
-                        servoR.setPosition(0.0);
+                        servoR.setPosition(0.8);
                         //servoL.setPosition(0.22); // Push position (~40 degrees from 0)
                     } else {
                         servoR.setPosition(0.0);
                         //servoL.setPosition(0.0);// Rest position
                     }
-                });
+                },
+                (((servo, telemetry) -> {
+                    telemetry.addData("pusher position", servo.getPosition());
+                })));
 
         flywheel = new DoubleShooter(hardwareMap, "flywheelMotorF", "flywheelMotorB",
                 (motorF, motorB,gamepad) -> {
                     if (gamepad.y) {
                         motorF.setPower(0.81);
-                        motorB.setPower(0.81);
+                        motorB.setPower(-0.81);
                     } else {
                         motorF.setPower(0);
                         motorB.setPower(0);

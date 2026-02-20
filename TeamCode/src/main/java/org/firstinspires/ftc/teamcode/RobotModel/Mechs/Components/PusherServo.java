@@ -29,16 +29,26 @@ public class PusherServo extends MechComponent {
         void controlPusher(Servo servoR, Gamepad gamepad);
     }
 
+    public interface PusherTelemetryStrategy
+    {
+        public void update(Servo servo, Telemetry telemetry);
+    }
+
     private final Servo servoR;
     //private final Servo servoL;
     private final BallPusherControlStrategy strategy;
+    protected final PusherTelemetryStrategy telemetryStrategy;
     private final AutonomousBallPusherBehaviors auton = new AutonomousBallPusherBehaviors();
 
-    public PusherServo(HardwareMap hardwareMap, String servoNameR, BallPusherControlStrategy strategy) {
+    public PusherServo(HardwareMap hardwareMap,
+                       String servoNameR,
+                       BallPusherControlStrategy strategy,
+                       PusherTelemetryStrategy telemetryStrategy) {
         super(strategy);
         this.servoR = hardwareMap.get(Servo.class, servoNameR);
         //this.servoL = hardwareMap.get(Servo.class, servoNameL);
         this.strategy = strategy;
+        this.telemetryStrategy = telemetryStrategy;
     }
 
     @Override
