@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.AutonStrategies;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -10,69 +11,66 @@ import org.firstinspires.ftc.teamcode.Extensions.ThreadExtensions;
 import org.firstinspires.ftc.teamcode.RobotModel.Robots.BillyRobot;
 
 public class ATagL2Strategy {
-    public static IAutonStrategy track(BillyRobot robot, Telemetry telemetry, LinearOpMode opMode)
+    public static IAutonStrategy track(BillyRobot robot, Telemetry telemetry, LinearOpMode opMode, int tagID)
                  {
         return () ->
         {
 
-            IState currentState = lookForTag(robot, telemetry);
+            IState turretState = lookForTag(robot, telemetry,tagID);
+            IState driveState = turnToAngle(robot,telemetry,90);
 
-            while (opMode.opModeIsActive() && currentState != null )
+            while (opMode.opModeIsActive() && driveState != null)
             {
-                currentState = currentState.execute();
+                turretState = turretState.execute();
+                driveState = driveState.execute();
                 opMode.idle();
             }
+
 
         };
     }
 
-    public static IState lookForTag(BillyRobot robot, Telemetry telemetry)
+    public static IState lookForTag(BillyRobot robot, Telemetry telemetry, int tagId)
     {
         return () ->
         {
-            telemetry.clear();
             telemetry.addLine("looking for tag");
             telemetry.update();
 
             Limelight3A limelight = robot.limelight;
 
-            limelight.setPollRateHz(100);
-            limelight.start();
-            limelight.pipelineSwitch(0);
-
             LLResult result = limelight.getLatestResult();
 
             result.getPipelineIndex();
+            boolean foundTag = result
+                    .getFiducialResults()
+                    .stream()
+                    .anyMatch(fr -> fr.getFiducialId() == tagId);
 
-            double tx = result.getTx(); // How far left or right the target is (degrees)
-            double ty = result.getTy(); // How far up or down the target is (degrees)
-            double ta = result.getTa(); // How big the target looks (0%-100% of the image)
-
-            if (result.isValid())
+            if(foundTag)
             {
+                telemetry.addLine("found");
+                telemetry.update();
+                LLResultTypes.FiducialResult fiducialResult = result
+                        .getFiducialResults()
+                        .stream()
+                        .filter(fr -> fr.getFiducialId() == tagId)
+                        .findFirst()
+                        .get();
 
-                telemetry.addData("Target X", tx);
-                telemetry.addData("Target Y", ty);
-                telemetry.addData("Target Area", ta);
-
-                return lookForTag(robot, telemetry);
-
+                double tx = fiducialResult.getTargetXDegrees();
+                if(tx > 0) {
+                    robot.getAutonomousRobot().mechAssembly.autonTurret.turnCCW();
+                    telemetry.addLine("tag is to the right");
+                    telemetry.update();
+                }
+                if(tx < 0) {
+                    robot.getAutonomousRobot().mechAssembly.autonTurret.turnCW();
+                    telemetry.addLine("tag is to the left");
+                    telemetry.update();
+                }
             }
-            else if (result.isValid() && tx > 0) //tag is to the right
-            {
-                robot.getAutonomousRobot().mechAssembly.autonTurret.turnCCW();
-                ThreadExtensions.TrySleep(10);
-
-                return lookForTag(robot, telemetry);
-            }
-            else if (result.isValid() && tx < 0) //tag is to the left
-            {
-                robot.getAutonomousRobot().mechAssembly.autonTurret.turnCW();
-                ThreadExtensions.TrySleep(10);
-
-                return lookForTag(robot, telemetry);
-            }
-            return lookForTag(robot, telemetry);
+            return lookForTag(robot, telemetry,tagId);
         };
     }
 
@@ -102,7 +100,7 @@ public class ATagL2Strategy {
 
             robot.getAutonomousRobot().mechAssembly.autonTurret.setPower(turnPower);
 
-            return turnToAngle(robot, telemetry, targetAngle);
+            return StraightDrive(robot, telemetry, -0.5, 0, 2000); // TEST
         };
     }
 
@@ -152,9 +150,8 @@ public class ATagL2Strategy {
             robot.getAutonomousRobot().driveTrain.drive(0,0.5,0);
             ThreadExtensions.TrySleep(1000);
 
-            return lookForTag(robot, telemetry);
+            return turnToAngle(robot, telemetry, 90);
         };
-
     }
 
     public static IState StraightDrive(BillyRobot robot,
@@ -197,8 +194,30 @@ public class ATagL2Strategy {
                     return null;
                 }
 
-                return this;
+                return IntakeBalls(robot,telemetry);
             }
+        };
+    }
+
+    public static IState IntakeBalls(BillyRobot robot, Telemetry telemetry){
+        return () -> {
+            telemetry.clear();
+            telemetry.addLine("intaking balls");
+
+            robot.getAutonomousRobot().mechAssembly.autonIntake.startIntake();
+            ThreadExtensions.TrySleep(3000);
+            robot.getAutonomousRobot().driveTrain.drive(0,0.25,0);
+            ThreadExtensions.TrySleep(2700);   //might have to change to back up intake
+            robot.getAutonomousRobot().mechAssembly.autonIntake.stopIntake();
+            ThreadExtensions.TrySleep(200);
+
+            //backing up
+            robot.getAutonomousRobot().driveTrain.drive(0,-0.5,0);
+            ThreadExtensions.TrySleep(1000);
+            robot.getAutonomousRobot().driveTrain.drive(0.75,0,0);
+            ThreadExtensions.TrySleep(1000);
+
+            return ShootBalls(robot, telemetry);
         };
     }
 }

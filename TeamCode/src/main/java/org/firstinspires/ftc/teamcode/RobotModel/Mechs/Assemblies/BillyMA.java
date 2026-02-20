@@ -50,8 +50,8 @@ public class BillyMA extends MechAssembly {
         flywheel = new DoubleShooter(hardwareMap, "flywheelMotorF", "flywheelMotorB",
                 (motorF, motorB,gamepad) -> {
                     if (gamepad.y) {
-                        motorF.setPower(0.81);
-                        motorB.setPower(-0.81);
+                        motorF.setPower(0.5);
+                        motorB.setPower(-0.5);
                     } else {
                         motorF.setPower(0);
                         motorB.setPower(0);
@@ -61,17 +61,17 @@ public class BillyMA extends MechAssembly {
         // just don't press the right bumper ig
         turret = new Turret(hardwareMap, "turretServo",
                 (servo, gamepad) -> {
-                    if (gamepad.right_bumper)
-                    {
-                        servo.setPower(1);
-                    }
-                    else if (gamepad.left_bumper)
-                    {
-                        servo.setPower(-1);
-                    }
-                    else {
-                        servo.setPower(0);
-                    }
+//                    if (gamepad.right_bumper)
+//                    {
+//                        servo.setPower(1);
+//                    }
+//                    else if (gamepad.left_bumper)
+//                    {
+//                        servo.setPower(-1);
+//                    }
+//                    else {
+//                        servo.setPower(0);
+//                    }
                 },
                 ((servo, telemetry) -> {
                     telemetry.addData("turret position", servo.getPower());

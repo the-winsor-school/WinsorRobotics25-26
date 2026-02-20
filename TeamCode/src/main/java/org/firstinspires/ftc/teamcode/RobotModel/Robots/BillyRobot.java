@@ -64,7 +64,7 @@ public class BillyRobot extends Robot {
         return auton;
     }
 
-    public BillyRobot(HardwareMap hardwareMap, Telemetry telemetry) {
+    public BillyRobot(HardwareMap hardwareMap, Telemetry telemetry, int tagID) {
         driveTrain = new MecanumDrive(hardwareMap, new MecanumDrive.OrientationConfiguration(
                 DcMotorSimple.Direction.FORWARD,
                 DcMotorSimple.Direction.FORWARD,
@@ -77,13 +77,14 @@ public class BillyRobot extends Robot {
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         limelight.setPollRateHz(100);
         limelight.start();
+        limelight.pipelineSwitch(0);
 
         imu = hardwareMap.get(IMU.class, "imu");
 
         IMU.Parameters parameters = new IMU.Parameters(
                 new RevHubOrientationOnRobot(
-                        RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                        RevHubOrientationOnRobot.UsbFacingDirection.FORWARD
+                        RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
+                        RevHubOrientationOnRobot.UsbFacingDirection.UP
                 )
         );
 
@@ -97,13 +98,13 @@ public class BillyRobot extends Robot {
                 driveTrain.getAutonomousDriving(),
                 mechAssembly.getAutonomousBehaviors());
 
-//        currentState = lookForTag(this, telemetry);
+        currentState = lookForTag(this, telemetry, tagID);
     }
 
-//    @Override
-//    public void update(Gamepad gamepad1, Gamepad gamepad2) {
-//        super.update(gamepad1, gamepad2);
-//        currentState = currentState.execute();
-//    }
-//    IState currentState;
+    @Override
+    public void update(Gamepad gamepad1, Gamepad gamepad2) {
+        super.update(gamepad1, gamepad2);
+        currentState = currentState.execute();
+    }
+    IState currentState;
 }

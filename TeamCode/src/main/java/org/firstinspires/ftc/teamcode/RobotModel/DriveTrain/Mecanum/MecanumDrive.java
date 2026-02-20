@@ -159,9 +159,9 @@ public class MecanumDrive extends DriveTrain
         double y1 = Math.sin(angle + Math.PI/4) * magnitude;
         double y2 = Math.sin(angle - Math.PI/4) * magnitude;
 
-        double lf = y1 + turn;
-        double lb = y2 + turn;
-        double rf = y2 - turn;
+        double lf = y1 + turn;   // swapped sign
+        double lb = y2 - turn;   // swapped sign
+        double rf = y2 + turn;
         double rb = y1 - turn;
 
         double n = Math.max(

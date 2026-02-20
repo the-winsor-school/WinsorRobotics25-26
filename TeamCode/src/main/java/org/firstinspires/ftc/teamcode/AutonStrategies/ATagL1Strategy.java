@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.AutonStrategies;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -10,20 +11,67 @@ import org.firstinspires.ftc.teamcode.Extensions.ThreadExtensions;
 import org.firstinspires.ftc.teamcode.RobotModel.Robots.BillyRobot;
 
 public class ATagL1Strategy {
-    public static IAutonStrategy track(BillyRobot robot, Telemetry telemetry, LinearOpMode opMode)
-    {
+    public static IAutonStrategy track(BillyRobot robot, Telemetry telemetry, LinearOpMode opMode, int tagID) {
         return () ->
         {
 
-            IState currentState = lookForTag(robot, telemetry);
+            IState turretState = lookForTag(robot, telemetry,tagID);
+            IState driveState = shootBalls(robot, telemetry);
 
-            while (opMode.opModeIsActive() && currentState != null )
-            {
-                currentState = currentState.execute();
+            while (opMode.opModeIsActive() && driveState != null) {
+                turretState = turretState.execute();
+                driveState = driveState.execute();
                 opMode.idle();
             }
+        };
+    }
 
+    public static IState lookForTag(BillyRobot robot, Telemetry telemetry, int tagId) {
+        return () ->
+        {
+            telemetry.clear();
+            telemetry.addLine("looking for tag");
+            telemetry.update();
 
+            Limelight3A limelight = robot.limelight;
+
+            LLResult result = limelight.getLatestResult();
+
+            result.getPipelineIndex();
+            boolean foundTag = result
+                    .getFiducialResults()
+                    .stream()
+                    .anyMatch(fr -> fr.getFiducialId() == tagId);
+
+            if (foundTag) {
+                LLResultTypes.FiducialResult fiducialResult = result
+                        .getFiducialResults()
+                        .stream()
+                        .filter(fr -> fr.getFiducialId() == tagId)
+                        .findFirst()
+                        .get();
+
+                double tx = fiducialResult.getTargetXDegrees();
+                if (tx > 0) {
+                    robot.getAutonomousRobot().mechAssembly.autonTurret.turnCCW();
+                    telemetry.addLine("tag is to the right");
+                    telemetry.update();
+                }
+                if (tx < 0) {
+                    robot.getAutonomousRobot().mechAssembly.autonTurret.turnCW();
+                    telemetry.addLine("tag is to the left");
+                    telemetry.update();
+                }
+            }
+            return lookForTag(robot, telemetry, tagId);
+        };
+    }
+
+    public static IState shootBalls(BillyRobot robot, Telemetry telemetry)
+    {
+
+        return() ->
+        {
             robot.getAutonomousRobot().mechAssembly.autonFlywheel.shoot(0.77);
             ThreadExtensions.TrySleep(3500);
             ThreadExtensions.TrySleep(200);
@@ -65,53 +113,7 @@ public class ATagL1Strategy {
             robot.getAutonomousRobot().driveTrain.drive(0,0.5,0);
             ThreadExtensions.TrySleep(1000);
 
-        };
-    }
-
-    public static IState lookForTag(BillyRobot robot, Telemetry telemetry)
-    {
-        return () ->
-        {
-            Limelight3A limelight = robot.limelight;
-
-            limelight.setPollRateHz(100);
-            limelight.start();
-            limelight.pipelineSwitch(0);
-
-            LLResult result = limelight.getLatestResult();
-            if (result != null && result.isValid()) {
-                result.getPipelineIndex();
-
-                double tx = result.getTx(); // How far left or right the target is (degrees)
-                double ty = result.getTy(); // How far up or down the target is (degrees)
-                double ta = result.getTa(); // How big the target looks (0%-100% of the image)
-
-                telemetry.addData("Target X", tx);
-                telemetry.addData("Target Y", ty);
-                telemetry.addData("Target Area", ta);
-
-                return turnToTag(robot, telemetry, tx);
-            } else {
-                telemetry.addData("Limelight", "No Targets");
-
-                return turnToTag(robot, telemetry, 0.0);
-            }
-        };
-    }
-
-    public static IState turnToTag(BillyRobot robot, Telemetry telemetry, Double angle)
-    {
-        return () ->
-        {
-            if (angle == 0) {
-                return lookForTag(robot, telemetry);
-            }
-
-            robot.getAutonomousRobot().driveTrain.turnToAngle(angle);
-
-            ThreadExtensions.TrySleep(100);
-
-            return lookForTag(robot, telemetry);
+            return null;
         };
     }
 }
