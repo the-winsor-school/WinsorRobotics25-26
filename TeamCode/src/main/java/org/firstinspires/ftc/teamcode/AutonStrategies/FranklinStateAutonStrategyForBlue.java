@@ -15,7 +15,7 @@ public class FranklinStateAutonStrategyForBlue {
         {
             telemetry.clear();
             telemetry.addLine("=== FRANKLIN AUTONOMOUS STARTED ===");
-            telemetry.addData("Target", "Red AprilTag ID 20 For Far");
+            telemetry.addData("Target", "Blue AprilTag ID 20 For Far");
             telemetry.addData("Strategy", "Drive Forward -> Search -> Approach -> Shoot");
             telemetry.update();
 
@@ -234,7 +234,8 @@ public class FranklinStateAutonStrategyForBlue {
             ThreadExtensions.TrySleep(2000);
 
             robot.getAutonomousRobot().mechAssembly.NewIntakeServo.newIntakeStop();
-            ThreadExtensions.TrySleep(2000);
+            robot.getAutonomousRobot().mechAssembly.AutonShooter.SetSpeed(0.9);
+            ThreadExtensions.TrySleep(4000);
 
             telemetry.addData("Step 4", "Stopping shooter...");
             telemetry.update();
