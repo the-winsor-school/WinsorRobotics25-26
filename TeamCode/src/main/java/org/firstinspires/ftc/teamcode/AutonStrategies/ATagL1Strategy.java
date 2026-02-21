@@ -26,10 +26,10 @@ public class ATagL1Strategy {
         };
     }
 
-    public static IState lookForTag(BillyRobot robot, Telemetry telemetry, int tagId) {
+    public static IState lookForTag(BillyRobot robot, Telemetry telemetry, int tagId)
+    {
         return () ->
         {
-            telemetry.clear();
             telemetry.addLine("looking for tag");
             telemetry.update();
 
@@ -43,7 +43,10 @@ public class ATagL1Strategy {
                     .stream()
                     .anyMatch(fr -> fr.getFiducialId() == tagId);
 
-            if (foundTag) {
+            if(foundTag)
+            {
+                telemetry.addLine("found");
+                telemetry.update();
                 LLResultTypes.FiducialResult fiducialResult = result
                         .getFiducialResults()
                         .stream()
@@ -52,18 +55,22 @@ public class ATagL1Strategy {
                         .get();
 
                 double tx = fiducialResult.getTargetXDegrees();
-                if (tx > 0) {
-                    robot.getAutonomousRobot().mechAssembly.autonTurret.turnCCW();
+                if(tx > 10) {
                     telemetry.addLine("tag is to the right");
-                    telemetry.update();
-                }
-                if (tx < 0) {
                     robot.getAutonomousRobot().mechAssembly.autonTurret.turnCW();
+                    robot.getAutonomousRobot().mechAssembly.autonTurret.stop();
+                    telemetry.update();
+
+                }
+                if(tx < -10) {
                     telemetry.addLine("tag is to the left");
+                    robot.getAutonomousRobot().mechAssembly.autonTurret.turnCCW();
+                    robot.getAutonomousRobot().mechAssembly.autonTurret.stop();
                     telemetry.update();
                 }
+
             }
-            return lookForTag(robot, telemetry, tagId);
+            return lookForTag(robot, telemetry,tagId);
         };
     }
 
@@ -72,8 +79,8 @@ public class ATagL1Strategy {
 
         return() ->
         {
-            robot.getAutonomousRobot().mechAssembly.autonFlywheel.shoot(0.77);
-            ThreadExtensions.TrySleep(3500);
+            robot.getAutonomousRobot().mechAssembly.autonFlywheel.shoot(0.5);
+            ThreadExtensions.TrySleep(2000);
             ThreadExtensions.TrySleep(200);
             robot.getAutonomousRobot().mechAssembly.autonBallPusher.pushBalls();
             ThreadExtensions.TrySleep(1000);
@@ -82,15 +89,13 @@ public class ATagL1Strategy {
 
 
             //second ball
-            robot.getAutonomousRobot().mechAssembly.autonFlywheel.shoot(0.78);
+            robot.getAutonomousRobot().mechAssembly.autonFlywheel.shoot(0.5);
             ThreadExtensions.TrySleep(1000);
             robot.getAutonomousRobot().mechAssembly.autonIntake.startIntake();
             ThreadExtensions.TrySleep(200);
             robot.getAutonomousRobot().mechAssembly.autonIntake.stopIntake();
             ThreadExtensions.TrySleep(200);
-            robot.getAutonomousRobot().mechAssembly.autonIntake.reverseIntake();
-            ThreadExtensions.TrySleep(100);
-            robot.getAutonomousRobot().mechAssembly.autonFlywheel.shoot(0.785);
+            robot.getAutonomousRobot().mechAssembly.autonFlywheel.shoot(0.5);
             robot.getAutonomousRobot().mechAssembly.autonIntake.stopIntake();
             ThreadExtensions.TrySleep(200);
             ThreadExtensions.TrySleep(200);

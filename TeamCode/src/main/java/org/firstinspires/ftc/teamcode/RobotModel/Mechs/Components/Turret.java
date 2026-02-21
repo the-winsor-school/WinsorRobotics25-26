@@ -17,8 +17,9 @@ public class Turret extends MechComponent
         {
             servo.setPower(power);
         }
-        public void turnCCW() { servo.setPower(1); }
-        public void turnCW() { servo.setPower(-1); }
+        public void turnCCW() { servo.setPower(1); ThreadExtensions.TrySleep(100); }
+        public void turnCW() { servo.setPower(-1); ThreadExtensions.TrySleep(100); }
+        public void stop() { servo.setPower(0); }
     }
 
     private AutonomousTurretBehaviors auton = new AutonomousTurretBehaviors();

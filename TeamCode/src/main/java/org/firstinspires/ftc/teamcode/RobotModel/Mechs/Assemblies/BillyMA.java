@@ -49,29 +49,36 @@ public class BillyMA extends MechAssembly {
 
         flywheel = new DoubleShooter(hardwareMap, "flywheelMotorF", "flywheelMotorB",
                 (motorF, motorB,gamepad) -> {
+                    double power = 0.5;
+                    if (gamepad.dpad_up) { power += 0.05; }
+                    if (gamepad.dpad_down) { power -= 0.05; }
+
                     if (gamepad.y) {
-                        motorF.setPower(0.5);
-                        motorB.setPower(-0.5);
-                    } else {
+                        motorF.setPower(power);
+                        motorB.setPower(-power);
+                    }
+                    else {
                         motorF.setPower(0);
                         motorB.setPower(0);
                     }
-                });
+                }, ((motorF, motorB, telemetry) -> {
+                    telemetry.addData("power:", motorF.getPower());
+        }));
         // idk how to add nothing for this so i added smth random
         // just don't press the right bumper ig
         turret = new Turret(hardwareMap, "turretServo",
                 (servo, gamepad) -> {
-//                    if (gamepad.right_bumper)
-//                    {
-//                        servo.setPower(1);
-//                    }
-//                    else if (gamepad.left_bumper)
-//                    {
-//                        servo.setPower(-1);
-//                    }
-//                    else {
-//                        servo.setPower(0);
-//                    }
+                    if (gamepad.right_bumper)
+                    {
+                        servo.setPower(1);
+                    }
+                    else if (gamepad.left_bumper)
+                    {
+                        servo.setPower(-1);
+                    }
+                    else {
+                        servo.setPower(0);
+                    }
                 },
                 ((servo, telemetry) -> {
                     telemetry.addData("turret position", servo.getPower());

@@ -11,17 +11,19 @@ public class DoubleShooter extends MechComponent
     public DoubleShooter(
             HardwareMap hardwareMap,
             String motorNameF, String motorNameB,
-            ShooterControlStrategy pewpew) {
+            ShooterControlStrategy pewpew,
+            ShooterTelemetryStrategy telemetryStrategy) {
         super(pewpew);
         shooterF = hardwareMap.get(DcMotor.class, motorNameF);
         shooterB = hardwareMap.get(DcMotor.class, motorNameB);
         this.pewpew = pewpew;
+        this.telemetryStrategy = telemetryStrategy;
     }
 
     public class AutonomousShooterBehavior extends AutonomousComponentBehaviors {
         public void StartShoot() {
             shooterF.setPower(0.76);
-            shooterB.setPower(0.76);
+            shooterB.setPower(-0.76);
         }
         public void StopShoot(){
             shooterF.setPower(0);
@@ -30,7 +32,7 @@ public class DoubleShooter extends MechComponent
 
         public void shoot(double power){
             shooterF.setPower(power);
-            shooterB.setPower(power);
+            shooterB.setPower(-power);
         }
     }
 
@@ -45,10 +47,16 @@ public class DoubleShooter extends MechComponent
     {
         void shoot(DcMotor motorF, DcMotor motorB, Gamepad gamepad);
     }
+
+    public interface ShooterTelemetryStrategy
+    {
+        public void update(DcMotor motorF, DcMotor motorB, Telemetry telemetry);
+    }
     private final DcMotor shooterF;
     private final DcMotor shooterB;
 
     protected ShooterControlStrategy pewpew;
+    protected ShooterTelemetryStrategy telemetryStrategy;
 
     @Override
     public void move(Gamepad gamepad) {

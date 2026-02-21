@@ -40,9 +40,11 @@ public class SpinnyIntake extends MechComponent
          */
         void nomNomNom(DcMotor motor, Gamepad gamepad);
     }
+
     private final DcMotor intake;
 
     protected SpinnyIntakeControlStrategy strategy;
+
 
     private final AutonomousIntakeBehaviors auton = new AutonomousIntakeBehaviors();;
 

@@ -17,7 +17,7 @@ public class ATagL2Strategy {
         {
 
             IState turretState = lookForTag(robot, telemetry,tagID);
-            IState driveState = turnToAngle(robot,telemetry,90);
+            IState driveState = ShootBalls(robot,telemetry);
 
             while (opMode.opModeIsActive() && driveState != null)
             {
@@ -59,16 +59,20 @@ public class ATagL2Strategy {
                         .get();
 
                 double tx = fiducialResult.getTargetXDegrees();
-                if(tx > 0) {
-                    robot.getAutonomousRobot().mechAssembly.autonTurret.turnCCW();
+                if(tx > 10) {
                     telemetry.addLine("tag is to the right");
-                    telemetry.update();
-                }
-                if(tx < 0) {
                     robot.getAutonomousRobot().mechAssembly.autonTurret.turnCW();
+                    robot.getAutonomousRobot().mechAssembly.autonTurret.stop();
+                    telemetry.update();
+
+                }
+                if(tx < -10) {
                     telemetry.addLine("tag is to the left");
+                    robot.getAutonomousRobot().mechAssembly.autonTurret.turnCCW();
+                    robot.getAutonomousRobot().mechAssembly.autonTurret.stop();
                     telemetry.update();
                 }
+
             }
             return lookForTag(robot, telemetry,tagId);
         };
