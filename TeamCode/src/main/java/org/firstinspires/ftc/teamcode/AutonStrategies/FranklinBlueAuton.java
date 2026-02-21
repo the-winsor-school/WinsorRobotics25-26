@@ -34,7 +34,7 @@ public class FranklinBlueAuton {
             // TODO:  The `driveForward()` method here should probably get a "speed" parameter~
             robot.getAutonomousRobot().driveTrain.driveForward();
             ThreadExtensions.TrySleep(duration);
-            return searchForTag(robot, 23, telemetry);
+            return searchForTag(robot, 20, telemetry);
         };
     }
 
@@ -60,7 +60,7 @@ public class FranklinBlueAuton {
             robot.getAutonomousRobot().driveTrain.stop();
             ThreadExtensions.TrySleep(10);
             // We need to stop the robot here~  That's why its spinning constantly
-            return searchForTag(robot, 23, telemetry);
+            return searchForTag(robot, 20, telemetry);
         };
     }
 
