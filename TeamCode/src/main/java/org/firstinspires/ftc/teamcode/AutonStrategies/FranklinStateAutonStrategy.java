@@ -233,7 +233,8 @@ public class FranklinStateAutonStrategy {
             ThreadExtensions.TrySleep(2000);
 
             robot.getAutonomousRobot().mechAssembly.NewIntakeServo.newIntakeStop();
-            ThreadExtensions.TrySleep(2000);
+            robot.getAutonomousRobot().mechAssembly.AutonShooter.SetSpeed(-0.9);
+            ThreadExtensions.TrySleep(4000);
 
             telemetry.addData("Step 4", "Stopping shooter...");
             telemetry.update();
@@ -334,7 +335,8 @@ public class FranklinStateAutonStrategy {
             ThreadExtensions.TrySleep(2000);
 
             robot.getAutonomousRobot().mechAssembly.NewIntakeServo.newIntakeStop();
-            ThreadExtensions.TrySleep(2000);
+            robot.getAutonomousRobot().mechAssembly.AutonShooter.SetSpeed(-0.9);
+            ThreadExtensions.TrySleep(4000);
 
             telemetry.addData("Step 4", "Stopping shooter...");
             telemetry.update();
