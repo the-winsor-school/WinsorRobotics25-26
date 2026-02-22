@@ -49,7 +49,7 @@ public class BillyMA extends MechAssembly {
 
         flywheel = new DoubleShooter(hardwareMap, "flywheelMotorF", "flywheelMotorB",
                 (motorF, motorB,gamepad) -> {
-                    double power = 0.5;
+                    double power = 0.45;
                     if (gamepad.dpad_up) { power += 0.05; }
                     if (gamepad.dpad_down) { power -= 0.05; }
 
@@ -70,11 +70,11 @@ public class BillyMA extends MechAssembly {
                 (servo, gamepad) -> {
                     if (gamepad.right_bumper)
                     {
-                        servo.setPower(1);
+                        servo.setPower(-1);
                     }
                     else if (gamepad.left_bumper)
                     {
-                        servo.setPower(-1);
+                        servo.setPower(1);
                     }
                     else {
                         servo.setPower(0);

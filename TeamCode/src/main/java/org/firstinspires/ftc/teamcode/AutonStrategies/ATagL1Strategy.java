@@ -79,44 +79,25 @@ public class ATagL1Strategy {
 
         return() ->
         {
-            robot.getAutonomousRobot().mechAssembly.autonFlywheel.shoot(0.5);
+            robot.getAutonomousRobot().mechAssembly.autonFlywheel.shoot(0.46);
             ThreadExtensions.TrySleep(2000);
-            ThreadExtensions.TrySleep(200);
             robot.getAutonomousRobot().mechAssembly.autonBallPusher.pushBalls();
             ThreadExtensions.TrySleep(1000);
-            robot.getAutonomousRobot().mechAssembly.autonBallPusher.retractPusher();
+            robot.getAutonomousRobot().mechAssembly.autonBallPusher.setPosition(0);
+            ThreadExtensions.TrySleep(1500);
+            robot.getAutonomousRobot().mechAssembly.autonIntake.startIntake();
+            ThreadExtensions.TrySleep(100);
+            robot.getAutonomousRobot().mechAssembly.autonIntake.stopIntake();
+            ThreadExtensions.TrySleep(100);
+            robot.getAutonomousRobot().mechAssembly.autonBallPusher.pushBalls();
+            ThreadExtensions.TrySleep(1000);
+            robot.getAutonomousRobot().mechAssembly.autonBallPusher.setPosition(0);
             ThreadExtensions.TrySleep(1500);
 
-
-            //second ball
-            robot.getAutonomousRobot().mechAssembly.autonFlywheel.shoot(0.5);
-            ThreadExtensions.TrySleep(1000);
-            robot.getAutonomousRobot().mechAssembly.autonIntake.startIntake();
-            ThreadExtensions.TrySleep(200);
             robot.getAutonomousRobot().mechAssembly.autonIntake.stopIntake();
-            ThreadExtensions.TrySleep(200);
-            robot.getAutonomousRobot().mechAssembly.autonFlywheel.shoot(0.5);
-            robot.getAutonomousRobot().mechAssembly.autonIntake.stopIntake();
-            ThreadExtensions.TrySleep(200);
-            ThreadExtensions.TrySleep(200);
-            robot.getAutonomousRobot().mechAssembly.autonBallPusher.pushBalls();
-            ThreadExtensions.TrySleep(1000);
-            robot.getAutonomousRobot().mechAssembly.autonBallPusher.retractPusher();
-            ThreadExtensions.TrySleep(1500);
-
-            //third ball
-            robot.getAutonomousRobot().mechAssembly.autonIntake.startIntake();
-            ThreadExtensions.TrySleep(1000);
-            robot.getAutonomousRobot().mechAssembly.autonIntake.stopIntake();
-            ThreadExtensions.TrySleep(200);
-            ThreadExtensions.TrySleep(200);
-            robot.getAutonomousRobot().mechAssembly.autonBallPusher.pushBalls();
-            ThreadExtensions.TrySleep(1000);
-            robot.getAutonomousRobot().mechAssembly.autonBallPusher.retractPusher();
-            ThreadExtensions.TrySleep(200);
 
             robot.getAutonomousRobot().driveTrain.drive(0,0.5,0);
-            ThreadExtensions.TrySleep(1000);
+            ThreadExtensions.TrySleep(1500);
 
             return null;
         };

@@ -15,6 +15,7 @@ public class PusherServo extends MechComponent {
         }
 
         public void setPosition(double position) {
+            servoR.setDirection(Servo.Direction.REVERSE);
             servoR.setPosition(position);
             //servoL.setPosition(position);
         }

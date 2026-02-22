@@ -113,8 +113,8 @@ public class ATagL2Strategy {
 
         return() ->
         {
-            robot.getAutonomousRobot().mechAssembly.autonFlywheel.shoot(0.77);
-            ThreadExtensions.TrySleep(3500);
+            robot.getAutonomousRobot().mechAssembly.autonFlywheel.shoot(0.6);
+            ThreadExtensions.TrySleep(2000);
             ThreadExtensions.TrySleep(200);
             robot.getAutonomousRobot().mechAssembly.autonBallPusher.pushBalls();
             ThreadExtensions.TrySleep(1000);
@@ -123,18 +123,12 @@ public class ATagL2Strategy {
 
 
             //second ball
-            robot.getAutonomousRobot().mechAssembly.autonFlywheel.shoot(0.78);
+            robot.getAutonomousRobot().mechAssembly.autonFlywheel.shoot(0.6);
             ThreadExtensions.TrySleep(1000);
             robot.getAutonomousRobot().mechAssembly.autonIntake.startIntake();
-            ThreadExtensions.TrySleep(200);
-            robot.getAutonomousRobot().mechAssembly.autonIntake.stopIntake();
-            ThreadExtensions.TrySleep(200);
-            robot.getAutonomousRobot().mechAssembly.autonIntake.reverseIntake();
             ThreadExtensions.TrySleep(100);
-            robot.getAutonomousRobot().mechAssembly.autonFlywheel.shoot(0.785);
             robot.getAutonomousRobot().mechAssembly.autonIntake.stopIntake();
-            ThreadExtensions.TrySleep(200);
-            ThreadExtensions.TrySleep(200);
+            ThreadExtensions.TrySleep(100);
             robot.getAutonomousRobot().mechAssembly.autonBallPusher.pushBalls();
             ThreadExtensions.TrySleep(1000);
             robot.getAutonomousRobot().mechAssembly.autonBallPusher.retractPusher();
@@ -145,14 +139,13 @@ public class ATagL2Strategy {
             ThreadExtensions.TrySleep(1000);
             robot.getAutonomousRobot().mechAssembly.autonIntake.stopIntake();
             ThreadExtensions.TrySleep(200);
-            ThreadExtensions.TrySleep(200);
             robot.getAutonomousRobot().mechAssembly.autonBallPusher.pushBalls();
             ThreadExtensions.TrySleep(1000);
             robot.getAutonomousRobot().mechAssembly.autonBallPusher.retractPusher();
             ThreadExtensions.TrySleep(200);
 
             robot.getAutonomousRobot().driveTrain.drive(0,0.5,0);
-            ThreadExtensions.TrySleep(1000);
+            ThreadExtensions.TrySleep(1500);
 
             return turnToAngle(robot, telemetry, 90);
         };
