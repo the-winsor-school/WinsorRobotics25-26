@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.AutonStrategies.IAutonStrategy;
+import org.firstinspires.ftc.teamcode.AutonStrategies.LimelightAutoTarget;
 import org.firstinspires.ftc.teamcode.Extensions.IState;
 import org.firstinspires.ftc.teamcode.RobotModel.Robots.BillyRobot;
 
@@ -29,12 +30,18 @@ public class BillyExampleAuton
         execute();
 
     }
-
+    private final LimelightAutoTarget targeter =
+            new LimelightAutoTarget(
+                    robot.limelight, //why is this yellow underlined?
+                    robot.getAutonomousRobot().mechAssembly.autonTurret,
+                    telemetry,
+                    20);
     @Override
     public void execute() {
         IState currentState = step1;
         while(opModeIsActive() && currentState !=null)
         {
+            targeter.updateState();
             currentState = currentState.execute();
             idle();
         }
