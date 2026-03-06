@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.Extensions;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 
+import java.util.Arrays;
+
 public class LimelightExtensions {
     /**
      * *look for a specific AprilTag Id using the limelight camera
@@ -29,11 +31,13 @@ public class LimelightExtensions {
             Limelight3A limelight,
             int... tags)
     {
+
+
         return limelight
                 .getLatestResult()
                 .getFiducialResults()
                 .stream()
-                .filter(fr -> fr.getFiducialId() == tags[0])
+                .filter(fr ->  Arrays.stream(tags).anyMatch(i -> i == fr.getFiducialId()))
                 .findFirst()
                 .orElse(null);
     }
