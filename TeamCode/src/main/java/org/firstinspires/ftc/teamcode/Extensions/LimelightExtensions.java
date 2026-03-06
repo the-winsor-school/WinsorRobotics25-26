@@ -24,4 +24,17 @@ public class LimelightExtensions {
             .findFirst()
             .orElse(null);
     }
+
+    public static LLResultTypes.FiducialResult tryFindOneOf(
+            Limelight3A limelight,
+            int... tags)
+    {
+        return limelight
+                .getLatestResult()
+                .getFiducialResults()
+                .stream()
+                .filter(fr -> fr.getFiducialId() == tags[0])
+                .findFirst()
+                .orElse(null);
+    }
 }
