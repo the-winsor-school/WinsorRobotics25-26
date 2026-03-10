@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.Extensions.IState;
 import org.firstinspires.ftc.teamcode.Extensions.LimelightExtensions;
 import org.firstinspires.ftc.teamcode.RobotModel.Robots.BillyRobot;
 
-@Autonomous(name = "Second Example Auton")
+@Autonomous(name = "SecondExampleAuton")
     public class SecondExampleAuton
         extends LinearOpMode
         implements IAutonStrategy {

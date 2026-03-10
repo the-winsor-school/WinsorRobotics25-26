@@ -32,7 +32,7 @@ public class BillyExampleAuton
     }
     private final LimelightAutoTarget targeter =
             new LimelightAutoTarget(
-                    robot.limelight, //why is this yellow underlined? most likely not an issue
+                    robot.limelight,
                     robot.getAutonomousRobot().mechAssembly.autonTurret,
                     telemetry,
                     20);
