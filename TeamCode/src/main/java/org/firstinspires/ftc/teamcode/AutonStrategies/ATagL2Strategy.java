@@ -113,7 +113,7 @@ public class ATagL2Strategy {
 
         return() ->
         {
-            robot.getAutonomousRobot().mechAssembly.autonFlywheel.shoot(0.6);
+            robot.getAutonomousRobot().mechAssembly.autonFlywheel.setPower(0.6);
             ThreadExtensions.TrySleep(2000);
             ThreadExtensions.TrySleep(200);
             robot.getAutonomousRobot().mechAssembly.autonBallPusher.pushBalls();
@@ -123,7 +123,7 @@ public class ATagL2Strategy {
 
 
             //second ball
-            robot.getAutonomousRobot().mechAssembly.autonFlywheel.shoot(0.6);
+            robot.getAutonomousRobot().mechAssembly.autonFlywheel.setPower(0.6);
             ThreadExtensions.TrySleep(1000);
             robot.getAutonomousRobot().mechAssembly.autonIntake.startIntake();
             ThreadExtensions.TrySleep(100);

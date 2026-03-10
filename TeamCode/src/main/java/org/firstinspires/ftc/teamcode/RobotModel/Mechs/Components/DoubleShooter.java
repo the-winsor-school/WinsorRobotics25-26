@@ -30,7 +30,7 @@ public class DoubleShooter extends MechComponent
             shooterB.setPower(0);
         }
 
-        public void shoot(double power){
+        public void setPower(double power){
             shooterF.setPower(power);
             shooterB.setPower(-power);
         }

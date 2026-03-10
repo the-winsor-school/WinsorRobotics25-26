@@ -176,7 +176,7 @@ public class BillyExampleAuton
                     () -> robot.getAutonomousRobot()
                             .mechAssembly
                             .autonFlywheel
-                            .shoot(0.6),
+                            .setPower(0.6),
                     2200,
                     step2
             );

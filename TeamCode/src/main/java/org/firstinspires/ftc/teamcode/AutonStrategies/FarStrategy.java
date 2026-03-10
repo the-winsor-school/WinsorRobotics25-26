@@ -18,7 +18,7 @@ public class FarStrategy
 
             //moves out of zone
             //first ball
-            robot.mechAssembly.autonFlywheel.shoot(0.77);
+            robot.mechAssembly.autonFlywheel.setPower(0.77);
             ThreadExtensions.TrySleep(3500);
             ThreadExtensions.TrySleep(200);
             robot.mechAssembly.autonBallPusher.pushBalls();
@@ -28,7 +28,7 @@ public class FarStrategy
 
 
             //second ball
-            robot.mechAssembly.autonFlywheel.shoot(0.78);
+            robot.mechAssembly.autonFlywheel.setPower(0.78);
             ThreadExtensions.TrySleep(1000);
             robot.mechAssembly.autonIntake.startIntake();
             ThreadExtensions.TrySleep(200);
@@ -36,7 +36,7 @@ public class FarStrategy
             ThreadExtensions.TrySleep(200);
             robot.mechAssembly.autonIntake.reverseIntake();
             ThreadExtensions.TrySleep(100);
-            robot.mechAssembly.autonFlywheel.shoot(0.785);
+            robot.mechAssembly.autonFlywheel.setPower(0.785);
             robot.mechAssembly.autonIntake.stopIntake();
             ThreadExtensions.TrySleep(200);
             ThreadExtensions.TrySleep(200);

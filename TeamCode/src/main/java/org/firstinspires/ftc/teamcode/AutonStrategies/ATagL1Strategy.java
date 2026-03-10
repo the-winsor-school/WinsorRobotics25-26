@@ -79,7 +79,7 @@ public class ATagL1Strategy {
 
         return() ->
         {
-            robot.getAutonomousRobot().mechAssembly.autonFlywheel.shoot(0.46);
+            robot.getAutonomousRobot().mechAssembly.autonFlywheel.setPower(0.46);
             ThreadExtensions.TrySleep(2000);
             robot.getAutonomousRobot().mechAssembly.autonBallPusher.pushBalls();
             ThreadExtensions.TrySleep(1000);
