@@ -91,21 +91,21 @@ import org.firstinspires.ftc.teamcode.RobotModel.Robots.BillyRobot;
         return doAndWait(
                 () -> robot.getAutonomousRobot()
                         .driveTrain
-                        .drive(-0.5, 0, 0), 2500, stopDriving());
+                        .drive(-0.5, 0, 0), 2500, spinInPlace());
     }
     private IState driveForward()
     {
         return doAndWait(
                 () -> robot.getAutonomousRobot()
                         .driveTrain
-                        .drive(0, 0.5, 0), 2500, stopDriving());
+                        .drive(0, 0.5, 0), 2500, spinInPlace());
     }
     private IState driveRight()
     {
         return doAndWait(
                 () -> robot.getAutonomousRobot()
                         .driveTrain
-                        .drive(0.5,0, 0), 2500, stopDriving());
+                        .drive(0.5,0, 0), 2500, spinInPlace());
     }
     private IState spinInPlace()
     {
