@@ -10,12 +10,12 @@ import org.firstinspires.ftc.teamcode.Extensions.IState;
 import org.firstinspires.ftc.teamcode.Extensions.LimelightExtensions;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.Turret;
 
-public class LimelightAutoTarget {
-    private IState currentState = lookForTag();
-    public void updateState()
-    {
-        currentState = currentState.execute();
-    }
+public class LimelightAutoTarget extends StateMachine {
+    //private IState currentState = lookForTag();
+    //public void updateState()
+    //{
+        //currentState = currentState.execute();
+    //}
     private final int targetTagId;
     private final Limelight3A limelight;
     private final Turret.AutonomousTurretBehaviors turret;
@@ -31,6 +31,7 @@ public class LimelightAutoTarget {
         this.turret = turret;
         this.telemetry = telemetry;
         this.targetTagId = tagId;
+        currentState = lookForTag();
     }
 
     public IState rotateCCW(double tx){
