@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.AutonStrategies.BillyRapidFire;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.DoubleShooter;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.SpinnyIntake;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.PusherServo;
@@ -17,14 +18,16 @@ public class BillyMA extends MechAssembly {
     private final DoubleShooter flywheel;
     private final Turret turret;
 
+    private final BillyRapidFire BRF;
+
     public BillyMA(HardwareMap hardwareMap) {
         intake = new SpinnyIntake(hardwareMap, "intakeMotor",
                 (motor, gamepad) -> {
-                    if (gamepad.a) {
+                    if (gamepad.dpad_up) {
 
                         motor.setPower(0.75);
                     }
-                    if (gamepad.b) {
+                    if (gamepad.dpad_down) {
                         motor.setPower(-0.75);
                     } else {
                         motor.setPower(0);
@@ -90,6 +93,8 @@ public class BillyMA extends MechAssembly {
                 flywheel.getAutonomousBehaviors(),
                 turret.getAutonomousBehaviors()
         );
+        BRF = new BillyRapidFire(auton, 3);
+        BRF.abort();
     }
 
     public class AutonomousBillyMA extends AutonomousMechBehaviors {
@@ -123,6 +128,14 @@ public class BillyMA extends MechAssembly {
         ballPusher.move(gamepad);
         flywheel.move(gamepad);
         turret.move(gamepad);
+        if(gamepad.a && BRF.isComplete())
+        {
+            BRF.reset(3);
+        }
+        if(!BRF.isComplete())
+        {
+            BRF.updateState();
+        }
     }
 
     @Override

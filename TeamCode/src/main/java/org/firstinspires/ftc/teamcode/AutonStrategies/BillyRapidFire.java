@@ -11,7 +11,7 @@ public class BillyRapidFire extends StateMachine
     private int ballCount;
     public BillyRapidFire(BillyMA.AutonomousBillyMA ma, int ballCount)
     {
-        mechAssembly = ma;
+        mechAssembly = ma; //dependency
         reset(ballCount);
     }
     public void reset(int ballCount)
