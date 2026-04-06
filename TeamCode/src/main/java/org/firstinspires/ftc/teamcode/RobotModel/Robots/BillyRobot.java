@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.RobotModel.Robots;
 
-import static org.firstinspires.ftc.teamcode.AutonStrategies.ATagL2Strategy.lookForTag;
-
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
