@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.AutonStrategies.IAutonStrategy;
+import org.firstinspires.ftc.teamcode.AutonStrategies.LimelightAutoTarget;
 import org.firstinspires.ftc.teamcode.Extensions.IState;
 import org.firstinspires.ftc.teamcode.Extensions.ThreadExtensions;
 import org.firstinspires.ftc.teamcode.RobotModel.DriveTrain.Mecanum.MecanumDrive;
@@ -58,6 +59,8 @@ public class BillyRobot extends Robot {
     public final Limelight3A limelight;
     public final IMU imu;
 
+    public final LimelightAutoTarget targeter;
+
 
     @Override
     public BillyRobot.AutonomousMecanumRobot getAutonomousRobot() {
@@ -98,13 +101,17 @@ public class BillyRobot extends Robot {
                 driveTrain.getAutonomousDriving(),
                 mechAssembly.getAutonomousBehaviors());
 
-        currentState = lookForTag(this, telemetry, tagID);
+        targeter = new LimelightAutoTarget(
+                limelight,
+                ((BillyMA)mechAssembly).getAutonomousBehaviors().autonTurret,
+                telemetry,
+                tagID);
     }
 
     @Override
     public void update(Gamepad gamepad1, Gamepad gamepad2) {
         super.update(gamepad1, gamepad2);
-        currentState = currentState.execute();
+        if(!targeter.isComplete())
+            targeter.updateState();
     }
-    IState currentState;
 }
