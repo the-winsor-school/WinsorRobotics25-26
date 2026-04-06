@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.AutonStrategies;
 
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Extensions.IState;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Assemblies.BillyMA;
 
@@ -9,9 +10,11 @@ public class BillyRapidFire extends StateMachine
 {
     private final BillyMA.AutonomousBillyMA mechAssembly;
     private int ballCount;
-    public BillyRapidFire(BillyMA.AutonomousBillyMA ma, int ballCount)
+    private final Telemetry telemetry;
+    public BillyRapidFire(BillyMA.AutonomousBillyMA ma, int ballCount, Telemetry tm)
     {
         mechAssembly = ma; //dependency
+        telemetry = tm;
         reset(ballCount);
     }
     public void reset(int ballCount)
@@ -22,6 +25,8 @@ public class BillyRapidFire extends StateMachine
 
 
     public IState startShooter() {
+        telemetry.addLine("startShooter");
+        telemetry.update();
         return
                 doAndWait(
                         () -> mechAssembly
@@ -35,6 +40,8 @@ public class BillyRapidFire extends StateMachine
     }
     public IState fire()
     {
+        telemetry.addLine("fire");
+        telemetry.update();
         return
                 doAndWait(
                         mechAssembly
@@ -46,6 +53,8 @@ public class BillyRapidFire extends StateMachine
     }
     public IState retract()
     {
+        telemetry.addLine("retract");
+        telemetry.update();
         return
                 doAndWait(
                         mechAssembly
@@ -61,6 +70,8 @@ public class BillyRapidFire extends StateMachine
     }
     public IState stopShooter()
     {
+        telemetry.addLine("stopShooter");
+        telemetry.update();
         return() ->
         {
             mechAssembly
@@ -69,4 +80,5 @@ public class BillyRapidFire extends StateMachine
             return null;
         };
     }
+
 }

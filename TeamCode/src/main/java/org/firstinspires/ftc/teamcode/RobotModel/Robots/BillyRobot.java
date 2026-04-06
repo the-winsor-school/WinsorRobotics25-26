@@ -72,7 +72,7 @@ public class BillyRobot extends Robot {
                 DcMotorSimple.Direction.FORWARD
         ));
 
-        mechAssembly = new BillyMA(hardwareMap);
+        mechAssembly = new BillyMA(hardwareMap, telemetry);
 
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         limelight.setPollRateHz(100);

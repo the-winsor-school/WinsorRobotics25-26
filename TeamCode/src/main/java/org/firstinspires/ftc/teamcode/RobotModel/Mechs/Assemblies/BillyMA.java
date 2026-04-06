@@ -18,11 +18,16 @@ public class BillyMA extends MechAssembly {
     private final DoubleShooter flywheel;
     private final Turret turret;
 
-    private final BillyRapidFire BRF;
+    private BillyRapidFire BRF = null;
 
-    public BillyMA(HardwareMap hardwareMap) {
+    private final Telemetry telemetry;
+
+    public BillyMA(HardwareMap hardwareMap, Telemetry tel) {
         intake = new SpinnyIntake(hardwareMap, "intakeMotor",
                 (motor, gamepad) -> {
+                    if (!BRF.isComplete()) {
+                        return;
+                    }
                     if (gamepad.dpad_up) {
 
                         motor.setPower(0.75);
@@ -37,6 +42,9 @@ public class BillyMA extends MechAssembly {
         ballPusher = new PusherServo(hardwareMap,
                 "ballPusherServo",
                 (servoR, gamepad) -> {
+                    if (!BRF.isComplete()) {
+                        return;
+                    }
                     servoR.setDirection(Servo.Direction.REVERSE);
                     if (gamepad.x) {
                         servoR.setPosition(0.8);
@@ -52,15 +60,21 @@ public class BillyMA extends MechAssembly {
 
         flywheel = new DoubleShooter(hardwareMap, "flywheelMotorF", "flywheelMotorB",
                 (motorF, motorB,gamepad) -> {
+                    if (!BRF.isComplete()) {
+                        return;
+                    }
                     double power = 0.45;
-                    if (gamepad.dpad_up) { power += 0.05; }
-                    if (gamepad.dpad_down) { power -= 0.05; }
+                    if (gamepad.dpad_up) {
+                        power += 0.05;
+                    }
+                    if (gamepad.dpad_down) {
+                        power -= 0.05;
+                    }
 
                     if (gamepad.y) {
                         motorF.setPower(power);
                         motorB.setPower(-power);
-                    }
-                    else {
+                    } else {
                         motorF.setPower(0);
                         motorB.setPower(0);
                     }
@@ -71,6 +85,9 @@ public class BillyMA extends MechAssembly {
         // just don't press the right bumper ig
         turret = new Turret(hardwareMap, "turretServo",
                 (servo, gamepad) -> {
+                    if (!BRF.isComplete()) {
+                        return;
+                    }
                     if (gamepad.right_bumper)
                     {
                         servo.setPower(-1);
@@ -86,6 +103,7 @@ public class BillyMA extends MechAssembly {
                 ((servo, telemetry) -> {
                     telemetry.addData("turret position", servo.getPower());
                 }));
+        this.telemetry = tel;
 
         auton = new AutonomousBillyMA(
                 intake.getAutonomousBehaviors(),
@@ -93,7 +111,7 @@ public class BillyMA extends MechAssembly {
                 flywheel.getAutonomousBehaviors(),
                 turret.getAutonomousBehaviors()
         );
-        BRF = new BillyRapidFire(auton, 3);
+        BRF = new BillyRapidFire(auton, 3, tel);
         BRF.abort();
     }
 
@@ -131,6 +149,8 @@ public class BillyMA extends MechAssembly {
         if(gamepad.a && BRF.isComplete())
         {
             BRF.reset(3);
+            telemetry.addLine("Start Rapid Fire");
+            telemetry.update();
         }
         if(!BRF.isComplete())
         {
