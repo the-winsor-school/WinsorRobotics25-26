@@ -25,8 +25,8 @@ public class BillyMA extends MechAssembly {
     public BillyMA(HardwareMap hardwareMap, Telemetry tel) {
         intake = new SpinnyIntake(hardwareMap, "intakeMotor",
                 (motor, gamepad) -> {
-                    if (!BRF.isComplete()) {
-                        return;
+                    if (!BRF.isComplete()) { // checks if BRF is running
+                        return; //if it is running, do not proceed
                     }
                     if (gamepad.dpad_up) {
 
