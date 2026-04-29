@@ -9,6 +9,9 @@ import org.firstinspires.ftc.vision.VisionPortal;
 
 public abstract class Robot
 {
+
+    protected interface IRobotStrategy { }
+    protected Robot.IRobotStrategy strategy;
     public abstract class AutonomousRobot
     {
         /**
@@ -39,6 +42,7 @@ public abstract class Robot
     protected VisionPortal visionPortal;
     protected DriveTrain driveTrain;
     protected MechAssembly mechAssembly;
+
 
     public void updateTelemetry(Telemetry telemetry) {
         driveTrain.updateTelemetry(telemetry);
