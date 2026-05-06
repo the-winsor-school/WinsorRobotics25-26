@@ -28,6 +28,8 @@ public class Claw extends MechComponent
             reportStatus("Claw: close");
         }
 
+        /** Halts the claw servo; added so autonomous routines can safely release
+         *  the claw without setting power directly (Susan Zuo). */
         public void stop()
         {
             servo.setPower(0);
@@ -69,6 +71,10 @@ public class Claw extends MechComponent
         this.telemetryStrategy = telemetryStrategy;
     }
 
+    /**
+     * Stores the telemetry reference (via super) and lazily creates the autonomous
+     * behaviors object (Susan Zuo — two-phase initialization pattern).
+     */
     @Override
     public void initializeTelemetry(Telemetry telemetry) {
         super.initializeTelemetry(telemetry);
@@ -80,6 +86,11 @@ public class Claw extends MechComponent
         strategy.chomp(servo, gamepad);
     }
 
+    /**
+     * Delegates to {@code telemetryStrategy} when present, otherwise writes
+     * claw power directly. Previously empty (Susan Zuo — Bug #3: "No telemetry
+     * data reported"). Never flushes.
+     */
     @Override
     void update()
     {

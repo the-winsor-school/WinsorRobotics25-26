@@ -87,6 +87,11 @@ public class CascadeArm extends MechAssembly
         );
     }
 
+    /**
+     * Propagates telemetry to the three components so each can lazily create its own
+     * autonomous behavior object, then assembles {@code AutonomousCascadeArm}
+     * (Susan Zuo — two-phase initialization pattern).
+     */
     @Override
     public void initializeTelemetry(Telemetry telemetry) {
         this.telemetry = telemetry;
@@ -107,6 +112,10 @@ public class CascadeArm extends MechAssembly
         claw.move(gamepad);
     }
 
+    /**
+     * Collects telemetry from all three components. Previously empty (Susan Zuo
+     * — Bug #3: "No telemetry data reported"). Never flushes.
+     */
     @Override
     public void updateTelemetry() {
         telemetry.addLine("--- Cascade Arm ---");

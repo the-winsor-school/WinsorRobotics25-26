@@ -121,6 +121,14 @@ public class BillyMA extends MechAssembly {
 
     private AutonomousBillyMA auton;
 
+    /**
+     * Propagates telemetry to all four components so each can lazily create its own
+     * autonomous behavior object, then assembles {@code AutonomousBillyMA} from the
+     * results. {@code BillyRapidFire} is also created here and immediately aborted so
+     * it is never null when {@link #giveInstructions} first runs (Susan Zuo —
+     * two-phase initialization pattern; previously the constructor accepted a
+     * {@code Telemetry} arg, coupling construction to telemetry lifetime).
+     */
     @Override
     public void initializeTelemetry(Telemetry telemetry) {
         this.telemetry = telemetry;
@@ -143,6 +151,14 @@ public class BillyMA extends MechAssembly {
         return auton;
     }
 
+    /**
+     * Drives all four components and advances the BillyRapidFire state machine each
+     * loop. Does NOT call {@code telemetry.update()} — flushing is the exclusive
+     * responsibility of {@code Robot.updateTelemetry()} (Susan Zuo — Bug #7:
+     * "mid-cycle {@code telemetry.update()} inside giveInstructions caused the
+     * driver-station display to flicker and showed partial data from the previous
+     * loop iteration").
+     */
     @Override
     public void giveInstructions(Gamepad gamepad) {
         intake.move(gamepad);
@@ -160,6 +176,12 @@ public class BillyMA extends MechAssembly {
         }
     }
 
+    /**
+     * Collects telemetry from all four components. Previously omitted
+     * {@code intake.update()} entirely (Susan Zuo — Bug #5: "BillyMA.updateTelemetry
+     * omits intake — drivers had no visibility into intake state during matches").
+     * Never flushes.
+     */
     @Override
     public void updateTelemetry() {
         intake.update();

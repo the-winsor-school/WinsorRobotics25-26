@@ -9,11 +9,27 @@ import org.firstinspires.ftc.teamcode.Extensions.IState;
 import org.firstinspires.ftc.teamcode.Extensions.LimelightExtensions;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.Turret;
 
+/**
+ * State machine that rotates the turret until the target AprilTag is centred in
+ * the Limelight's field of view. Previously held a raw {@code Telemetry} reference
+ * and called {@code telemetry.update()} between state transitions (Susan Zuo —
+ * Bug #2: "mid-cycle {@code telemetry.update()} in state machines", and Bug #6:
+ * "autonomous strategies held raw telemetry references, bypassing the object
+ * model"). All reporting now goes through
+ * {@code turret.reportStatus/reportData} so the single-flush rule is respected.
+ */
 public class LimelightAutoTarget extends StateMachine {
     private final int targetTagId;
     private final Limelight3A limelight;
     private final Turret.AutonomousTurretBehaviors turret;
 
+    /**
+     * @param limelight  the Limelight3A sensor
+     * @param turret     the live autonomous turret behavior — carries its own
+     *                   telemetry reference, so no raw {@code Telemetry} arg is
+     *                   needed here (Susan Zuo — Bug #6)
+     * @param tagId      AprilTag ID to track
+     */
     public LimelightAutoTarget(
             Limelight3A limelight,
             Turret.AutonomousTurretBehaviors turret,

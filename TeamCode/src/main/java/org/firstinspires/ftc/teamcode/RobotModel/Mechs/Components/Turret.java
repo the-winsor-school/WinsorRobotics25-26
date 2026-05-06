@@ -61,6 +61,12 @@ public class Turret extends MechComponent
         this.telemetryStrategy = telemetryStrategy;
     }
 
+    /**
+     * Stores the telemetry reference (via super) and lazily creates the autonomous
+     * behaviors object. Previously {@code auton} was a field-initializer that ran
+     * before telemetry was available, so the inner class had no telemetry reference
+     * (Susan Zuo — two-phase initialization pattern).
+     */
     @Override
     public void initializeTelemetry(Telemetry telemetry) {
         super.initializeTelemetry(telemetry);
@@ -72,6 +78,11 @@ public class Turret extends MechComponent
         strategy.move(servo, gamepad);
     }
 
+    /**
+     * Delegates to {@code telemetryStrategy} when present, otherwise writes
+     * turret power directly. Previously empty (Susan Zuo — Bug #3: "No telemetry
+     * data reported despite having telemetryStrategy"). Never flushes.
+     */
     @Override
     void update()
     {

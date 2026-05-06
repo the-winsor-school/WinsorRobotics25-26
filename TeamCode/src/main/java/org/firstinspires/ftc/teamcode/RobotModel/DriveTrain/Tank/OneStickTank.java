@@ -89,6 +89,11 @@ public class OneStickTank extends DriveTrain
         right = hardwareMap.get(DcMotor.class, "rightTread");
     }
 
+    /**
+     * Creates the LeroyState with telemetry so it can report via
+     * {@code reportStatus/reportData}. Must be called before {@link #drive}
+     * (Susan Zuo — two-phase initialization pattern).
+     */
     @Override
     public void initializeTelemetry(Telemetry telemetry)
     {
@@ -140,6 +145,11 @@ public class OneStickTank extends DriveTrain
         return throttle * (1 + turnBias);
     }
 
+    /**
+     * Writes left/right power and Leroy active status to the buffer.
+     * Previously empty (Susan Zuo — Bug #3: "No telemetry despite complex
+     * Leroy Jenkins state"). Never flushes.
+     */
     @Override
     public void updateTelemetry()
     {

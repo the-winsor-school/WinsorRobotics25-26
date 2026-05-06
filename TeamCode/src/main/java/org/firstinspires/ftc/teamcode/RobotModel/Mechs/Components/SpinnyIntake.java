@@ -81,6 +81,10 @@ public class SpinnyIntake extends MechComponent
         strategy.nomNomNom(intake, gamepad);
     }
 
+    /**
+     * Writes intake power and encoder position to the buffer. Previously
+     * empty (Susan Zuo — Bug #3: "No telemetry data reported"). Never flushes.
+     */
     @Override
     void update() {
         telemetry.addData("intake power:", intake.getPower());

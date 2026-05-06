@@ -5,11 +5,27 @@ import org.firstinspires.ftc.teamcode.Extensions.IState;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Assemblies.BillyMA;
 
 
+/**
+ * State machine that fires a fixed number of balls by sequencing the shooter,
+ * ball pusher, and retract states. Previously accepted a raw {@code Telemetry}
+ * argument and called {@code telemetry.update()} mid-state, which produced
+ * flickering on the driver station and could flush incomplete data (Susan Zuo —
+ * Bug #2: "mid-cycle {@code telemetry.update()} in state machines"). All
+ * reporting now goes through {@code mechAssembly.reportStatus/reportData} so the
+ * single-flush rule in {@code Robot.updateTelemetry()} is respected.
+ */
 public class BillyRapidFire extends StateMachine
 {
     private final BillyMA.AutonomousBillyMA mechAssembly;
     private int ballCount;
 
+    /**
+     * @param ma         the live autonomous behavior object — not constructed here,
+     *                   so no raw {@code Telemetry} reference is needed (Susan Zuo
+     *                   — Bug #6: "autonomous strategies held raw telemetry
+     *                   references, bypassing the object model").
+     * @param ballCount  initial number of balls to fire
+     */
     public BillyRapidFire(BillyMA.AutonomousBillyMA ma, int ballCount)
     {
         mechAssembly = ma;

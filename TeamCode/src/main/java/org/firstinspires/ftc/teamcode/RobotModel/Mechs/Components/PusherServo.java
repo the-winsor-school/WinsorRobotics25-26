@@ -70,6 +70,13 @@ public class PusherServo extends MechComponent {
         strategy.controlPusher(servoR, gamepad);
     }
 
+    /**
+     * Delegates to {@code telemetryStrategy} when present. Previously,
+     * {@code telemetryStrategy.update()} was never called even though a
+     * strategy was configured (Susan Zuo — Bug #4: "telemetryStrategy is
+     * ignored — strategies are either ignored or inconsistently used").
+     * Never flushes.
+     */
     @Override
     void update() {
         if (telemetryStrategy != null) {

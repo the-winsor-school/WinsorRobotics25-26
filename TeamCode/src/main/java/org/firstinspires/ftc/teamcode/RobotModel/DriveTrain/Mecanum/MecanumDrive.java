@@ -149,8 +149,17 @@ public class MecanumDrive extends DriveTrain
         imu = hardwareMap.get(IMU.class, "imu");
     }
 
+    // Lazily initialized — created in initializeTelemetry once telemetry is
+    // available. Was previously a final field-initializer, which prevented
+    // the AutonomousMecanumDrive from holding a telemetry reference at all
+    // (Susan Zuo — Bug #3: "Dead telemetry hook in AutonomousMecanumDrive").
     private AutonomousMecanumDrive auton;
 
+    /**
+     * Stores the telemetry reference and creates the autonomous driving object.
+     * Called once by {@code Robot.initializeSubsystems()} (Susan Zuo —
+     * two-phase initialization pattern).
+     */
     @Override
     public void initializeTelemetry(Telemetry telemetry) {
         this.telemetry = telemetry;
@@ -202,6 +211,10 @@ public class MecanumDrive extends DriveTrain
         LB.setPower(lb);
     }
 
+    /**
+     * Writes IMU yaw and motor powers to the telemetry buffer. Previously
+     * empty (Susan Zuo — Bug #3: "Dead telemetry hook"). Never flushes.
+     */
     @Override
     public void updateTelemetry()
     {

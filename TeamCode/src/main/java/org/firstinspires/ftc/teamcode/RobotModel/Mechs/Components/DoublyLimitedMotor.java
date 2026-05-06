@@ -78,6 +78,10 @@ public  class DoublyLimitedMotor extends MechComponent {
         this.telemetryStrategy = telemetryStrategy;
     }
 
+    /**
+     * Stores the telemetry reference (via super) and lazily creates the autonomous
+     * behaviors object (Susan Zuo — two-phase initialization pattern).
+     */
     @Override
     public void initializeTelemetry(Telemetry telemetry) {
         super.initializeTelemetry(telemetry);
@@ -110,6 +114,11 @@ public  class DoublyLimitedMotor extends MechComponent {
 
     }
 
+    /**
+     * Delegates to {@code telemetryStrategy} when present, otherwise writes
+     * motor power and limit-sensor states directly. Previously empty (Susan Zuo
+     * — Bug #3: "No telemetry data reported"). Never flushes.
+     */
     @Override
     void update()
     {

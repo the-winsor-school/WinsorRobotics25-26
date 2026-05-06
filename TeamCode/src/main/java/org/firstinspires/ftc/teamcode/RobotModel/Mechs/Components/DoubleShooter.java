@@ -76,6 +76,12 @@ public class DoubleShooter extends MechComponent
         pewpew.shoot(shooterF, shooterB, gamepad);
     }
 
+    /**
+     * Delegates to {@code telemetryStrategy} if one was provided, otherwise
+     * writes shooter powers directly. Previously empty despite having a
+     * strategy (Susan Zuo — Bug #3: "No telemetry data reported despite
+     * having telemetryStrategy"). Never flushes.
+     */
     @Override
     void update() {
         if (telemetryStrategy != null) {

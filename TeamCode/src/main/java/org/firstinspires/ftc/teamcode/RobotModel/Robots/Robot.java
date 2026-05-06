@@ -7,12 +7,36 @@ import org.firstinspires.ftc.teamcode.RobotModel.DriveTrain.DriveTrain;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Assemblies.MechAssembly;
 import org.firstinspires.ftc.vision.VisionPortal;
 
+/**
+ * Abstract base for all robots in the system.
+ *
+ * <p><b>Telemetry contract (Susan Zuo):</b> Telemetry is injected at
+ * construction via {@code Robot(Telemetry)} and propagated to every subsystem
+ * by {@link #initializeSubsystems()}. This class is the <em>single flush
+ * point</em> for the entire robot — only {@link #updateTelemetry()} calls
+ * {@code telemetry.update()}. No other layer may call it.
+ *
+ * <p>Previously, telemetry was passed as a parameter on every loop
+ * ({@code updateTelemetry(Telemetry)}), causing multiple competing flush
+ * points and mid-cycle updates. Susan Zuo identified this as the root cause
+ * of Bugs #1, #2, and #7: "Split Ownership — multiple layers assume they
+ * can call telemetry.update()."
+ *
+ * @author Susan Zuo (telemetry refactor)
+ */
 public abstract class Robot
 {
 
     protected interface IRobotStrategy { }
     protected Robot.IRobotStrategy strategy;
 
+    /**
+     * Autonomous-facing surface for the full robot. Provides
+     * {@link #reportStatus}, {@link #reportData}, and {@link #clearTelemetry}
+     * so top-level autonomous strategies do not need a raw {@code Telemetry}
+     * parameter (Susan Zuo — fixes Bug #6: "AutonomousRobot provides no
+     * telemetry support — forces strategies to use raw telemetry").
+     */
     public abstract class AutonomousRobot
     {
         protected final Telemetry telemetry;
@@ -31,7 +55,9 @@ public abstract class Robot
             this.telemetry = telemetry;
         }
 
+        /** Adds a status line to the telemetry buffer. Does NOT flush. */
         public void reportStatus(String status) { telemetry.addLine(status); }
+        /** Adds a key-value pair to the telemetry buffer. Does NOT flush. */
         public void reportData(String key, Object value) { telemetry.addData(key, value); }
         public void clearTelemetry() { telemetry.clear(); }
     }
@@ -57,8 +83,10 @@ public abstract class Robot
     }
 
     /**
-     * Propagates the owned telemetry reference to subsystems.
-     * Call this in subclass constructors after driveTrain and mechAssembly are assigned.
+     * Propagates the owned telemetry reference to driveTrain and mechAssembly,
+     * triggering their two-phase initialization. Call this in subclass
+     * constructors after both fields are assigned (Susan Zuo — "construct →
+     * initializeTelemetry" two-phase pattern).
      */
     protected void initializeSubsystems()
     {
@@ -67,7 +95,11 @@ public abstract class Robot
     }
 
     /**
-     * Single flush point for all telemetry — the only place that calls telemetry.update().
+     * The single flush point for all telemetry in the robot. Collects data
+     * from driveTrain and mechAssembly, then calls {@code telemetry.update()}
+     * exactly once per loop (Susan Zuo — "Single Point of Control: only Robot
+     * is allowed to call telemetry.update(). All other layers write data but
+     * never flush." Fixes Bugs #1, #2, #7).
      */
     public void updateTelemetry() {
         if (driveTrain != null) driveTrain.updateTelemetry();

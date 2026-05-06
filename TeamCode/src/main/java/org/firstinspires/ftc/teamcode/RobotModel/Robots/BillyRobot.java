@@ -66,6 +66,20 @@ public class BillyRobot extends Robot {
         return auton;
     }
 
+    /**
+     * Constructs all subsystems and wires them together. Key decisions (Susan Zuo):
+     * <ul>
+     *   <li>{@code super(telemetry)} stores the telemetry reference in {@code Robot}
+     *       before any subsystem is initialized.</li>
+     *   <li>{@code BillyMA} no longer accepts a {@code Telemetry} arg — telemetry is
+     *       injected later via {@link #initializeSubsystems()} which calls
+     *       {@code initializeTelemetry} on every subsystem (two-phase init).</li>
+     *   <li>{@code LimelightAutoTarget} no longer accepts a {@code Telemetry} arg —
+     *       it reports through {@code Turret.AutonomousTurretBehaviors} which already
+     *       holds the telemetry reference (Bug #6: "autonomous strategies held raw
+     *       telemetry references, bypassing the object model").</li>
+     * </ul>
+     */
     public BillyRobot(HardwareMap hardwareMap, Telemetry telemetry, int tagID) {
         super(telemetry);
 
