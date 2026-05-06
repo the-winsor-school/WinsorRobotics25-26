@@ -20,16 +20,13 @@ public class BillyMA extends MechAssembly {
 
     private BillyRapidFire BRF = null;
 
-    private final Telemetry telemetry;
-
-    public BillyMA(HardwareMap hardwareMap, Telemetry tel) {
+    public BillyMA(HardwareMap hardwareMap) {
         intake = new SpinnyIntake(hardwareMap, "intakeMotor",
                 (motor, gamepad) -> {
-                    if (!BRF.isComplete()) { // checks if BRF is running
-                        return; //if it is running, do not proceed
+                    if (BRF == null || !BRF.isComplete()) {
+                        return;
                     }
                     if (gamepad.dpad_up) {
-
                         motor.setPower(0.75);
                     }
                     if (gamepad.dpad_down) {
@@ -42,25 +39,23 @@ public class BillyMA extends MechAssembly {
         ballPusher = new PusherServo(hardwareMap,
                 "ballPusherServo",
                 (servoR, gamepad) -> {
-                    if (!BRF.isComplete()) {
+                    if (BRF == null || !BRF.isComplete()) {
                         return;
                     }
                     servoR.setDirection(Servo.Direction.REVERSE);
                     if (gamepad.x) {
                         servoR.setPosition(0.8);
-                        //servoL.setPosition(0.22); // Push position (~40 degrees from 0)
                     } else {
                         servoR.setPosition(0.0);
-                        //servoL.setPosition(0.0);// Rest position
                     }
                 },
-                (((servo, telemetry) -> {
+                (servo, telemetry) -> {
                     telemetry.addData("pusher position", servo.getPosition());
-                })));
+                });
 
         flywheel = new DoubleShooter(hardwareMap, "flywheelMotorF", "flywheelMotorB",
-                (motorF, motorB,gamepad) -> {
-                    if (!BRF.isComplete()) {
+                (motorF, motorB, gamepad) -> {
+                    if (BRF == null || !BRF.isComplete()) {
                         return;
                     }
                     double power = 0.45;
@@ -78,14 +73,13 @@ public class BillyMA extends MechAssembly {
                         motorF.setPower(0);
                         motorB.setPower(0);
                     }
-                }, ((motorF, motorB, telemetry) -> {
+                }, (motorF, motorB, telemetry) -> {
                     telemetry.addData("power:", motorF.getPower());
-        }));
-        // idk how to add nothing for this so i added smth random
-        // just don't press the right bumper ig
+                });
+
         turret = new Turret(hardwareMap, "turretServo",
                 (servo, gamepad) -> {
-                    if (!BRF.isComplete()) {
+                    if (BRF == null || !BRF.isComplete()) {
                         return;
                     }
                     if (gamepad.right_bumper)
@@ -100,19 +94,9 @@ public class BillyMA extends MechAssembly {
                         servo.setPower(0);
                     }
                 },
-                ((servo, telemetry) -> {
+                (servo, telemetry) -> {
                     telemetry.addData("turret position", servo.getPower());
-                }));
-        this.telemetry = tel;
-
-        auton = new AutonomousBillyMA(
-                intake.getAutonomousBehaviors(),
-                ballPusher.getAutonomousBehaviors(),
-                flywheel.getAutonomousBehaviors(),
-                turret.getAutonomousBehaviors()
-        );
-        BRF = new BillyRapidFire(auton, 3, tel);
-        BRF.abort();
+                });
     }
 
     public class AutonomousBillyMA extends AutonomousMechBehaviors {
@@ -125,7 +109,9 @@ public class BillyMA extends MechAssembly {
                 SpinnyIntake.AutonomousIntakeBehaviors autonIntake,
                 PusherServo.AutonomousBallPusherBehaviors autonBallPusher,
                 DoubleShooter.AutonomousShooterBehavior autonFlywheel,
-                Turret.AutonomousTurretBehaviors autonTurret) {
+                Turret.AutonomousTurretBehaviors autonTurret,
+                Telemetry telemetry) {
+            super(telemetry);
             this.autonIntake = autonIntake;
             this.autonBallPusher = autonBallPusher;
             this.autonFlywheel = autonFlywheel;
@@ -133,7 +119,24 @@ public class BillyMA extends MechAssembly {
         }
     }
 
-    private final AutonomousBillyMA auton;
+    private AutonomousBillyMA auton;
+
+    @Override
+    public void initializeTelemetry(Telemetry telemetry) {
+        this.telemetry = telemetry;
+        intake.initializeTelemetry(telemetry);
+        ballPusher.initializeTelemetry(telemetry);
+        flywheel.initializeTelemetry(telemetry);
+        turret.initializeTelemetry(telemetry);
+        auton = new AutonomousBillyMA(
+                intake.getAutonomousBehaviors(),
+                ballPusher.getAutonomousBehaviors(),
+                flywheel.getAutonomousBehaviors(),
+                turret.getAutonomousBehaviors(),
+                telemetry);
+        BRF = new BillyRapidFire(auton, 3);
+        BRF.abort();
+    }
 
     @Override
     public AutonomousBillyMA getAutonomousBehaviors() {
@@ -146,22 +149,22 @@ public class BillyMA extends MechAssembly {
         ballPusher.move(gamepad);
         flywheel.move(gamepad);
         turret.move(gamepad);
-        if(gamepad.a && BRF.isComplete())
+        if(gamepad.a && (BRF == null || BRF.isComplete()))
         {
             BRF.reset(3);
             telemetry.addLine("Start Rapid Fire");
-            telemetry.update();
         }
-        if(!BRF.isComplete())
+        if(BRF != null && !BRF.isComplete())
         {
             BRF.updateState();
         }
     }
 
     @Override
-    public void updateTelemetry(Telemetry telemetry) {
-        ballPusher.update(telemetry);
-        flywheel.update(telemetry);
-        turret.update(telemetry);
+    public void updateTelemetry() {
+        intake.update();
+        ballPusher.update();
+        flywheel.update();
+        turret.update();
     }
 }

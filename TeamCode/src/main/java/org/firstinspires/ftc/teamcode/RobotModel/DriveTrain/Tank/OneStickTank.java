@@ -22,9 +22,11 @@ public class OneStickTank extends DriveTrain
         /**
          * Instantiate a Leroy Jenkins state
          * @param chargeTime duration of the blind charge in seconds
+         * @param telemetry telemetry injected at construction time
          */
-        public LeroyState(double chargeTime)
+        public LeroyState(double chargeTime, Telemetry telemetry)
         {
+            super(telemetry);
             _stateTimer = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
             _chargeTime = chargeTime;
             _isActive = false;
@@ -39,11 +41,12 @@ public class OneStickTank extends DriveTrain
             right.setPower(1);
             _stateTimer.reset();
             _isActive = true;
+            reportStatus("LEROY JENKINS!");
         }
 
         /**
          * Are we still Charging?
-         * @return
+         * @return true if the state has completed
          */
         public boolean isCompleted()
         {
@@ -51,12 +54,15 @@ public class OneStickTank extends DriveTrain
                 return true;
 
             double duration = _stateTimer.time();
-            if(duration < _chargeTime)
+            if(duration < _chargeTime) {
+                reportData("Leroy charge remaining", _chargeTime - duration);
                 return false;
+            }
 
             left.setPower(0);
             right.setPower(0);
             _isActive = false;
+            reportStatus("Leroy complete");
             return true;
         }
     }
@@ -69,7 +75,8 @@ public class OneStickTank extends DriveTrain
 
     // these can be declared Final because once they are initialized they should not be changed.
     private final DcMotor left, right;
-    private final LeroyState leroyState = new LeroyState(10);
+    private LeroyState leroyState;
+
     /**
      * Initialize the Tank Drive with Configuration motors named:
      * left -> "leftTread"
@@ -80,6 +87,13 @@ public class OneStickTank extends DriveTrain
     {
         left = hardwareMap.get(DcMotor.class, "leftTread");
         right = hardwareMap.get(DcMotor.class, "rightTread");
+    }
+
+    @Override
+    public void initializeTelemetry(Telemetry telemetry)
+    {
+        this.telemetry = telemetry;
+        leroyState = new LeroyState(10, telemetry);
     }
 
     @Override
@@ -126,13 +140,11 @@ public class OneStickTank extends DriveTrain
         return throttle * (1 + turnBias);
     }
 
-    /**
-     * Don't need anything here yet, might be useful in the future
-     * @param telemetry
-     */
     @Override
-    public void updateTelemetry(Telemetry telemetry)
+    public void updateTelemetry()
     {
-
+        telemetry.addData("Left power:", left.getPower());
+        telemetry.addData("Right power:", right.getPower());
+        telemetry.addData("Leroy active:", leroyState != null && leroyState._isActive);
     }
 }

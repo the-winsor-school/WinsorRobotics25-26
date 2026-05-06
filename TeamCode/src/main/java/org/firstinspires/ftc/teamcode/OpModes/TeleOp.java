@@ -17,7 +17,7 @@ public class TeleOp extends LinearOpMode
     public void runOpMode()
             throws InterruptedException
     {
-        robot = new Wildbots2025(hardwareMap);
+        robot = new Wildbots2025(hardwareMap, telemetry);
         telemetry.addLine("initialized");
         telemetry.update();
         waitForStart();
@@ -25,10 +25,7 @@ public class TeleOp extends LinearOpMode
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             robot.update(gamepad1, gamepad2);
-            robot.updateTelemetry(telemetry);
-
-            telemetry.update();
-            //double time = this.getRuntime();
+            robot.updateTelemetry();
         }
     }
 }

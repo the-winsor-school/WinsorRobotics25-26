@@ -9,20 +9,24 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class PusherServo extends MechComponent {
 
     public class AutonomousBallPusherBehaviors extends AutonomousComponentBehaviors {
+        public AutonomousBallPusherBehaviors(Telemetry telemetry) {
+            super(telemetry);
+        }
+
         public void pushBalls() {
             servoR.setPosition(0.8);
-            //servoL.setPosition(0.22);
+            reportStatus("Pusher: push");
         }
 
         public void setPosition(double position) {
             servoR.setDirection(Servo.Direction.REVERSE);
             servoR.setPosition(position);
-            //servoL.setPosition(position);
+            reportData("Pusher position", position);
         }
 
         public void retractPusher() {
             servoR.setPosition(0.0);
-            //servoL.setPosition(0.0);
+            reportStatus("Pusher: retract");
         }
     }
 
@@ -36,10 +40,9 @@ public class PusherServo extends MechComponent {
     }
 
     private final Servo servoR;
-    //private final Servo servoL;
     private final BallPusherControlStrategy strategy;
     protected final PusherTelemetryStrategy telemetryStrategy;
-    private final AutonomousBallPusherBehaviors auton = new AutonomousBallPusherBehaviors();
+    private AutonomousBallPusherBehaviors auton;
 
     public PusherServo(HardwareMap hardwareMap,
                        String servoNameR,
@@ -47,9 +50,14 @@ public class PusherServo extends MechComponent {
                        PusherTelemetryStrategy telemetryStrategy) {
         super(strategy);
         this.servoR = hardwareMap.get(Servo.class, servoNameR);
-        //this.servoL = hardwareMap.get(Servo.class, servoNameL);
         this.strategy = strategy;
         this.telemetryStrategy = telemetryStrategy;
+    }
+
+    @Override
+    public void initializeTelemetry(Telemetry telemetry) {
+        super.initializeTelemetry(telemetry);
+        auton = new AutonomousBallPusherBehaviors(telemetry);
     }
 
     @Override
@@ -63,8 +71,11 @@ public class PusherServo extends MechComponent {
     }
 
     @Override
-    public void update(Telemetry telemetry) {
-        telemetry.addData("Right Pusher Position", "%.2f", servoR.getPosition());
-       // telemetry.addData("Left Pusher Position", "%.2f", servoL.getPosition());
+    void update() {
+        if (telemetryStrategy != null) {
+            telemetryStrategy.update(servoR, telemetry);
+        } else {
+            telemetry.addData("Right Pusher Position", "%.2f", servoR.getPosition());
+        }
     }
 }

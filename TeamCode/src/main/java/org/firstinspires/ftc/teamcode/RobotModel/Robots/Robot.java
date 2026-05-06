@@ -12,21 +12,28 @@ public abstract class Robot
 
     protected interface IRobotStrategy { }
     protected Robot.IRobotStrategy strategy;
+
     public abstract class AutonomousRobot
     {
+        protected final Telemetry telemetry;
+
         /**
-         * This doesn't actually do anything with these parameters. It DOES require that any
-         * extension of this class MUST include matching parameters in its constructor
+         * Requires that any extending class provide matching parameter types in its constructor.
          * @param driveTrain Any AutonomousDriving implementation
-         * @param mechAssembly Any Aut
+         * @param mechAssembly Any AutonomousMechBehaviors implementation
+         * @param telemetry Telemetry injected at construction time
          */
         public AutonomousRobot(
                 DriveTrain.AutonomousDriving driveTrain,
-                MechAssembly.AutonomousMechBehaviors mechAssembly)
+                MechAssembly.AutonomousMechBehaviors mechAssembly,
+                Telemetry telemetry)
         {
-            // this requires that any inheriting classes must provide these types of parameters.
+            this.telemetry = telemetry;
         }
 
+        public void reportStatus(String status) { telemetry.addLine(status); }
+        public void reportData(String key, Object value) { telemetry.addData(key, value); }
+        public void clearTelemetry() { telemetry.clear(); }
     }
 
     protected interface IControlStrategy {  }
@@ -42,11 +49,29 @@ public abstract class Robot
     protected VisionPortal visionPortal;
     protected DriveTrain driveTrain;
     protected MechAssembly mechAssembly;
+    protected Telemetry telemetry;
 
+    protected Robot(Telemetry telemetry)
+    {
+        this.telemetry = telemetry;
+    }
 
-    public void updateTelemetry(Telemetry telemetry) {
-        driveTrain.updateTelemetry(telemetry);
-        mechAssembly.updateTelemetry(telemetry);
+    /**
+     * Propagates the owned telemetry reference to subsystems.
+     * Call this in subclass constructors after driveTrain and mechAssembly are assigned.
+     */
+    protected void initializeSubsystems()
+    {
+        if (driveTrain != null) driveTrain.initializeTelemetry(telemetry);
+        if (mechAssembly != null) mechAssembly.initializeTelemetry(telemetry);
+    }
+
+    /**
+     * Single flush point for all telemetry — the only place that calls telemetry.update().
+     */
+    public void updateTelemetry() {
+        if (driveTrain != null) driveTrain.updateTelemetry();
+        if (mechAssembly != null) mechAssembly.updateTelemetry();
         telemetry.update();
     }
 
@@ -57,7 +82,7 @@ public abstract class Robot
      */
     public void update(Gamepad gamepad1, Gamepad gamepad2)
     {
-        driveTrain.drive(gamepad1);
-        mechAssembly.giveInstructions(gamepad2);
+        if (driveTrain != null) driveTrain.drive(gamepad1);
+        if (mechAssembly != null) mechAssembly.giveInstructions(gamepad2);
     }
 }

@@ -19,7 +19,9 @@ public class MecanumDrive extends DriveTrain
 {
     public class AutonomousMecanumDrive extends AutonomousDriving
     {
-        // TODO: Write the Autonomous Methods!
+        public AutonomousMecanumDrive(Telemetry telemetry) {
+            super(telemetry);
+        }
 
         public void turnToAngle(double degrees) {
             degrees = AngleExtensions.mapToIMURange(degrees);
@@ -28,15 +30,19 @@ public class MecanumDrive extends DriveTrain
             while(Math.abs(smol) > 1 ) {  //can change dead-zone here
                 if (smol > 0) {
                     spin(TurnDirection.LEFT);
+                    reportStatus("Turning LEFT");
                 }
                 else {
                     spin(TurnDirection.RIGHT);
+                    reportStatus("Turning RIGHT");
                 }
+                reportData("Yaw", yaw);
+                reportData("Target", degrees);
                 ThreadExtensions.TrySleep(100);
                 yaw = imu.getRobotYawPitchRollAngles().getYaw();
                 smol = AngleExtensions.getSmol(degrees, yaw);
-
             }
+            reportStatus("Turn complete");
         }
 
         public void drive(double x, double y, double t)
@@ -68,11 +74,17 @@ public class MecanumDrive extends DriveTrain
                 rb/=n;
             }
 
+            reportData("LF", lf);
+            reportData("LB", lb);
+            reportData("RF", rf);
+            reportData("RB", rb);
+
             RF.setPower(rf);
             RB.setPower(rb);
             LF.setPower(lf);
             LB.setPower(lb);
         }
+
         public void spin(TurnDirection direction)
         {
             double dir = direction==TurnDirection.RIGHT? 1:-1;
@@ -81,7 +93,6 @@ public class MecanumDrive extends DriveTrain
             RB.setPower(-dir);
             RF.setPower(-dir);
         }
-
     }
 
 
@@ -136,10 +147,15 @@ public class MecanumDrive extends DriveTrain
         RF.setDirection(orientationConfiguration.getRf());
 
         imu = hardwareMap.get(IMU.class, "imu");
-
     }
 
-    private final AutonomousMecanumDrive auton = new AutonomousMecanumDrive();
+    private AutonomousMecanumDrive auton;
+
+    @Override
+    public void initializeTelemetry(Telemetry telemetry) {
+        this.telemetry = telemetry;
+        auton = new AutonomousMecanumDrive(telemetry);
+    }
 
     @Override
     public AutonomousMecanumDrive getAutonomousDriving() {
@@ -186,15 +202,14 @@ public class MecanumDrive extends DriveTrain
         LB.setPower(lb);
     }
 
-
-    /**
-     * Don't need anything here yet, might be useful in the future
-     * @param telemetry
-     */
     @Override
-    public void updateTelemetry(Telemetry telemetry)
+    public void updateTelemetry()
     {
         double yaw = imu.getRobotYawPitchRollAngles().getYaw();
         telemetry.addData("yaw:", yaw);
+        telemetry.addData("LF power:", LF.getPower());
+        telemetry.addData("LB power:", LB.getPower());
+        telemetry.addData("RF power:", RF.getPower());
+        telemetry.addData("RB power:", RB.getPower());
     }
 }

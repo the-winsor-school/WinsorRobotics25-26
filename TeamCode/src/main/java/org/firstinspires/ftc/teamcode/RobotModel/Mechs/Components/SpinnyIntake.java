@@ -10,19 +10,26 @@ public class SpinnyIntake extends MechComponent
 {
     public class AutonomousIntakeBehaviors extends MechComponent.AutonomousComponentBehaviors
     {
+        public AutonomousIntakeBehaviors(Telemetry telemetry) {
+            super(telemetry);
+        }
+
         public void startIntake()
         {
             intake.setPower(-1);
+            reportStatus("Intake: running");
         }
 
         public void stopIntake()
         {
             intake.setPower(0);
+            reportStatus("Intake: stopped");
         }
 
         public void reverseIntake()
         {
             intake.setPower(1);
+            reportStatus("Intake: reversed");
         }
     }
 
@@ -45,8 +52,7 @@ public class SpinnyIntake extends MechComponent
 
     protected SpinnyIntakeControlStrategy strategy;
 
-
-    private final AutonomousIntakeBehaviors auton = new AutonomousIntakeBehaviors();;
+    private AutonomousIntakeBehaviors auton;
 
     public SpinnyIntake(
             HardwareMap hardwareMap,
@@ -56,6 +62,12 @@ public class SpinnyIntake extends MechComponent
         super(strategy);
         intake = hardwareMap.get(DcMotor.class, motorName);
         this.strategy = (SpinnyIntakeControlStrategy) super.strategy;
+    }
+
+    @Override
+    public void initializeTelemetry(Telemetry telemetry) {
+        super.initializeTelemetry(telemetry);
+        auton = new AutonomousIntakeBehaviors(telemetry);
     }
 
     @Override
@@ -70,7 +82,8 @@ public class SpinnyIntake extends MechComponent
     }
 
     @Override
-    void update(Telemetry telemetry) {
-
+    void update() {
+        telemetry.addData("intake power:", intake.getPower());
+        telemetry.addData("intake position:", intake.getCurrentPosition());
     }
 }

@@ -13,32 +13,38 @@ public class StandardTankDrive extends DriveTrain
 {
     public class AutonomousTankDrive extends AutonomousDriving
     {
-        //make it move for a set amount of time/distance using millis and trysleep.
-        //make it turn for a set amount of degrees using millis
+        public AutonomousTankDrive(Telemetry telemetry) {
+            super(telemetry);
+        }
 
         public void driveForward() {
             left.setPower(1);
             right.setPower(1);
+            reportStatus("Driving forward");
         }
         public void driveBackward() {
             left.setPower(-1);
             right.setPower(-1);
+            reportStatus("Driving backward");
         }
         public void stop() {
             left.setPower(0);
             right.setPower(0);
+            reportStatus("Stopped");
         }
         public void turnLeft() {
             left.setPower(-1);
             right.setPower(1);
+            reportStatus("Turning left");
         }
         public void turnRight() {
             left.setPower(1);
             right.setPower(-1);
+            reportStatus("Turning right");
         }
     }
 
-    private final AutonomousTankDrive auton = new AutonomousTankDrive();
+    private AutonomousTankDrive auton;
 
     @Override
     public AutonomousTankDrive getAutonomousDriving()
@@ -63,6 +69,12 @@ public class StandardTankDrive extends DriveTrain
     }
 
     @Override
+    public void initializeTelemetry(Telemetry telemetry) {
+        this.telemetry = telemetry;
+        auton = new AutonomousTankDrive(telemetry);
+    }
+
+    @Override
     public void drive(Gamepad gamepad)
     {
         float leftDrive = GamepadExtensions.GetLeftStickY(gamepad);
@@ -71,14 +83,10 @@ public class StandardTankDrive extends DriveTrain
         right.setPower(rightDrive);
     }
 
-    /**
-     * Don't need anything here yet, might be useful in the future
-     * @param telemetry
-     */
     @Override
-    public void updateTelemetry(Telemetry telemetry)
+    public void updateTelemetry()
     {
-
+        telemetry.addData("Left power:", left.getPower());
+        telemetry.addData("Right power:", right.getPower());
     }
-
 }

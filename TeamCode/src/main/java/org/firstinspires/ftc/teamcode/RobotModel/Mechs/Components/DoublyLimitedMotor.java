@@ -11,27 +11,33 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Assemblies.CascadeArm;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Assemblies.MechAssembly;
 
-public  class DoublyLimitedMotor extends MechComponent{
+public  class DoublyLimitedMotor extends MechComponent {
 
     public class AutonomousDLMBehaviors extends MechComponent.AutonomousComponentBehaviors
     {
-        // TODO: What Autonomous Behaviors Go here?
+        public AutonomousDLMBehaviors(Telemetry telemetry) {
+            super(telemetry);
+        }
 
         public void goForward()
         {
             setPower(1);
+            reportStatus("DLM: forward");
         }
 
         public void stop()
         {
             setPower(0);
+            reportStatus("DLM: stop");
         }
 
         public void goBackward()
         {
             setPower(-1);
+            reportStatus("DLM: backward");
         }
     }
+
     public interface DoublyLimitedMotorControlStrategy extends IControlStrategy{
         public void move(Gamepad gamepad, DoublyLimitedMotor doublyLimitedMotor);
     }
@@ -45,7 +51,7 @@ public  class DoublyLimitedMotor extends MechComponent{
     private TouchSensor reverseSensor;
     private DoublyLimitedMotorControlStrategy strategy;
 
-    private AutonomousDLMBehaviors auton = new AutonomousDLMBehaviors();
+    private AutonomousDLMBehaviors auton;
     protected DoublyLimitedMotorTelemetryStrategy telemetryStrategy;
 
     /**
@@ -70,7 +76,12 @@ public  class DoublyLimitedMotor extends MechComponent{
         reverseSensor = hardwareMap.get(TouchSensor.class, reverseSensorName);
         this.strategy = strategy;
         this.telemetryStrategy = telemetryStrategy;
+    }
 
+    @Override
+    public void initializeTelemetry(Telemetry telemetry) {
+        super.initializeTelemetry(telemetry);
+        auton = new AutonomousDLMBehaviors(telemetry);
     }
 
     /**
@@ -100,9 +111,15 @@ public  class DoublyLimitedMotor extends MechComponent{
     }
 
     @Override
-    public void update(Telemetry telemetry)
+    void update()
     {
-        telemetryStrategy.update(this, telemetry);
+        if (telemetryStrategy != null) {
+            telemetryStrategy.update(this, telemetry);
+        } else {
+            telemetry.addData("motor power:", motor.getPower());
+            telemetry.addData("can go forward:", canGoForward());
+            telemetry.addData("can go reverse:", canGoReverse());
+        }
     }
 
 
