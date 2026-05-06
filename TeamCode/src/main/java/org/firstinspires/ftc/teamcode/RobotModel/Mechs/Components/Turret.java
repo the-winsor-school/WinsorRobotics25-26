@@ -13,16 +13,21 @@ public class Turret extends MechComponent
 
     public class AutonomousTurretBehaviors extends AutonomousComponentBehaviors
     {
+        public AutonomousTurretBehaviors(Telemetry telemetry) {
+            super(telemetry);
+        }
+
         public void setPower(double power)
         {
             servo.setPower(power);
+            reportData("Turret power", power);
         }
-        public void turnCCW() { servo.setPower(1); ThreadExtensions.TrySleep(100); }
-        public void turnCW() { servo.setPower(-1); ThreadExtensions.TrySleep(100); }
-        public void stop() { servo.setPower(0); }
+        public void turnCCW() { servo.setPower(1); reportStatus("Turret: CCW"); ThreadExtensions.TrySleep(100); }
+        public void turnCW() { servo.setPower(-1); reportStatus("Turret: CW"); ThreadExtensions.TrySleep(100); }
+        public void stop() { servo.setPower(0); reportStatus("Turret: stopped"); }
     }
 
-    private AutonomousTurretBehaviors auton = new AutonomousTurretBehaviors();
+    private AutonomousTurretBehaviors auton;
 
     @Override
     public AutonomousTurretBehaviors getAutonomousBehaviors()
@@ -56,15 +61,25 @@ public class Turret extends MechComponent
         this.telemetryStrategy = telemetryStrategy;
     }
 
+    @Override
+    public void initializeTelemetry(Telemetry telemetry) {
+        super.initializeTelemetry(telemetry);
+        auton = new AutonomousTurretBehaviors(telemetry);
+    }
+
     public void move(Gamepad gamepad)
     {
         strategy.move(servo, gamepad);
     }
 
     @Override
-    public void update(Telemetry telemetry)
+    void update()
     {
-        telemetryStrategy.update(servo, telemetry);
+        if (telemetryStrategy != null) {
+            telemetryStrategy.update(servo, telemetry);
+        } else {
+            telemetry.addData("turret power:", servo.getPower());
+        }
     }
 
 }

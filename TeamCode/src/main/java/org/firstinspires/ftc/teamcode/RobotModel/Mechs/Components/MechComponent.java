@@ -6,28 +6,30 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public abstract class MechComponent
 {
-    /**
-     * Override with an implemenation that applies to the Mech in question.
-     */
-    public abstract class AutonomousComponentBehaviors { }
+    public abstract class AutonomousComponentBehaviors {
+        protected final Telemetry telemetry;
+        public AutonomousComponentBehaviors(Telemetry telemetry) {
+            this.telemetry = telemetry;
+        }
+        public void reportStatus(String status) { telemetry.addLine(status); }
+        public void reportData(String key, Object value) { telemetry.addData(key, value); }
+    }
     public abstract <T extends AutonomousComponentBehaviors> T getAutonomousBehaviors();
     protected interface IControlStrategy { }
 
-    /**
-     * a mech component must have a control strategy!
-     */
     protected IControlStrategy strategy;
+    protected Telemetry telemetry;
 
     protected MechComponent(IControlStrategy strategy)
     {
         this.strategy = strategy;
     }
 
-    /**
-     * the implementation of this method should use the
-     * Control Strategy defined in the implementing class
-     * @param gamepad gamepad passed down from the MechAssembly
-     */
+    public void initializeTelemetry(Telemetry telemetry)
+    {
+        this.telemetry = telemetry;
+    }
+
     abstract void move(Gamepad gamepad);
-    abstract void update(Telemetry telemetry);
+    abstract void update();
 }

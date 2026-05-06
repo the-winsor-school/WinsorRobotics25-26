@@ -21,26 +21,39 @@ public class DoubleShooter extends MechComponent
     }
 
     public class AutonomousShooterBehavior extends AutonomousComponentBehaviors {
+        public AutonomousShooterBehavior(Telemetry telemetry) {
+            super(telemetry);
+        }
+
         public void StartShoot() {
             shooterF.setPower(0.76);
             shooterB.setPower(-0.76);
+            reportStatus("Shooter: running");
         }
         public void StopShoot(){
             shooterF.setPower(0);
             shooterB.setPower(0);
+            reportStatus("Shooter: stopped");
         }
 
         public void setPower(double power){
             shooterF.setPower(power);
             shooterB.setPower(-power);
+            reportData("Shooter power", power);
         }
     }
 
+    private AutonomousShooterBehavior auton;
+
     @Override
-    public <T extends AutonomousComponentBehaviors> T getAutonomousBehaviors() {
-        // Return a new instance of the autonomous behavior so callers get a working object,
-        // not null. Cast is safe because AutonomousShooterBehavior extends AutonomousComponentBehaviors.
-        return (T) new AutonomousShooterBehavior();
+    public void initializeTelemetry(Telemetry telemetry) {
+        super.initializeTelemetry(telemetry);
+        auton = new AutonomousShooterBehavior(telemetry);
+    }
+
+    @Override
+    public AutonomousShooterBehavior getAutonomousBehaviors() {
+        return auton;
     }
 
     public interface ShooterControlStrategy extends IControlStrategy
@@ -64,7 +77,12 @@ public class DoubleShooter extends MechComponent
     }
 
     @Override
-    public void update(Telemetry telemetry) {
-
+    void update() {
+        if (telemetryStrategy != null) {
+            telemetryStrategy.update(shooterF, shooterB, telemetry);
+        } else {
+            telemetry.addData("shooterF power:", shooterF.getPower());
+            telemetry.addData("shooterB power:", shooterB.getPower());
+        }
     }
 }

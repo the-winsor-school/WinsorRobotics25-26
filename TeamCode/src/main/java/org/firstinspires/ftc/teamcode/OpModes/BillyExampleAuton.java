@@ -34,7 +34,6 @@ public class BillyExampleAuton
             new LimelightAutoTarget(
                     robot.limelight,
                     robot.getAutonomousRobot().mechAssembly.autonTurret,
-                    telemetry,
                     20);
     @Override
     public void execute() {

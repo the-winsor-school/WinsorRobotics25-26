@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.AutonStrategies;
 
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Extensions.IState;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Assemblies.BillyMA;
 
@@ -10,13 +9,13 @@ public class BillyRapidFire extends StateMachine
 {
     private final BillyMA.AutonomousBillyMA mechAssembly;
     private int ballCount;
-    private final Telemetry telemetry;
-    public BillyRapidFire(BillyMA.AutonomousBillyMA ma, int ballCount, Telemetry tm)
+
+    public BillyRapidFire(BillyMA.AutonomousBillyMA ma, int ballCount)
     {
-        mechAssembly = ma; //dependency
-        telemetry = tm;
+        mechAssembly = ma;
         reset(ballCount);
     }
+
     public void reset(int ballCount)
     {
         this.ballCount = ballCount;
@@ -25,8 +24,7 @@ public class BillyRapidFire extends StateMachine
 
 
     public IState startShooter() {
-        telemetry.addLine("startShooter");
-        telemetry.update();
+        mechAssembly.reportStatus("startShooter");
         return
                 doAndWait(
                         () -> mechAssembly
@@ -40,8 +38,7 @@ public class BillyRapidFire extends StateMachine
     }
     public IState fire()
     {
-        telemetry.addLine("fire");
-        telemetry.update();
+        mechAssembly.reportStatus("fire");
         return
                 doAndWait(
                         mechAssembly
@@ -53,8 +50,7 @@ public class BillyRapidFire extends StateMachine
     }
     public IState retract()
     {
-        telemetry.addLine("retract");
-        telemetry.update();
+        mechAssembly.reportStatus("retract");
         return
                 doAndWait(
                         mechAssembly
@@ -62,7 +58,7 @@ public class BillyRapidFire extends StateMachine
                                 ::retractPusher,
                         1000,
                         --ballCount > 0
-                                ? fire ()
+                                ? fire()
                                 : stopShooter()
 
 
@@ -70,8 +66,7 @@ public class BillyRapidFire extends StateMachine
     }
     public IState stopShooter()
     {
-        telemetry.addLine("stopShooter");
-        telemetry.update();
+        mechAssembly.reportStatus("stopShooter");
         return() ->
         {
             mechAssembly
