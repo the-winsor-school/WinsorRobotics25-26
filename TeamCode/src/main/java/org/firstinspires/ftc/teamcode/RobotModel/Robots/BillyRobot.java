@@ -78,8 +78,6 @@ public class BillyRobot extends Robot {
                 DcMotorSimple.Direction.REVERSE,
                 DcMotorSimple.Direction.FORWARD)
         );
-        //super(limelightAutoTargetStrategy);
-        //this.limelightAutoTargetStrategy = limelightAutoTargetStrategy;
 
         mechAssembly = new BillyMA(hardwareMap, telemetry);
 
