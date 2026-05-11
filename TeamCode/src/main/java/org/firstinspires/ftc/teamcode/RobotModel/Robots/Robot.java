@@ -12,6 +12,7 @@ public abstract class Robot
 
     protected interface IRobotStrategy { }
     protected Robot.IRobotStrategy strategy;
+
     public abstract class AutonomousRobot
     {
         /**
@@ -30,6 +31,7 @@ public abstract class Robot
     }
 
     protected interface IControlStrategy {  }
+
 
     /**
      * This abstract method definition tells inheriting classes that they MUST define a
