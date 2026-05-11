@@ -1,12 +1,14 @@
 package org.firstinspires.ftc.teamcode.AutonStrategies;
 
 
+import com.qualcomm.robotcore.hardware.Gamepad;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Extensions.IState;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Assemblies.BillyMA;
 
 
-public class BillyRapidFire extends StateMachine
+public class BillyRapidFire extends StateMachine implements BillyMA.BillyAssemblyStrategy
 {
     private final BillyMA.AutonomousBillyMA mechAssembly;
     private int ballCount;
@@ -81,4 +83,8 @@ public class BillyRapidFire extends StateMachine
         };
     }
 
+    @Override
+    public void execute(BillyMA mechAssembly, Gamepad gamepad) {
+
+    }
 }

@@ -13,14 +13,19 @@ import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.Turret;
 
 public class BillyMA extends MechAssembly {
 
+    public interface BillyAssemblyStrategy extends IAssemblyStrategy
+    {
+        void execute(BillyMA mechAssembly, Gamepad gamepad);
+    }
+
+
     private final SpinnyIntake intake;
     private final PusherServo ballPusher;
     private final DoubleShooter flywheel;
     private final Turret turret;
-
     private BillyRapidFire BRF = null;
-
     private final Telemetry telemetry;
+    protected BillyAssemblyStrategy strategy;
 
     public BillyMA(HardwareMap hardwareMap, Telemetry tel) {
         intake = new SpinnyIntake(hardwareMap, "intakeMotor",
@@ -113,6 +118,22 @@ public class BillyMA extends MechAssembly {
         );
         BRF = new BillyRapidFire(auton, 3, tel);
         BRF.abort();
+        strategy = (mechAssembly, gamepad) -> {
+            intake.move(gamepad);
+            ballPusher.move(gamepad);
+            flywheel.move(gamepad);
+            turret.move(gamepad);
+            if(gamepad.a && BRF.isComplete())
+            {
+                BRF.reset(3);
+                telemetry.addLine("Start Rapid Fire");
+                telemetry.update();
+            }
+            if(!BRF.isComplete())
+            {
+                BRF.updateState();
+            }
+        };
     }
 
     public class AutonomousBillyMA extends AutonomousMechBehaviors {
@@ -142,20 +163,7 @@ public class BillyMA extends MechAssembly {
 
     @Override
     public void giveInstructions(Gamepad gamepad) {
-        intake.move(gamepad);
-        ballPusher.move(gamepad);
-        flywheel.move(gamepad);
-        turret.move(gamepad);
-        if(gamepad.a && BRF.isComplete())
-        {
-            BRF.reset(3);
-            telemetry.addLine("Start Rapid Fire");
-            telemetry.update();
-        }
-        if(!BRF.isComplete())
-        {
-            BRF.updateState();
-        }
+       strategy.execute(this, gamepad);
     }
 
     @Override
@@ -164,4 +172,6 @@ public class BillyMA extends MechAssembly {
         flywheel.update(telemetry);
         turret.update(telemetry);
     }
+
+
 }
