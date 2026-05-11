@@ -30,9 +30,6 @@ public class BillyMA extends MechAssembly {
     public BillyMA(HardwareMap hardwareMap, Telemetry tel) {
         intake = new SpinnyIntake(hardwareMap, "intakeMotor",
                 (motor, gamepad) -> {
-                    if (!BRF.isComplete()) { // checks if BRF is running
-                        return; //if it is running, do not proceed
-                    }
                     if (gamepad.dpad_up) {
 
                         motor.setPower(0.75);
@@ -47,9 +44,6 @@ public class BillyMA extends MechAssembly {
         ballPusher = new PusherServo(hardwareMap,
                 "ballPusherServo",
                 (servoR, gamepad) -> {
-                    if (!BRF.isComplete()) {
-                        return;
-                    }
                     servoR.setDirection(Servo.Direction.REVERSE);
                     if (gamepad.x) {
                         servoR.setPosition(0.8);
@@ -65,9 +59,6 @@ public class BillyMA extends MechAssembly {
 
         flywheel = new DoubleShooter(hardwareMap, "flywheelMotorF", "flywheelMotorB",
                 (motorF, motorB,gamepad) -> {
-                    if (!BRF.isComplete()) {
-                        return;
-                    }
                     double power = 0.45;
                     if (gamepad.dpad_up) {
                         power += 0.05;
@@ -90,9 +81,6 @@ public class BillyMA extends MechAssembly {
         // just don't press the right bumper ig
         turret = new Turret(hardwareMap, "turretServo",
                 (servo, gamepad) -> {
-                    if (!BRF.isComplete()) {
-                        return;
-                    }
                     if (gamepad.right_bumper)
                     {
                         servo.setPower(-1);
@@ -119,10 +107,7 @@ public class BillyMA extends MechAssembly {
         BRF = new BillyRapidFire(auton, 3, tel);
         BRF.abort();
         strategy = (mechAssembly, gamepad) -> {
-            intake.move(gamepad);
-            ballPusher.move(gamepad);
-            flywheel.move(gamepad);
-            turret.move(gamepad);
+            
             if(gamepad.a && BRF.isComplete())
             {
                 BRF.reset(3);
@@ -132,7 +117,16 @@ public class BillyMA extends MechAssembly {
             if(!BRF.isComplete())
             {
                 BRF.updateState();
+                return;
             }
+
+            intake.move(gamepad);
+            ballPusher.move(gamepad);
+            flywheel.move(gamepad);
+            // This line is a bug! because Turret has nothing to do with BillyRapidFire,
+            // AND it is wholly owned by LimelightAutoTarget.
+            turret.move(gamepad);
+             
         };
     }
 
