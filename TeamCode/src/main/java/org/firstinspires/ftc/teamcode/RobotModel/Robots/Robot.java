@@ -64,6 +64,7 @@ public abstract class Robot
 
     protected interface IControlStrategy {  }
 
+
     /**
      * This abstract method definition tells inheriting classes that they MUST define a
      * way to run Autonomously.

@@ -13,19 +13,24 @@ import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.Turret;
 
 public class BillyMA extends MechAssembly {
 
+    public interface BillyAssemblyStrategy extends IAssemblyStrategy
+    {
+        void execute(BillyMA mechAssembly, Gamepad gamepad);
+    }
+
+
     private final SpinnyIntake intake;
     private final PusherServo ballPusher;
     private final DoubleShooter flywheel;
     private final Turret turret;
-
     private BillyRapidFire BRF = null;
 
-    public BillyMA(HardwareMap hardwareMap) {
+    private final Telemetry telemetry;
+    protected BillyAssemblyStrategy strategy;
+
+    public BillyMA(HardwareMap hardwareMap, Telemetry tel) {
         intake = new SpinnyIntake(hardwareMap, "intakeMotor",
                 (motor, gamepad) -> {
-                    if (BRF == null || !BRF.isComplete()) {
-                        return;
-                    }
                     if (gamepad.dpad_up) {
                         motor.setPower(0.75);
                     }
@@ -39,9 +44,6 @@ public class BillyMA extends MechAssembly {
         ballPusher = new PusherServo(hardwareMap,
                 "ballPusherServo",
                 (servoR, gamepad) -> {
-                    if (BRF == null || !BRF.isComplete()) {
-                        return;
-                    }
                     servoR.setDirection(Servo.Direction.REVERSE);
                     if (gamepad.x) {
                         servoR.setPosition(0.8);
@@ -54,10 +56,7 @@ public class BillyMA extends MechAssembly {
                 });
 
         flywheel = new DoubleShooter(hardwareMap, "flywheelMotorF", "flywheelMotorB",
-                (motorF, motorB, gamepad) -> {
-                    if (BRF == null || !BRF.isComplete()) {
-                        return;
-                    }
+                (motorF, motorB,gamepad) -> {
                     double power = 0.45;
                     if (gamepad.dpad_up) {
                         power += 0.05;
@@ -79,9 +78,6 @@ public class BillyMA extends MechAssembly {
 
         turret = new Turret(hardwareMap, "turretServo",
                 (servo, gamepad) -> {
-                    if (BRF == null || !BRF.isComplete()) {
-                        return;
-                    }
                     if (gamepad.right_bumper)
                     {
                         servo.setPower(-1);
@@ -96,7 +92,39 @@ public class BillyMA extends MechAssembly {
                 },
                 (servo, telemetry) -> {
                     telemetry.addData("turret position", servo.getPower());
-                });
+                }));
+        this.telemetry = tel;
+
+        auton = new AutonomousBillyMA(
+                intake.getAutonomousBehaviors(),
+                ballPusher.getAutonomousBehaviors(),
+                flywheel.getAutonomousBehaviors(),
+                turret.getAutonomousBehaviors()
+        );
+        BRF = new BillyRapidFire(auton, 3, tel);
+        BRF.abort();
+        strategy = (mechAssembly, gamepad) -> {
+            
+            if(gamepad.a && BRF.isComplete())
+            {
+                BRF.reset(3);
+                telemetry.addLine("Start Rapid Fire");
+                telemetry.update();
+            }
+            if(!BRF.isComplete())
+            {
+                BRF.updateState();
+                return;
+            }
+
+            intake.move(gamepad);
+            ballPusher.move(gamepad);
+            flywheel.move(gamepad);
+            // This line is a bug! because Turret has nothing to do with BillyRapidFire,
+            // AND it is wholly owned by LimelightAutoTarget.
+            turret.move(gamepad);
+             
+        };
     }
 
     public class AutonomousBillyMA extends AutonomousMechBehaviors {
@@ -161,19 +189,7 @@ public class BillyMA extends MechAssembly {
      */
     @Override
     public void giveInstructions(Gamepad gamepad) {
-        intake.move(gamepad);
-        ballPusher.move(gamepad);
-        flywheel.move(gamepad);
-        turret.move(gamepad);
-        if(gamepad.a && (BRF == null || BRF.isComplete()))
-        {
-            BRF.reset(3);
-            telemetry.addLine("Start Rapid Fire");
-        }
-        if(BRF != null && !BRF.isComplete())
-        {
-            BRF.updateState();
-        }
+       strategy.execute(this, gamepad);
     }
 
     /**

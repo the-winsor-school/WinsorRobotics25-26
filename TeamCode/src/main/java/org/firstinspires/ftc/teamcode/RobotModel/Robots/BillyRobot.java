@@ -21,8 +21,7 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.
-        ftc.robotcore.external.navigation.YawPitchRollAngles;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 
 public class BillyRobot extends Robot {
@@ -53,12 +52,19 @@ public class BillyRobot extends Robot {
         }
     }
 
+    public interface BillyRobotStrategy extends IRobotStrategy
+    {
+        void execute (BillyRobot robot, Gamepad g, Gamepad h);
+    }
+
     private final AprilTagProcessor aprilTag;
     private final AutonomousMecanumRobot auton;
     public final Limelight3A limelight;
     public final IMU imu;
 
     public final LimelightAutoTarget targeter;
+
+    protected BillyRobotStrategy strategy;
 
 
     @Override
@@ -87,8 +93,8 @@ public class BillyRobot extends Robot {
                 DcMotorSimple.Direction.FORWARD,
                 DcMotorSimple.Direction.FORWARD,
                 DcMotorSimple.Direction.REVERSE,
-                DcMotorSimple.Direction.FORWARD
-        ));
+                DcMotorSimple.Direction.FORWARD)
+        );
 
         mechAssembly = new BillyMA(hardwareMap);
 
@@ -122,12 +128,16 @@ public class BillyRobot extends Robot {
                 limelight,
                 ((BillyMA)mechAssembly).getAutonomousBehaviors().autonTurret,
                 tagID);
+
+        strategy = (robot, gamepad1, gamepad2)  -> {
+            super.update(gamepad1, gamepad2);
+            if(!targeter.isComplete())
+                targeter.updateState();
+        };
     }
 
     @Override
     public void update(Gamepad gamepad1, Gamepad gamepad2) {
-        super.update(gamepad1, gamepad2);
-        if(!targeter.isComplete())
-            targeter.updateState();
+       strategy.execute(this, gamepad1, gamepad2);
     }
 }
