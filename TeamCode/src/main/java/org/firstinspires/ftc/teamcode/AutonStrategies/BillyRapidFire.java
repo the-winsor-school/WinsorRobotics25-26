@@ -13,19 +13,34 @@ public class BillyRapidFire extends StateMachine implements BillyMA.BillyAssembl
     private final BillyMA.AutonomousBillyMA mechAssembly;
     private int ballCount;
     private final Telemetry telemetry;
+
+    /**
+     * 
+     * @param ma The mechAssembly of BillyRapidFire
+     * @param ballCount The number of balls that BillyRapidFire will launch
+     * @param tm Telemetry is good and necessary! yay
+     */
     public BillyRapidFire(BillyMA.AutonomousBillyMA ma, int ballCount, Telemetry tm)
     {
         mechAssembly = ma; //dependency
         telemetry = tm;
         reset(ballCount);
     }
+
+    /**
+     * Resets BillyRapidFire
+     * @param ballCount The number of balls that BillyRapidFire will launch
+     */
     public void reset(int ballCount)
     {
         this.ballCount = ballCount;
         currentState = startShooter();
     }
 
-
+    /**
+     * Starts the flywheel shooter
+     * @return Sets the flywheel to 0.6 power and waits for 2200 milliseconds, then goes to fire()
+     */
     public IState startShooter() {
         telemetry.addLine("startShooter");
         telemetry.update();
@@ -40,6 +55,11 @@ public class BillyRapidFire extends StateMachine implements BillyMA.BillyAssembl
 
 
     }
+
+    /**
+     * Pushes the balls into the flywheel shooter
+     * @return Pushes the balls and waits for 1000 milliseconds, then goes to retract()
+     */
     public IState fire()
     {
         telemetry.addLine("fire");
@@ -53,6 +73,12 @@ public class BillyRapidFire extends StateMachine implements BillyMA.BillyAssembl
                         retract()
                 );
     }
+
+    /**
+     * Retracts the ball pusher
+     * @return Retracts the ball pusher servo and waits for 1000 milliseconds.
+     * If ballCount > 0, goes to fire(). Otherwise, goes to stopShooter()
+     */
     public IState retract()
     {
         telemetry.addLine("retract");
@@ -70,6 +96,11 @@ public class BillyRapidFire extends StateMachine implements BillyMA.BillyAssembl
 
                 );
     }
+
+    /**
+     * Stops the flywheel shooter
+     * @return Stops the flywheel shooter, then returns null.
+     */
     public IState stopShooter()
     {
         telemetry.addLine("stopShooter");
@@ -83,6 +114,7 @@ public class BillyRapidFire extends StateMachine implements BillyMA.BillyAssembl
         };
     }
 
+    //actually I don't think this one does anything
     @Override
     public void execute(BillyMA mechAssembly, Gamepad gamepad) {
 

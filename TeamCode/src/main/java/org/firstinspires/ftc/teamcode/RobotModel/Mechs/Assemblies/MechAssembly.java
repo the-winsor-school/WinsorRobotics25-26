@@ -12,6 +12,10 @@ import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.MechComponent;
  */
 public abstract class MechAssembly
 {
+    /**
+     * IAssemblyStrategy is an interface that allows
+     * the creation of modes or macros which use multiple components
+     */
     protected interface IAssemblyStrategy { }
     protected MechAssembly.IAssemblyStrategy strategy;
 
