@@ -31,6 +31,7 @@ The program will be a mode and run in the background while chasing the april tag
 **developer note** model based off of the preexisting stateMachine in a new file, thereby not modifying existing files
 3. "Run in the background while chasing AprilTags" is ambiguous and should be tied to a specific OpMode and activation model. **developer note:** It should run in autonomous
 4. Multi-tag behavior is currently underspecified and needs an explicit selection/switching policy.
+**developer note:**
 5. Search behavior ("spin to find tag") needs safety bounds and timeout/fallback behavior.
 6. Hardware assumptions need to be explicit (camera mount, offset, FOV expectations, calibration status). **developer note:** It is a Limelight3A limelight
 
