@@ -19,15 +19,17 @@ public class CascadeArm extends MechAssembly
         public AutonomousCascadeArm(
                 DoublyLimitedMotor.AutonomousDLMBehaviors cascade,
                 DoublyLimitedMotor.AutonomousDLMBehaviors drawbridge,
-                Claw.AutonomousClawBehaviors claw)
+                Claw.AutonomousClawBehaviors claw,
+                Telemetry telemetry)
         {
+            super(telemetry);
             this.cascade = cascade;
             this.drawbridge = drawbridge;
             this.claw = claw;
         }
     }
 
-    private final AutonomousCascadeArm auton;
+    private AutonomousCascadeArm auton;
 
     @Override
     public AutonomousCascadeArm getAutonomousBehaviors()
@@ -38,6 +40,7 @@ public class CascadeArm extends MechAssembly
     private final DoublyLimitedMotor cascade;
     private final DoublyLimitedMotor drawbridge;
     private final Claw claw;
+
     public CascadeArm (HardwareMap hardwareMap){
         cascade = new DoublyLimitedMotor(
                 hardwareMap,
@@ -82,11 +85,24 @@ public class CascadeArm extends MechAssembly
                     telemetry.addData("Claw Position", servo.getPower());
                 }
         );
+    }
 
+    /**
+     * Propagates telemetry to the three components so each can lazily create its own
+     * autonomous behavior object, then assembles {@code AutonomousCascadeArm}
+     * (Susan Zuo — two-phase initialization pattern).
+     */
+    @Override
+    public void initializeTelemetry(Telemetry telemetry) {
+        this.telemetry = telemetry;
+        cascade.initializeTelemetry(telemetry);
+        drawbridge.initializeTelemetry(telemetry);
+        claw.initializeTelemetry(telemetry);
         auton = new AutonomousCascadeArm(
                 cascade.getAutonomousBehaviors(),
                 drawbridge.getAutonomousBehaviors(),
-                claw.getAutonomousBehaviors());
+                claw.getAutonomousBehaviors(),
+                telemetry);
     }
 
     @Override
@@ -96,10 +112,15 @@ public class CascadeArm extends MechAssembly
         claw.move(gamepad);
     }
 
+    /**
+     * Collects telemetry from all three components. Previously empty (Susan Zuo
+     * — Bug #3: "No telemetry data reported"). Never flushes.
+     */
     @Override
-    public void updateTelemetry(Telemetry telemetry) {
-        claw.update(telemetry);
-        cascade.update(telemetry);
-        drawbridge.update(telemetry);
+    public void updateTelemetry() {
+        telemetry.addLine("--- Cascade Arm ---");
+        claw.update();
+        cascade.update();
+        drawbridge.update();
     }
 }

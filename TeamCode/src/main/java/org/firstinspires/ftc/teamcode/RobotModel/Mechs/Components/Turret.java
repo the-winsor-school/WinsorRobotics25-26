@@ -13,16 +13,21 @@ public class Turret extends MechComponent
 
     public class AutonomousTurretBehaviors extends AutonomousComponentBehaviors
     {
+        public AutonomousTurretBehaviors(Telemetry telemetry) {
+            super(telemetry);
+        }
+
         public void setPower(double power)
         {
             servo.setPower(power);
+            reportData("Turret power", power);
         }
-        public void turnCCW() { servo.setPower(1); ThreadExtensions.TrySleep(100); }
-        public void turnCW() { servo.setPower(-1); ThreadExtensions.TrySleep(100); }
-        public void stop() { servo.setPower(0); }
+        public void turnCCW() { servo.setPower(1); reportStatus("Turret: CCW"); ThreadExtensions.TrySleep(100); }
+        public void turnCW() { servo.setPower(-1); reportStatus("Turret: CW"); ThreadExtensions.TrySleep(100); }
+        public void stop() { servo.setPower(0); reportStatus("Turret: stopped"); }
     }
 
-    private AutonomousTurretBehaviors auton = new AutonomousTurretBehaviors();
+    private AutonomousTurretBehaviors auton;
 
     @Override
     public AutonomousTurretBehaviors getAutonomousBehaviors()
@@ -56,15 +61,36 @@ public class Turret extends MechComponent
         this.telemetryStrategy = telemetryStrategy;
     }
 
+    /**
+     * Stores the telemetry reference (via super) and lazily creates the autonomous
+     * behaviors object. Previously {@code auton} was a field-initializer that ran
+     * before telemetry was available, so the inner class had no telemetry reference
+     * (Susan Zuo — two-phase initialization pattern).
+     */
+    @Override
+    public void initializeTelemetry(Telemetry telemetry) {
+        super.initializeTelemetry(telemetry);
+        auton = new AutonomousTurretBehaviors(telemetry);
+    }
+
     public void move(Gamepad gamepad)
     {
         strategy.move(servo, gamepad);
     }
 
+    /**
+     * Delegates to {@code telemetryStrategy} when present, otherwise writes
+     * turret power directly. Previously empty (Susan Zuo — Bug #3: "No telemetry
+     * data reported despite having telemetryStrategy"). Never flushes.
+     */
     @Override
-    public void update(Telemetry telemetry)
+    void update()
     {
-        telemetryStrategy.update(servo, telemetry);
+        if (telemetryStrategy != null) {
+            telemetryStrategy.update(servo, telemetry);
+        } else {
+            telemetry.addData("turret power:", servo.getPower());
+        }
     }
 
 }

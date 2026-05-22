@@ -16,17 +16,22 @@ public class ExampleIntakeAssembly extends MechAssembly
         public final SpinnyIntake.AutonomousIntakeBehaviors intake;
         public final Claw.AutonomousClawBehaviors claw;
 
-        public AutonomousIntakeAssembly(SpinnyIntake.AutonomousIntakeBehaviors intake, Claw.AutonomousClawBehaviors claw)
+        public AutonomousIntakeAssembly(
+                SpinnyIntake.AutonomousIntakeBehaviors intake,
+                Claw.AutonomousClawBehaviors claw,
+                Telemetry telemetry)
         {
+            super(telemetry);
             this.intake = intake;
             this.claw = claw;
         }
     }
 
-    private final AutonomousIntakeAssembly auton;
+    private AutonomousIntakeAssembly auton;
 
     private final SpinnyIntake intake;
     private final Claw claw;
+
     public ExampleIntakeAssembly(HardwareMap hardwareMap)
     {
         intake = new SpinnyIntake(hardwareMap, "spinner",
@@ -50,8 +55,17 @@ public class ExampleIntakeAssembly extends MechAssembly
                         servo.setPower(0);
                 },
                 (servo, telemetry) -> {});
+    }
 
-        auton = new AutonomousIntakeAssembly(intake.getAutonomousBehaviors(), claw.getAutonomousBehaviors());
+    @Override
+    public void initializeTelemetry(Telemetry telemetry) {
+        this.telemetry = telemetry;
+        intake.initializeTelemetry(telemetry);
+        claw.initializeTelemetry(telemetry);
+        auton = new AutonomousIntakeAssembly(
+                intake.getAutonomousBehaviors(),
+                claw.getAutonomousBehaviors(),
+                telemetry);
     }
 
     @Override
@@ -66,7 +80,8 @@ public class ExampleIntakeAssembly extends MechAssembly
     }
 
     @Override
-    public void updateTelemetry(Telemetry telemetry) {
-        claw.update(telemetry);
+    public void updateTelemetry() {
+        claw.update();
+        intake.update();
     }
 }

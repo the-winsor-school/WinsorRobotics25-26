@@ -5,31 +5,38 @@ import static org.firstinspires.ftc.teamcode.AutonStrategies.ATagL1Strategy.look
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Extensions.IState;
 import org.firstinspires.ftc.teamcode.Extensions.LimelightExtensions;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.Turret;
 
+/**
+ * State machine that rotates the turret until the target AprilTag is centred in
+ * the Limelight's field of view. Previously held a raw {@code Telemetry} reference
+ * and called {@code telemetry.update()} between state transitions (Susan Zuo —
+ * Bug #2: "mid-cycle {@code telemetry.update()} in state machines", and Bug #6:
+ * "autonomous strategies held raw telemetry references, bypassing the object
+ * model"). All reporting now goes through
+ * {@code turret.reportStatus/reportData} so the single-flush rule is respected.
+ */
 public class LimelightAutoTarget extends StateMachine {
-    //private IState currentState = lookForTag();
-    //public void updateState()
-    //{
-        //currentState = currentState.execute();
-    //}
     private final int targetTagId;
     private final Limelight3A limelight;
     private final Turret.AutonomousTurretBehaviors turret;
-    private final Telemetry telemetry;
 
+    /**
+     * @param limelight  the Limelight3A sensor
+     * @param turret     the live autonomous turret behavior — carries its own
+     *                   telemetry reference, so no raw {@code Telemetry} arg is
+     *                   needed here (Susan Zuo — Bug #6)
+     * @param tagId      AprilTag ID to track
+     */
     public LimelightAutoTarget(
             Limelight3A limelight,
             Turret.AutonomousTurretBehaviors turret,
-            Telemetry telemetry,
             int tagId)
     {
         this.limelight = limelight;
         this.turret = turret;
-        this.telemetry = telemetry;
         this.targetTagId = tagId;
         currentState = lookForTag();
     }
@@ -41,8 +48,7 @@ public class LimelightAutoTarget extends StateMachine {
             if(tx > -10)
                 power = -tx / 10.0;
             turret.setPower(power);
-            telemetry.addData("Turret CCW: ", power);
-            telemetry.update();
+            turret.reportData("Turret CCW", power);
             return lookForTag();
         };
     }
@@ -53,8 +59,7 @@ public class LimelightAutoTarget extends StateMachine {
             if (tx < 10)
                 power = -tx / 10.0;
             turret.setPower(power);
-            telemetry.addData("Turret CW: ", power);
-            telemetry.update();
+            turret.reportData("Turret CW", power);
             return lookForTag();
         };
     }
@@ -63,8 +68,7 @@ public class LimelightAutoTarget extends StateMachine {
         return () ->
         {
             turret.stop();
-            telemetry.addLine("Turret Stopped");
-            telemetry.update();
+            turret.reportStatus("Turret Stopped");
             return lookForTag();
         };
     }
@@ -79,8 +83,7 @@ public class LimelightAutoTarget extends StateMachine {
 
             if(tag == null)
             {
-                telemetry.addLine(
-                        "Tag" + targetTagId + " not found.");
+                turret.reportStatus("Tag " + targetTagId + " not found.");
                 return stopTurret();
             }
             double tx = tag.getTargetXDegrees();
@@ -90,6 +93,3 @@ public class LimelightAutoTarget extends StateMachine {
         };
     }
 }
-
-
-

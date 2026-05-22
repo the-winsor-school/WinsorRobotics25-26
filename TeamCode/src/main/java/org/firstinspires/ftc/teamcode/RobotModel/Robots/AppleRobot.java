@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.RobotModel.Robots;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.RobotModel.DriveTrain.Mecanum.MecanumDrive;
 
 public class AppleRobot extends Robot {
@@ -11,8 +12,9 @@ public class AppleRobot extends Robot {
         return null;
     }
 
-    public AppleRobot(HardwareMap hardwareMap)
+    public AppleRobot(HardwareMap hardwareMap, Telemetry telemetry)
     {
+        super(telemetry);
         driveTrain = new MecanumDrive(
             hardwareMap, //step up mec drive- wheels mec
             new MecanumDrive.OrientationConfiguration(
@@ -27,5 +29,6 @@ public class AppleRobot extends Robot {
             */
             )
         );
+        initializeSubsystems();
     }
 }

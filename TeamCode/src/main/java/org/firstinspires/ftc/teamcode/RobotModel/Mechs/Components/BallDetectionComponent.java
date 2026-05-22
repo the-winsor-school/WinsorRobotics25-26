@@ -34,6 +34,10 @@ import java.util.List;
  */
 public class BallDetectionComponent extends MechComponent{
     public class AutonomousBallDetection extends AutonomousComponentBehaviors {
+        public AutonomousBallDetection(Telemetry telemetry) {
+            super(telemetry);
+        }
+
         public boolean isPurpleBallDetected() {
             return purpleBallProcessor.getBlobs().size() > 0;
         }
@@ -71,7 +75,7 @@ public class BallDetectionComponent extends MechComponent{
     private final ColorBlobLocatorProcessor purpleBallProcessor;
     private final ColorBlobLocatorProcessor greenBallProcessor;
     private final BallDetectionStrategy strategy;
-    private final AutonomousBallDetection auton = new AutonomousBallDetection();
+    private AutonomousBallDetection auton;
 
     public BallDetectionComponent(HardwareMap hardwareMap,
                                   String cameraName,
@@ -106,6 +110,12 @@ public class BallDetectionComponent extends MechComponent{
     }
 
     @Override
+    public void initializeTelemetry(Telemetry telemetry) {
+        super.initializeTelemetry(telemetry);
+        auton = new AutonomousBallDetection(telemetry);
+    }
+
+    @Override
     public AutonomousBallDetection getAutonomousBehaviors() {
         return auton;
     }
@@ -116,7 +126,7 @@ public class BallDetectionComponent extends MechComponent{
     }
 
     @Override
-    public void update(Telemetry telemetry) {
+    void update() {
         List<ColorBlobLocatorProcessor.Blob> purpleBlobs = purpleBallProcessor.getBlobs();
         List<ColorBlobLocatorProcessor.Blob> greenBlobs = greenBallProcessor.getBlobs();
         telemetry.addData("Purple Balls Detected", purpleBlobs.size());

@@ -19,8 +19,7 @@ public class BillyTeleOpRED extends LinearOpMode {
         waitForStart();
         while(opModeIsActive()){
             robot.update(gamepad1, gamepad2);
-            robot.updateTelemetry(telemetry);
-            telemetry.update();
+            robot.updateTelemetry();
         }
     }
 

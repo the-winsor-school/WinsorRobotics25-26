@@ -7,29 +7,63 @@ import org.firstinspires.ftc.teamcode.RobotModel.DriveTrain.DriveTrain;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Assemblies.MechAssembly;
 import org.firstinspires.ftc.vision.VisionPortal;
 
+/**
+ * Abstract base for all robots in the system.
+ *
+ * <p><b>Telemetry contract (Susan Zuo):</b> Telemetry is injected at
+ * construction via {@code Robot(Telemetry)} and propagated to every subsystem
+ * by {@link #initializeSubsystems()}. This class is the <em>single flush
+ * point</em> for the entire robot — only {@link #updateTelemetry()} calls
+ * {@code telemetry.update()}. No other layer may call it.
+ *
+ * <p>Previously, telemetry was passed as a parameter on every loop
+ * ({@code updateTelemetry(Telemetry)}), causing multiple competing flush
+ * points and mid-cycle updates. Susan Zuo identified this as the root cause
+ * of Bugs #1, #2, and #7: "Split Ownership — multiple layers assume they
+ * can call telemetry.update()."
+ *
+ * @author Susan Zuo (telemetry refactor)
+ */
 public abstract class Robot
 {
 
     protected interface IRobotStrategy { }
     protected Robot.IRobotStrategy strategy;
+
+    /**
+     * Autonomous-facing surface for the full robot. Provides
+     * {@link #reportStatus}, {@link #reportData}, and {@link #clearTelemetry}
+     * so top-level autonomous strategies do not need a raw {@code Telemetry}
+     * parameter (Susan Zuo — fixes Bug #6: "AutonomousRobot provides no
+     * telemetry support — forces strategies to use raw telemetry").
+     */
     public abstract class AutonomousRobot
     {
+        protected final Telemetry telemetry;
+
         /**
-         * This doesn't actually do anything with these parameters. It DOES require that any
-         * extension of this class MUST include matching parameters in its constructor
+         * Requires that any extending class provide matching parameter types in its constructor.
          * @param driveTrain Any AutonomousDriving implementation
-         * @param mechAssembly Any Aut
+         * @param mechAssembly Any AutonomousMechBehaviors implementation
+         * @param telemetry Telemetry injected at construction time
          */
         public AutonomousRobot(
                 DriveTrain.AutonomousDriving driveTrain,
-                MechAssembly.AutonomousMechBehaviors mechAssembly)
+                MechAssembly.AutonomousMechBehaviors mechAssembly,
+                Telemetry telemetry)
         {
-            // this requires that any inheriting classes must provide these types of parameters.
+            this.telemetry = telemetry;
         }
 
+        /** Adds a status line to the telemetry buffer. Does NOT flush. */
+        public void reportStatus(String status) { telemetry.addLine(status); }
+        /** Adds a key-value pair to the telemetry buffer. Does NOT flush. */
+        public void reportData(String key, Object value) { telemetry.addData(key, value); }
+        public void clearTelemetry() { telemetry.clear(); }
     }
 
     protected interface IControlStrategy {  }
+
 
     /**
      * This abstract method definition tells inheriting classes that they MUST define a
@@ -42,11 +76,35 @@ public abstract class Robot
     protected VisionPortal visionPortal;
     protected DriveTrain driveTrain;
     protected MechAssembly mechAssembly;
+    protected Telemetry telemetry;
 
+    protected Robot(Telemetry telemetry)
+    {
+        this.telemetry = telemetry;
+    }
 
-    public void updateTelemetry(Telemetry telemetry) {
-        driveTrain.updateTelemetry(telemetry);
-        mechAssembly.updateTelemetry(telemetry);
+    /**
+     * Propagates the owned telemetry reference to driveTrain and mechAssembly,
+     * triggering their two-phase initialization. Call this in subclass
+     * constructors after both fields are assigned (Susan Zuo — "construct →
+     * initializeTelemetry" two-phase pattern).
+     */
+    protected void initializeSubsystems()
+    {
+        if (driveTrain != null) driveTrain.initializeTelemetry(telemetry);
+        if (mechAssembly != null) mechAssembly.initializeTelemetry(telemetry);
+    }
+
+    /**
+     * The single flush point for all telemetry in the robot. Collects data
+     * from driveTrain and mechAssembly, then calls {@code telemetry.update()}
+     * exactly once per loop (Susan Zuo — "Single Point of Control: only Robot
+     * is allowed to call telemetry.update(). All other layers write data but
+     * never flush." Fixes Bugs #1, #2, #7).
+     */
+    public void updateTelemetry() {
+        if (driveTrain != null) driveTrain.updateTelemetry();
+        if (mechAssembly != null) mechAssembly.updateTelemetry();
         telemetry.update();
     }
 
@@ -57,7 +115,7 @@ public abstract class Robot
      */
     public void update(Gamepad gamepad1, Gamepad gamepad2)
     {
-        driveTrain.drive(gamepad1);
-        mechAssembly.giveInstructions(gamepad2);
+        if (driveTrain != null) driveTrain.drive(gamepad1);
+        if (mechAssembly != null) mechAssembly.giveInstructions(gamepad2);
     }
 }

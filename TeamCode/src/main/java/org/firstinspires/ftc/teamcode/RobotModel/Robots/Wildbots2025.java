@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.RobotModel.Robots;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.RobotModel.DriveTrain.Mecanum.MecanumDrive;
 import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Assemblies.CascadeArm;
 
@@ -18,9 +19,10 @@ public class Wildbots2025 extends Robot
         public final CascadeArm.AutonomousCascadeArm mechAssembly;
         public AutonomousMecanumRobot(
                 MecanumDrive.AutonomousMecanumDrive driveTrain,
-                CascadeArm.AutonomousCascadeArm mechAssembly)
+                CascadeArm.AutonomousCascadeArm mechAssembly,
+                Telemetry telemetry)
         {
-            super(driveTrain, mechAssembly);
+            super(driveTrain, mechAssembly, telemetry);
             this.driveTrain = driveTrain;
             this.mechAssembly = mechAssembly;
         }
@@ -33,8 +35,9 @@ public class Wildbots2025 extends Robot
     }
 
 
-    public Wildbots2025(HardwareMap hardwareMap)
+    public Wildbots2025(HardwareMap hardwareMap, Telemetry telemetry)
     {
+        super(telemetry);
         driveTrain = new MecanumDrive(
                 hardwareMap,
                 new MecanumDrive.OrientationConfiguration(
@@ -46,8 +49,11 @@ public class Wildbots2025 extends Robot
                 );
         mechAssembly = new CascadeArm(hardwareMap);
 
+        initializeSubsystems();
+
         auton = new AutonomousMecanumRobot(
                 driveTrain.getAutonomousDriving(),
-                mechAssembly.getAutonomousBehaviors());
+                mechAssembly.getAutonomousBehaviors(),
+                telemetry);
     }
 }
