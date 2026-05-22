@@ -26,19 +26,28 @@ public class BillyRapidFire extends StateMachine
      *                   references, bypassing the object model").
      * @param ballCount  initial number of balls to fire
      */
+
+
     public BillyRapidFire(BillyMA.AutonomousBillyMA ma, int ballCount)
     {
         mechAssembly = ma;
         reset(ballCount);
     }
 
+    /**
+     * Resets BillyRapidFire
+     * @param ballCount The number of balls that BillyRapidFire will launch
+     */
     public void reset(int ballCount)
     {
         this.ballCount = ballCount;
         currentState = startShooter();
     }
 
-
+    /**
+     * Starts the flywheel shooter
+     * @return Sets the flywheel to 0.6 power and waits for 2200 milliseconds, then goes to fire()
+     */
     public IState startShooter() {
         mechAssembly.reportStatus("startShooter");
         return
@@ -52,6 +61,10 @@ public class BillyRapidFire extends StateMachine
 
 
     }
+    /**
+     * Pushes the balls into the flywheel shooter
+     * @return Pushes the balls and waits for 1000 milliseconds, then goes to retract()
+     */
     public IState fire()
     {
         mechAssembly.reportStatus("fire");
@@ -64,6 +77,12 @@ public class BillyRapidFire extends StateMachine
                         retract()
                 );
     }
+
+    /**
+     * Retracts the ball pusher
+     * @return Retracts the ball pusher servo and waits for 1000 milliseconds.
+     * If ballCount > 0, goes to fire(). Otherwise, goes to stopShooter()
+     */
     public IState retract()
     {
         mechAssembly.reportStatus("retract");
@@ -80,6 +99,10 @@ public class BillyRapidFire extends StateMachine
 
                 );
     }
+    /**
+     * Stops the flywheel shooter
+     * @return Stops the flywheel shooter, then returns null.
+     */
     public IState stopShooter()
     {
         mechAssembly.reportStatus("stopShooter");
