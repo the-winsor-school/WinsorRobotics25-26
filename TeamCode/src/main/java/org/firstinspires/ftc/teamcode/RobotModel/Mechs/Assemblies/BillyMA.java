@@ -25,7 +25,7 @@ public class BillyMA extends MechAssembly {
     private final Turret turret;
     private BillyRapidFire BRF = null;
 
-    private final Telemetry telemetry;
+    private Telemetry telemetry;
     protected BillyAssemblyStrategy strategy;
 
     public BillyMA(HardwareMap hardwareMap, Telemetry tel) {
@@ -92,16 +92,17 @@ public class BillyMA extends MechAssembly {
                 },
                 (servo, telemetry) -> {
                     telemetry.addData("turret position", servo.getPower());
-                }));
+                });
         this.telemetry = tel;
 
         auton = new AutonomousBillyMA(
                 intake.getAutonomousBehaviors(),
                 ballPusher.getAutonomousBehaviors(),
                 flywheel.getAutonomousBehaviors(),
-                turret.getAutonomousBehaviors()
+                turret.getAutonomousBehaviors(),
+                telemetry
         );
-        BRF = new BillyRapidFire(auton, 3, tel);
+        BRF = new BillyRapidFire(auton, 3);
         BRF.abort();
         strategy = (mechAssembly, gamepad) -> {
             
@@ -200,9 +201,5 @@ public class BillyMA extends MechAssembly {
      */
     @Override
     public void updateTelemetry() {
-        intake.update();
-        ballPusher.update();
-        flywheel.update();
-        turret.update();
     }
 }
