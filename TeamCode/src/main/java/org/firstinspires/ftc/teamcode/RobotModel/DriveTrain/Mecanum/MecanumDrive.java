@@ -184,6 +184,13 @@ public class MecanumDrive extends DriveTrain
         double y1 = Math.sin(angle + Math.PI/4) * magnitude;
         double y2 = Math.sin(angle - Math.PI/4) * magnitude;
 
+        // TODO: compare these signs to AutonomousMecanumDrive.drive(x,y,t) above and to
+        // spin() below. lb and rf here are flipped relative to both - a pure-turn input
+        // (vertical=horizontal=0, turn!=0) works out to lf=+turn, lb=-turn, rf=+turn, rb=-turn,
+        // which splits the wheels front-vs-back (LF/RF one way, LB/RB the other), not
+        // left-vs-right the way spin() and the autonomous drive() do. That's not a clean
+        // in-place rotation - the wheels fight each other. lb should match lf's sign and rf
+        // should match rb's sign (mirroring the autonomous version) for turning to work right.
         double lf = y1 + turn;   // swapped sign
         double lb = y2 - turn;   // swapped sign
         double rf = y2 + turn;

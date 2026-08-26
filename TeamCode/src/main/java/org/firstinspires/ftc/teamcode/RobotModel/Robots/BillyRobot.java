@@ -115,6 +115,11 @@ public class BillyRobot extends Robot {
         imu.initialize(parameters);
         imu.resetYaw();
 
+        // TODO: aprilTag is constructed here but never attached to a VisionPortal (the
+        // inherited `visionPortal` field from Robot is never assigned anywhere) - it will
+        // never receive camera frames or produce detections until it's wired up. Either
+        // build a VisionPortal for it, or remove it if Limelight-based targeting
+        // (LimelightAutoTarget, below) is meant to fully replace this.
         aprilTag = AprilTagProcessor.easyCreateWithDefaults();
 
         initializeSubsystems();

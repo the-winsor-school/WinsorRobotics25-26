@@ -31,6 +31,11 @@ public class BillyMA extends MechAssembly {
     public BillyMA(HardwareMap hardwareMap, Telemetry tel) {
         intake = new SpinnyIntake(hardwareMap, "intakeMotor",
                 (motor, gamepad) -> {
+                    // TODO: dpad_up and dpad_down are two separate if-statements, not one
+                    // if/else-if/else chain. Pressing dpad_up alone sets power to 0.75 here,
+                    // then the dpad_down check below immediately overwrites it back to 0
+                    // (since dpad_down is false, its else branch runs) - forward intake never
+                    // actually turns the motor on. Combine these into a single chain.
                     if (gamepad.dpad_up) {
                         motor.setPower(0.75);
                     }
@@ -123,8 +128,14 @@ public class BillyMA extends MechAssembly {
             flywheel.move(gamepad);
             // This line is a bug! because Turret has nothing to do with BillyRapidFire,
             // AND it is wholly owned by LimelightAutoTarget.
+            // TODO: the turret has two uncoordinated owners at once - this manual gamepad
+            // strategy AND LimelightAutoTarget (see BillyRobot's update strategy), which
+            // runs every loop regardless of what happens here. Whichever one calls
+            // turret.move()/setPower() last in a given loop silently wins. Give the turret
+            // a real resource-ownership rule (see doc/ControlStrategyExpansionPlan.md and
+            // Flint Lessons 5 & 7) so only one strategy commands it at a time.
             turret.move(gamepad);
-             
+
         };
     }
 
@@ -201,5 +212,13 @@ public class BillyMA extends MechAssembly {
      */
     @Override
     public void updateTelemetry() {
+        // TODO: this method never visits any component, so none of the four
+        // mechanisms (intake, ballPusher, flywheel, turret) ever report telemetry to
+        // the driver station. Call each component's own telemetry-reporting behavior
+        // here, the same way giveInstructions() above visits every component for
+        // gamepad input (see Flint Lesson 4). Heads up: MechComponent.update() (and
+        // every component's override of it) is currently package-private, so you may
+        // need to widen its access before you can call it from here - see the TODO on
+        // MechComponent.java.
     }
 }

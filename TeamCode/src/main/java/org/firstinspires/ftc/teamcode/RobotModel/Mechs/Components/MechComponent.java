@@ -72,5 +72,11 @@ public abstract class MechComponent
      * {@code Robot.updateTelemetry()} (Susan Zuo — "Single Point of Control:
      * Only Robot is allowed to call telemetry.update()").
      */
+    // TODO: this is package-private (default access), and every override in every
+    // concrete component (SpinnyIntake, PusherServo, Turret, DoubleShooter,
+    // DoublyLimitedMotor) keeps that same default access. MechAssembly subclasses
+    // like BillyMA live in a different package, so they can't call a component's
+    // update() at all right now - which blocks the exact fix BillyMA.updateTelemetry()
+    // needs. Widening this (and its overrides) to public should fix it.
     abstract void update();
 }

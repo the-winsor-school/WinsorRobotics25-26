@@ -14,6 +14,12 @@ public class LimelightExtensions {
      * @return The desired FiducialResult or NULL if not found.
      */
 
+    // TODO: getLatestResult() can return null before the Limelight has produced its
+    // first frame (e.g. right after limelight.start()), or if it drops out mid-match.
+    // Neither this method nor tryFindOneOf() below null-checks it before calling
+    // .getFiducialResults(), so that's an uncaught NullPointerException waiting to
+    // happen - and since LimelightAutoTarget.lookForTag() calls this every single
+    // teleop loop, it would crash the whole OpMode, not just this one lookup.
     public static LLResultTypes.FiducialResult tryGetFiducial(
         Limelight3A limelight,
         int tagId)

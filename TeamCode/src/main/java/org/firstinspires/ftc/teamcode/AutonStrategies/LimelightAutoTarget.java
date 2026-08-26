@@ -53,6 +53,12 @@ public class LimelightAutoTarget extends StateMachine {
     public IState rotateCW(double tx) {
         return () ->
         {
+            // TODO: compare to rotateCCW below - there, both the default (far-off-target)
+            // power and the proportional (near-target) power are positive. Here, the default
+            // is +1 but the proportional branch computes a negative power for the same
+            // "target is to the right" case. That sign flip means a far-right tag drives the
+            // turret full-speed the WRONG way (away from center), and since tx keeps growing,
+            // it never recovers. Should the default below be -1?
             double power = 1;
             if (tx < 10)
                 power = -tx / 10.0;
