@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.AutonStrategies;
 
-import static org.firstinspires.ftc.teamcode.AutonStrategies.ATagL1Strategy.lookForTag;
-
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 
