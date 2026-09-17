@@ -128,6 +128,11 @@ public class BillyRobot extends Robot {
                 limelight,
                 ((BillyMA)mechAssembly).getAutonomousBehaviors().autonTurret,
                 tagID);
+        /*
+          IRobot strategy is initialized in the constructor that takes the input of robot, gamepad1, and gamepad2
+          It updates the robot state with the parameters gamepad1 and gamepad2
+          If the LimelightAutoTarget has not finished running, then the LimelightAutoTarget's state is updated
+         */
 
         strategy = (robot, gamepad1, gamepad2)  -> {
             super.update(gamepad1, gamepad2);
@@ -136,6 +141,11 @@ public class BillyRobot extends Robot {
         };
     }
 
+    /**
+     * The IRobotStrategy executes by taking the robot, gamepad1, and gamepad2 parameters
+     * @param gamepad1 driver gamepad
+     * @param gamepad2 mech gamepad
+     */
     @Override
     public void update(Gamepad gamepad1, Gamepad gamepad2) {
        strategy.execute(this, gamepad1, gamepad2);

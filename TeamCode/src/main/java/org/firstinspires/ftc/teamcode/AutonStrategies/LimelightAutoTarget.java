@@ -19,6 +19,11 @@ import org.firstinspires.ftc.teamcode.RobotModel.Mechs.Components.Turret;
  * {@code turret.reportStatus/reportData} so the single-flush rule is respected.
  */
 public class LimelightAutoTarget extends StateMachine {
+    /**
+     * The targetTagId is the AprilTag ID to keep track of.
+     * Limelight is the Limelight3A sensor that senses for the AprilTag.
+     * The turret rotates to look for the AprilTag.
+     */
     private final int targetTagId;
     private final Limelight3A limelight;
     private final Turret.AutonomousTurretBehaviors turret;
@@ -29,6 +34,7 @@ public class LimelightAutoTarget extends StateMachine {
      *                   telemetry reference, so no raw {@code Telemetry} arg is
      *                   needed here (Susan Zuo — Bug #6)
      * @param tagId      AprilTag ID to track
+     * the currentState is set to the state lookForTag();
      */
     public LimelightAutoTarget(
             Limelight3A limelight,
@@ -41,6 +47,14 @@ public class LimelightAutoTarget extends StateMachine {
         currentState = lookForTag();
     }
 
+    /**
+     * The state sets the power to 1.
+     * If tx > -10, the power is set to -tx / 10.0.
+     * The turret returns "Turret CCW" and the power
+     * @param tx is the current tx in pixels from the crosshair
+     * @return the state lookForTag();
+     */
+
     public IState rotateCCW(double tx){
         return () ->
         {
@@ -52,6 +66,15 @@ public class LimelightAutoTarget extends StateMachine {
             return lookForTag();
         };
     }
+
+    /**
+     * The state assigns power to 1.
+     * If the tx is less than 10; the power is -tx / 10.0.
+     * It sets the turret to the power.
+     * The state returns "Turret CW" and the power.
+     * @param tx is the current tx in pixels from the crosshair
+     * @return the state lookForTag();
+     */
     public IState rotateCW(double tx) {
         return () ->
         {
@@ -64,6 +87,11 @@ public class LimelightAutoTarget extends StateMachine {
         };
     }
 
+    /**
+     * Turret set to 0 power, prints on telemetry "Turret Stopped"
+     * @return the nextState, lookForTag();
+     */
+
     public IState stopTurret() {
         return () ->
         {
@@ -73,6 +101,16 @@ public class LimelightAutoTarget extends StateMachine {
         };
     }
 
+    /**
+     * The IState returns the AprilTagID, and if it is not there, it returns null.
+     * If the tag is null, it prints on telemetry the aprilTagID and that it is not found.
+     * The variable tx is set to the current tx in degrees away from the crosshair
+     *
+     * @return If the tag is null, the IState goes to the next state StopTurret.
+     * The state rotateCCW(tx) is returned if the current tx is less than -2.
+     * The state rotateCW(tx) is returned if the current tx is greater than -2.
+     * The state stopTurret() is returned if tx = -2.
+     */
     public IState lookForTag() {
         return()->
         {

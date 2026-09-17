@@ -26,7 +26,10 @@ import org.firstinspires.ftc.vision.VisionPortal;
  */
 public abstract class Robot
 {
-
+    /**
+     * IRobotStrategy is defined here as an interface that is part of the Robot class
+     * and allows for the creation of modes, meaning programs that run in the background at all times.
+     */
     protected interface IRobotStrategy { }
     protected Robot.IRobotStrategy strategy;
 
