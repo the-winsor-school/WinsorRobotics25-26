@@ -21,7 +21,6 @@ public class BillyMA extends MechAssembly {
         intake = new SpinnyIntake(hardwareMap, "intakeMotor",
                 (motor, gamepad) -> {
                     if (gamepad.a) {
-
                         motor.setPower(0.75);
                     }
                     if (gamepad.b) {
@@ -49,13 +48,13 @@ public class BillyMA extends MechAssembly {
 
         flywheel = new DoubleShooter(hardwareMap, "flywheelMotorF", "flywheelMotorB",
                 (motorF, motorB,gamepad) -> {
-                    double power = 0.45;
-                    if (gamepad.dpad_up) { power += 0.05; }
-                    if (gamepad.dpad_down) { power -= 0.05; }
+//                    double power = 0.45;
+//                    if (gamepad.dpad_up) { power += 0.05; }
+//                    if (gamepad.dpad_d`own) { power -= 0.05; }
 
                     if (gamepad.y) {
-                        motorF.setPower(power);
-                        motorB.setPower(-power);
+                        motorF.setPower(0.3);
+                        motorB.setPower(-0.3);
                     }
                     else {
                         motorF.setPower(0);
